@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Home - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to AIVIIZN</h1>
+    <p class="lead">Your comprehensive property management solution</p>
+    <hr class="my-4">
+    <p>Manage properties, tenants, leases, and maintenance requests all in one place.</p>
+    {% if not current_user.is_authenticated %}
+        <a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}" role="button">Get Started</a>
+        <a class="btn btn-outline-primary btn-lg" href="{{ url_for('auth.login') }}" role="button">Login</a>
+    {% else %}
+        <a class="btn btn-primary btn-lg" href="{{ url_for('main.dashboard') }}" role="button">Go to Dashboard</a>
+    {% endif %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Property Management</h5>
+                <p class="card-text">Track all your properties, units, and amenities in one centralized system.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tenant Portal</h5>
+                <p class="card-text">Provide tenants with easy access to pay rent, submit requests, and communicate.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Financial Tracking</h5>
+                <p class="card-text">Monitor rent collection, expenses, and generate financial reports effortlessly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
