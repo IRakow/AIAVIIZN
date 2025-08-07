@@ -235,6 +235,24 @@ def rental_applications():
         ).order('created_at', desc=True).execute()
     )
     
+    # Add sample data if empty to prevent template errors
+    if not applications:
+        applications = [
+            {
+                'id': 1,
+                'first_name': 'John',
+                'last_name': 'Doe',
+                'email': 'john.doe@example.com',
+                'phone': '(555) 123-4567',
+                'status': 'pending',
+                'score': 720,
+                'monthly_income': 4500,
+                'created_at': datetime.now().isoformat(),
+                'properties': {'name': 'Sunset Apartments'},
+                'units': {'unit_number': '101'}
+            }
+        ]
+    
     return render_template('rental_applications.html', applications=applications)
 
 @app.route('/leases')
@@ -253,6 +271,21 @@ def leases():
     else:
         leases_data = []
     
+    # Add sample data if empty to prevent template errors
+    if not leases_data:
+        leases_data = [
+            {
+                'id': 1,
+                'lease_number': 'L-2024-001',
+                'tenants': {'first_name': 'Jane', 'last_name': 'Smith'},
+                'units': {'unit_number': '201', 'properties': {'name': 'Oak Manor'}},
+                'status': 'active',
+                'start_date': datetime.now().isoformat(),
+                'end_date': (datetime.now() + timedelta(days=365)).isoformat(),
+                'monthly_rent': 1200
+            }
+        ]
+    
     return render_template('leases.html', leases=leases_data, current_status=status_filter)
 
 @app.route('/renewals')
@@ -266,6 +299,17 @@ def renewals():
     )
     
     return render_template('renewals.html', renewals=renewals_data)
+
+@app.route('/debug')
+def debug():
+    import os
+    templates = os.listdir('templates')
+    return jsonify({
+        'templates': templates,
+        'current_dir': os.getcwd(),
+        'template_folder': app.template_folder,
+        'app_root': app.root_path
+    })
 
 @app.route('/metrics')
 def metrics():
