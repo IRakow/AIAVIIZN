@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Leases - Property Management{% endblock %}
+{% block page_title %}Leases{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <div class="filter-row">
+        <a href="{{ url_for('leases', status='all') }}" class="btn {% if current_status == 'all' %}btn-primary{% else %}btn-secondary{% endif %}" style="background-color: {% if current_status == 'all' %}#007bff{% else %}white{% endif %}; color: {% if current_status == 'all' %}white{% else %}#6c757d{% endif %}; border: 1px solid {% if current_status == 'all' %}#007bff{% else %}#6c757d{% endif %};">All</a>
+        <a href="{{ url_for('leases', status='ready_to_countersign') }}" class="btn" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">Ready to Countersign</a>
+        <a href="{{ url_for('leases', status='out_for_signing') }}" class="btn" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">Out for Signing</a>
+        <a href="{{ url_for('leases', status='printed') }}" class="btn" style="background-color: white; color: #6c757d; border: 1px solid #6c757d;">Printed</a>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Tenants</th>
+                <th>Unit Name</th>
+                <th>Lease Generation Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lease in leases %}
+            <tr>
+                <td>{{ lease.tenants.first_name }} {{ lease.tenants.last_name }}</td>
+                <td>
+                    {{ lease.units.properties.name }} - {{ lease.units.unit_number }}
+                </td>
+                <td>{{ lease.generated_date.strftime('%m/%d/%Y %I:%M %p') if lease.generated_date else '-' }}</td>
+                <td>
+                    {% if lease.status == 'executed' %}
+                        <span class="status-executed">Fully Executed</span>
+                    {% elif lease.status == 'pending' %}
+                        Out for Signing
+                    {% else %}
+                        Ready to Countersign
+                    {% endif %}
+                </td>
+                <td>
+                    {% if lease.status != 'executed' %}
+                    <button class="btn btn-primary" onclick="countersignLease('{{ lease.id }}')">Countersign</button>
+                    {% else %}
+                    <button class="btn btn-success">View</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 20px;">No leases found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function countersignLease(leaseId) {
+    if (confirm('Are you sure you want to countersign this lease?')) {
+        fetch('/api/leases/countersign', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({lease_id: leaseId})
+        }).then(response => {
+            if (response.ok) {
+                alert('Lease countersigned successfully!');
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Guest Cards - Property Management{% endblock %}
+{% block page_title %}Guest Cards{% endblock %}
+
+{% block extra_css %}
+<style>
+    .guest-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .guest-actions button {
+        padding: 8px 16px;
+        border: 1px solid #007bff;
+        background-color: white;
+        color: #007bff;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .guest-actions button:hover {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <form method="get">
+        <div class="filter-row">
+            <input type="text" name="search" placeholder="Click here to search" style="width: 100%;" value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="guest-actions">
+    <button onclick="bulkAction('active')">Mark Active</button>
+    <button onclick="bulkAction('inactive')">Mark Inactive</button>
+    <button onclick="bulkAction('waitlisted')">Mark Waitlisted</button>
+    <button onclick="sendEmail()">Send Email</button>
+    <button onclick="assignUser()">Assign User</button>
+    <button onclick="sendApplicationLink()">Send Application Link</button>
+    <button onclick="sendShowingLink()">Send Showing Link</button>
+    <button onclick="sendText()">Send Text</button>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>Name ↕</th>
+                <th>Interested In ↕</th>
+                <th>Latest Interest ↕</th>
+                <th>Most Recent Activity ↕</th>
+                <th>Source ↕</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for guest in guests %}
+            <tr>
+                <td><input type="checkbox" class="guest-check" value="{{ guest.id }}"></td>
+                <td>{{ guest.name }}</td>
+                <td>
+                    {% if guest.properties %}
+                        {{ guest.properties.name }}
+                        {% if guest.units %} - {{ guest.units.unit_number }}{% endif %}
+                    {% else %}
+                        {{ guest.interested_in }}
+                    {% endif %}
+                </td>
+                <td>{{ guest.latest_interest_date.strftime('%m/%d/%Y') if guest.latest_interest_date else '-' }}</td>
+                <td>
+                    {{ guest.last_activity }}<br>
+                    {{ guest.last_activity_date.strftime('%m/%d/%Y') if guest.last_activity_date else '-' }}
+                </td>
+                <td>{{ guest.source }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No guest cards found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.guest-check');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+function getSelectedGuests() {
+    const selected = [];
+    document.querySelectorAll('.guest-check:checked').forEach(cb => {
+        selected.push(cb.value);
+    });
+    return selected;
+}
+
+function bulkAction(status) {
+    const selected = getSelectedGuests();
+    if (selected.length === 0) {
+        alert('Please select at least one guest card');
+        return;
+    }
+    
+    fetch('/api/guest-cards/bulk-update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ids: selected, status: status})
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+function sendEmail() {
+    const selected = getSelectedGuests();
+    if (selected.length === 0) {
+        alert('Please select at least one guest card');
+        return;
+    }
+    // Implement email sending logic
+    alert('Email feature coming soon');
+}
+
+function sendApplicationLink() {
+    const selected = getSelectedGuests();
+    if (selected.length === 0) {
+        alert('Please select at least one guest card');
+        return;
+    }
+    // Implement application link sending
+    alert('Application link sent to selected guests');
+}
+</script>
+{% endblock %}

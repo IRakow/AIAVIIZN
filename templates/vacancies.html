@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Vacancies - Property Management{% endblock %}
+{% block page_title %}Vacancies{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vacancy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+
+    .vacancy-card {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .vacancy-header {
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 15px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .vacancy-image {
+        height: 150px;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .vacancy-details {
+        padding: 15px;
+    }
+
+    .vacancy-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .vacancy-actions {
+        display: flex;
+        gap: 10px;
+        padding: 0 15px 15px;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 8px;
+        text-align: center;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .btn-post {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-activate {
+        background-color: #28a745;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <form method="get">
+        <div class="filter-row">
+            <input type="text" name="search" placeholder="Click here to search" style="width: 100%;" value="{{ request.args.get('search', '') }}">
+        </div>
+        <div class="filter-row">
+            <select name="sort">
+                <option value="days_vacant" {% if request.args.get('sort') == 'days_vacant' %}selected{% endif %}>Sort By: Days Vacant</option>
+                <option value="rent" {% if request.args.get('sort') == 'rent' %}selected{% endif %}>Sort By: Rent Price</option>
+                <option value="property" {% if request.args.get('sort') == 'property' %}selected{% endif %}>Sort By: Property Name</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </form>
+</div>
+
+<div class="vacancy-grid">
+    {% for vacancy in vacancies %}
+    <div class="vacancy-card">
+        <div class="vacancy-header">Vacant For: {{ vacancy.days_vacant }} days</div>
+        <div class="vacancy-image">🏠 {{ vacancy.photos_count }} Photos</div>
+        <div class="vacancy-details">
+            <h3>{{ vacancy.properties.name }} - {{ vacancy.unit_number }}</h3>
+            <p>{{ vacancy.properties.address }}, {{ vacancy.properties.city }}, {{ vacancy.properties.state }} {{ vacancy.properties.zip }}</p>
+            <div class="vacancy-info-row">
+                <span>BD/BA: {{ vacancy.bedrooms }}/{{ vacancy.bathrooms }}</span>
+                <span>SQ. FT.: {{ vacancy.square_feet }}</span>
+            </div>
+            <div class="vacancy-info-row">
+                <span>RENT: ${{ vacancy.rent }}</span>
+                <span>AVAILABLE: {{ 'Now' if not vacancy.available_date else vacancy.available_date.strftime('%m/%d/%Y') }}</span>
+            </div>
+        </div>
+        <div class="vacancy-actions">
+            <button class="action-btn btn-post" onclick="postUnit('{{ vacancy.id }}')">Post</button>
+            <button class="action-btn btn-activate" onclick="activateUnit('{{ vacancy.id }}')">Activate</button>
+        </div>
+    </div>
+    {% else %}
+    <p>No vacant units available.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function postUnit(unitId) {
+    fetch('/api/units/post', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({unit_id: unitId})
+    }).then(response => {
+        if (response.ok) {
+            alert('Unit posted successfully!');
+        }
+    });
+}
+
+function activateUnit(unitId) {
+    fetch('/api/units/update-status', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({unit_id: unitId, status: 'active'})
+    }).then(response => {
+        if (response.ok) {
+            alert('Unit activated successfully!');
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

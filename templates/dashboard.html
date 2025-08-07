@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Property Management{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+{% if alerts %}
+    {% for alert in alerts %}
+    <div class="alert-box">
+        <span>ℹ️</span>
+        <span>{{ alert.message }} 
+        {% if alert.link %}<a href="{{ alert.link }}">Click here</a>{% endif %}
+        {% if alert.dismissible %}
+        | <a href="#" onclick="dismissAlert('{{ alert.id }}')">Remind me in 7 days</a> 
+        | <a href="#" onclick="dismissAlert('{{ alert.id }}', true)">Don't show this message again</a>
+        {% endif %}
+        </span>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<div style="background-color: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <button class="btn btn-info" style="float: right;">📧 FEEDBACK</button>
+    <h2 style="color: #28a745; font-size: 16px; margin-bottom: 10px;">NEW - Move Ins Updated</h2>
+    <p>We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+</div>
+
+<div class="filter-section">
+    <form method="get" action="{{ url_for('dashboard') }}">
+        <div class="filter-row">
+            <input type="text" name="search" placeholder="Search by property, unit or group" value="{{ request.args.get('search', '') }}">
+            <select name="status">
+                <option value="">Lease Status</option>
+                <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
+                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="executed" {% if request.args.get('status') == 'executed' %}selected{% endif %}>Executed</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <label>
+                <input type="checkbox" name="show_finished" {% if request.args.get('show_finished') %}checked{% endif %}>
+                Show Finished Move Ins
+            </label>
+        </div>
+    </form>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Future Tenant ↕</th>
+                <th>Property - Unit ↕</th>
+                <th>Lease ↕</th>
+                <th>Portal ↕</th>
+                <th>Balance ↕</th>
+                <th>Insurance</th>
+                <th>Move In Date ↕</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for move_in in move_ins %}
+            <tr>
+                <td>{{ move_in.tenant.last_name }}, {{ move_in.tenant.first_name }}</td>
+                <td>{{ move_in.property.name }} - {{ move_in.unit.unit_number }}</td>
+                <td>
+                    {% if move_in.lease_status == 'executed' %}
+                        <span class="status-executed">Fully Executed</span>
+                    {% elif move_in.lease_status == 'pending' %}
+                        Out for Signing
+                    {% else %}
+                        Ready to Countersign
+                    {% endif %}
+                </td>
+                <td><span class="status-active">{{ move_in.portal_status|capitalize }}</span></td>
+                <td>${{ "%.2f"|format(move_in.balance) }}</td>
+                <td>
+                    {% if move_in.insurance_status == 'covered' %}
+                        <span class="badge badge-success">Covered</span>
+                    {% elif move_in.insurance_status == 'pending' %}
+                        <span class="badge badge-info">Pending</span>
+                    {% else %}
+                        <span class="badge badge-warning">Not Covered</span>
+                    {% endif %}
+                </td>
+                <td>{{ move_in.move_in_date.strftime('%m/%d/%Y') if move_in.move_in_date else '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 20px;">No move-ins scheduled</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function dismissAlert(alertId, permanent = false) {
+    fetch('/api/alerts/dismiss', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            alert_id: alertId,
+            permanent: permanent
+        })
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}
