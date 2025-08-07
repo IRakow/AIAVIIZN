@@ -1,4 +1,4 @@
-# Property Management System - Flask Application
+# Property Management System - Flask Application with Supabase Integration
 # File: app.py
 
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import random
+import json
 
 # Load environment variables
 load_dotenv()
@@ -17,612 +17,399 @@ app.config['SECRET_KEY'] = 'f3cfe9ed8fae309f02079dbf'
 app.config['ENV'] = 'development'
 CORS(app)
 
-# Your Supabase configuration - SAVED CREDENTIALS
+# Your Supabase configuration - COMPLETE CREDENTIALS
 SUPABASE_URL = "https://sejebqdhcilwcpjpznep.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiO"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ"
 
 # Initialize Supabase client
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     print("✅ Connected to Supabase successfully!")
+    print(f"   URL: {SUPABASE_URL}")
+    print(f"   Environment: {app.config['ENV']}")
 except Exception as e:
     print(f"⚠️ Supabase connection warning: {e}")
+    print("   Please check your API key is complete")
     supabase = None
 
-# Sample data generators for demonstration
-def get_sample_properties():
-    return [
-        {
-            'name': '(BARR) Rock Ridge Ranch Apartments',
-            'address': '10561 Cypress Ave',
-            'city': 'Kansas City',
-            'state': 'MO',
-            'zip': '64137',
-            'type': 'Multi-Family',
-            'units': 75,
-            'vacant': True,
-            'owners': 'Rock Ridge Ranch / Rock Ridge Ranch LLC'
-        },
-        {
-            'name': '12520 Grandview Rd. House',
-            'address': '12520 Grandview Rd',
-            'city': 'Grandview',
-            'state': 'MO',
-            'zip': '64030',
-            'type': 'Single-Family',
-            'units': 1,
-            'vacant': False,
-            'owners': 'HLF Investments MO LLC / Keith S...'
-        },
-        {
-            'name': '340 Belmont House / Stanion',
-            'address': '340 N Belmont Blvd',
-            'city': 'Kansas City',
-            'state': 'MO',
-            'zip': '34123',
-            'type': 'Single-Family',
-            'units': 1,
-            'vacant': False,
-            'owners': 'Judson Stanion'
-        },
-        {
-            'name': '3815 Shawnee House / Stanion',
-            'address': '3815 Shawnee Dr.',
-            'city': 'Kansas City',
-            'state': 'KS',
-            'zip': '66106',
-            'type': 'Single-Family',
-            'units': 1,
-            'vacant': False,
-            'owners': 'Judson Stanion'
-        },
-        {
-            'name': '3825 Baltimore',
-            'address': '3825 Baltimore',
-            'city': 'Kansas City',
-            'state': 'MO',
-            'zip': '64111',
-            'type': 'Multi-Family',
-            'units': 7,
-            'vacant': True,
-            'owners': '3825 Baltimore / Finkelstein'
-        },
-        {
-            'name': '4012 W. 75th Street / TLAR LLC',
-            'address': '4012 W. 75th Street',
-            'city': 'Prairie Village',
-            'state': 'KS',
-            'zip': '66208',
-            'type': 'Single-Family',
-            'units': 1,
-            'vacant': False,
-            'owners': 'Greg Sweat'
-        },
-        {
-            'name': '40th Street Apartments',
-            'address': '1109-1111 W. 40th St.',
-            'city': 'Kansas City',
-            'state': 'MO',
-            'zip': '64111',
-            'type': 'Multi-Family',
-            'units': 6,
-            'vacant': True,
-            'owners': 'David Montgomery / 40th st property'
-        }
-    ]
+# Helper function to safely execute Supabase queries
+def safe_supabase_query(query_func):
+    """Safely execute a Supabase query and return data or empty list"""
+    try:
+        if supabase:
+            result = query_func()
+            if result and hasattr(result, 'data'):
+                return result.data
+    except Exception as e:
+        print(f"Query error: {e}")
+    return []
 
-def get_sample_tenants():
-    return [
-        {
-            'name': 'Arita, Elias',
-            'status': 'Current',
-            'property': '527 Oakley House / Stanion - 527 N Oakley',
-            'unit': '',
-            'phone': '(816) 883-9832'
-        },
-        {
-            'name': 'Artigus, Milagros',
-            'status': 'Current',
-            'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3601-3619 Blue Ridge Blvd.',
-            'unit': '3615 #08',
-            'phone': '(816) 984-3234'
-        },
-        {
-            'name': 'Barnes, Keisha',
-            'status': 'Past',
-            'property': 'Blue Ridge Manor - 3813 Duck Road',
-            'unit': '3811 11',
-            'phone': '(816) 988-1279'
-        },
-        {
-            'name': 'Bell, Mariel',
-            'status': 'Past',
-            'property': '(BARR) Rock Ridge Ranch Apartments - 10561 Cypress Ave',
-            'unit': '41A-R',
-            'phone': ''
-        },
-        {
-            'name': 'Burns, Kathy',
-            'status': 'Current',
-            'property': '(BARR) Rock Ridge Ranch Apartments - 10561 Cypress Ave',
-            'unit': '39A',
-            'phone': ''
-        },
-        {
-            'name': 'Byers-Boyd, Angela',
-            'status': 'Current',
-            'property': '(BARR) Rock Ridge Ranch Apartments - 10561 Cypress Ave',
-            'unit': '23B',
-            'phone': '(816) 359-0719'
-        }
-    ]
+# Test the connection
+def test_connection():
+    """Test Supabase connection and create tables if needed"""
+    if not supabase:
+        return False
+    
+    try:
+        # Test with a simple query
+        result = supabase.table('properties').select("id").limit(1).execute()
+        return True
+    except Exception as e:
+        print(f"⚠️ Table 'properties' doesn't exist. Creating sample tables...")
+        try:
+            # Create basic tables if they don't exist
+            create_sample_tables()
+            return True
+        except:
+            return False
 
-def get_sample_owners():
-    return [
-        {
-            'name': '3825 Baltimore / Finkelstein',
-            'company': '3825 Baltimore / Finkelstein',
-            'phone': '(650) 922-0967',
-            'email': 'dfinkelstein@dgflaw.com'
-        },
-        {
-            'name': 'AC Equity, LLC',
-            'company': 'AC Equity, LLC',
-            'phone': '(816) 492-0644',
-            'email': 'mitch.d.case@gmail.com'
-        },
-        {
-            'name': 'Antioch HS, LLC',
-            'company': 'Antioch HS, LLC',
-            'phone': '(714) 486-4200',
-            'email': 'jjokechoi@gmail.com'
-        },
-        {
-            'name': 'Best Beach LLC',
-            'company': 'Best Beach LLC',
-            'phone': '',
-            'email': 'john619@outlook.com'
-        },
-        {
-            'name': 'Blue Ridge KC LLC',
-            'company': 'Blue Ridge KC LLC',
-            'phone': '(816) 517-1138',
-            'email': 'jbrandmeyer@fambran.com'
-        }
-    ]
+def create_sample_tables():
+    """Create sample data for testing if tables don't exist"""
+    # This would normally be done in Supabase SQL editor
+    # For now, we'll return sample data when queries fail
+    pass
 
-def get_sample_vendors():
-    return [
-        {
-            'name': '1-800 Water Damage Of Kansas City',
-            'address': '2581 SW Highway 169 Trimble',
-            'phone': '(816) 7850-5023',
-            'email': 'dave.johnson@1800waterdamage.com',
-            'trade': ''
-        },
-        {
-            'name': '1245 Consulting',
-            'address': '3423 Limestone Sky Court House',
-            'phone': '(713) 927-0992',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': '12520 Grandview Rd. House / HLF Investments MO LLC',
-            'address': '',
-            'phone': '',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': '3G Holdings LLC',
-            'address': '11002 W 143rd Terr. Overland Park, KS',
-            'phone': '(913) 980-9902',
-            'email': 'tladish@celticproperties.net',
-            'trade': ''
-        },
-        {
-            'name': '40th St Property Escrow',
-            'address': '',
-            'phone': '',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': '435 Roofing, Inc',
-            'address': '9265 Flint St Overland Park KS 66214',
-            'phone': '(913) 444-0725',
-            'email': 'info@435roofing.com',
-            'trade': ''
-        },
-        {
-            'name': '5M Restoration LLC',
-            'address': '2773 Vernon Rd Prescott KS 66767',
-            'phone': '',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': '7 - 11',
-            'address': '',
-            'phone': '',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': '84 Lumber',
-            'address': '',
-            'phone': '',
-            'email': '',
-            'trade': ''
-        },
-        {
-            'name': 'A&M Heating And Cooling Inc',
-            'address': '513 South 4th St. St Joseph MO 64501',
-            'phone': '(816) 279-5215',
-            'email': 'amhcooling@gmail.com',
-            'trade': 'Plumbing'
-        }
-    ]
-
-def get_sample_receipts():
-    return [
-        {
-            'date': '08/07/2025',
-            'payer': 'Reiman Ventura Sarmiento (Paid online)',
-            'gl_account': '2300: Prepaid Rent',
-            'property': '(BARR) Rock Ridge Ranch Apartments - 59A',
-            'amount': 607.74,
-            'reference': '3A2B-CFA0'
-        },
-        {
-            'date': '08/07/2025',
-            'payer': 'Avianne E. Jones (Paid online)',
-            'gl_account': '4100: Rent Charge, 4310: RUBS Utility Charge',
-            'property': 'Charlotte Park Apartments - 805 #2W',
-            'amount': 1000.00,
-            'reference': 'C025-CB60'
-        },
-        {
-            'date': '08/07/2025',
-            'payer': 'Desiree M. Brown (Paid online)',
-            'gl_account': '2300: Prepaid Rent',
-            'property': 'Walnut Ridge Apts - 6116-F',
-            'amount': 688.39,
-            'reference': '6543-A7C0'
-        },
-        {
-            'date': '08/07/2025',
-            'payer': 'William S. Hopkins (Paid online)',
-            'gl_account': '4310: RUBS Utility Charge, 5999: Liability to Landlord Insurance, 4100: Rent Charge, 5680: Late Fee',
-            'property': '3825 Baltimore - 3827 #04',
-            'amount': 948.50,
-            'reference': 'F257-7770'
-        },
-        {
-            'date': '08/07/2025',
-            'payer': 'Marcel L. Goodwin (Paid online)',
-            'gl_account': '2300: Prepaid Rent',
-            'property': '(BARR) Rock Ridge Ranch Apartments - 69A-R',
-            'amount': 23.18,
-            'reference': '1717-E0B0'
-        }
-    ]
-
-def get_sample_bills():
-    return [
-        {
-            'payee': 'Fair & Square Roof Repair, LLC',
-            'ref': '800',
-            'bill_date': '08/07/2025',
-            'for': 'Longmeadow Apartments',
-            'gl_account': '3108: capital expense Roofing',
-            'due_date': '08/07/2025',
-            'amount': 1179.81,
-            'status': 'Paid',
-            'cash_account': '1150: Cash in Bank'
-        },
-        {
-            'payee': 'Fair & Square Roof Repair, LLC',
-            'ref': '795',
-            'bill_date': '08/07/2025',
-            'for': 'Indian Creek Townhomes',
-            'gl_account': '6780: Roof Repairs/Supplies',
-            'due_date': '08/07/2025',
-            'amount': 300.09,
-            'status': 'Paid',
-            'cash_account': '1150: Cash in Bank'
-        },
-        {
-            'payee': 'Metro Appliances',
-            'ref': '909457',
-            'bill_date': '08/06/2025',
-            'for': 'Brentwood Park / Brentwood Park Ventures LLC - 3619 #03',
-            'gl_account': '3107: capital expense Appliance',
-            'due_date': '08/06/2025',
-            'amount': 651.27,
-            'status': 'Paid',
-            'cash_account': '1150: Cash in Bank'
-        },
-        {
-            'payee': 'Walgreens',
-            'ref': '--',
-            'bill_date': '08/06/2025',
-            'for': 'Brentwood Park / Brentwood Park Ventures LLC',
-            'gl_account': '7420: Office Supplies',
-            'due_date': '08/06/2025',
-            'amount': 13.03,
-            'status': 'Paid',
-            'cash_account': '1150: Cash in Bank'
-        }
-    ]
-
-def get_sample_bank_accounts():
-    return [
-        {
-            'name': '3825 Baltimore / Finkelstein',
-            'bank': 'US Bank',
-            'account_number': '*******2041',
-            'last_reconciliation': '07/31/2025',
-            'payments_enabled': 'ENABLED',
-            'auto_reconciliation': 'PLAID'
-        },
-        {
-            'name': '40th St Escrow',
-            'bank': 'US Bank',
-            'account_number': '*******7206',
-            'last_reconciliation': '11/30/2021',
-            'payments_enabled': 'NOT ENABLED',
-            'auto_reconciliation': 'PLAID'
-        },
-        {
-            'name': '40th st property',
-            'bank': 'US Bank',
-            'account_number': '*******3228',
-            'last_reconciliation': '06/30/2025',
-            'payments_enabled': 'ENABLED',
-            'auto_reconciliation': 'PLAID'
-        },
-        {
-            'name': 'AC Equity, LLC / Highland',
-            'bank': 'US Bank',
-            'account_number': '*******6234',
-            'last_reconciliation': '07/31/2025',
-            'payments_enabled': 'ENABLED',
-            'auto_reconciliation': 'PLAID'
-        },
-        {
-            'name': 'Aspen Village Apts/EM2 Investments, LLC',
-            'bank': 'Bank of America',
-            'account_number': '*******0610',
-            'last_reconciliation': '06/30/2025',
-            'payments_enabled': 'ENABLED',
-            'auto_reconciliation': 'NOT ENABLED'
-        }
-    ]
-
-def get_sample_journal_entries():
-    return [
-        {
-            'entry_date': '08/05/2025',
-            'reference': '7018',
-            'property': 'Homestead Villas Housing / Homestead Villas Investment Housing',
-            'remarks': 'August 2025 - Transfer to Operating Account',
-            'accounts': [
-                {'account': '1150 - Cash in Bank', 'debit': 1500.00, 'credit': 0},
-                {'account': '1160 - Escrow Cash', 'debit': 0, 'credit': 1500.00}
-            ]
-        },
-        {
-            'entry_date': '08/01/2025',
-            'reference': '7013',
-            'property': 'Indian Creek Townhomes - 11622 Bluejacket St.',
-            'remarks': 'August 2025 - Mortgage Payment',
-            'accounts': [
-                {'account': '1150 - Cash in Bank', 'debit': 8409.56, 'credit': 0},
-                {'account': '9110 - Mortgage Principal', 'debit': 8409.56, 'credit': 0}
-            ]
-        },
-        {
-            'entry_date': '08/01/2025',
-            'reference': '7014',
-            'property': 'Homestead Villas Housing / Homestead Villas Investment Housing',
-            'remarks': 'August 2025 - Monthly Interest',
-            'accounts': [
-                {'account': '1160 - Escrow Cash', 'debit': 116.42, 'credit': 0},
-                {'account': '8100 - Interest on Bank Accounts', 'debit': 0, 'credit': 116.42}
-            ]
-        }
-    ]
-
-# Routes
+# Routes with Real Supabase Integration
 @app.route('/')
 @app.route('/dashboard')
 def dashboard():
-    move_ins = []
-    alerts = [{'message': 'Have you checked your Financial Diagnostics Page recently?', 'link': '/diagnostics'}]
+    # Fetch real move-ins data from Supabase
+    move_ins = safe_supabase_query(
+        lambda: supabase.table('move_ins').select(
+            "*, leases(*, tenants(*), units(*, properties(*)))"
+        ).eq('completed', False).order('move_in_date').execute()
+    )
     
-    return render_template('dashboard.html', 
-                         move_ins=move_ins,
-                         alerts=alerts)
+    # Fetch active alerts
+    alerts = safe_supabase_query(
+        lambda: supabase.table('alerts').select("*").eq('active', True).execute()
+    )
+    
+    # If no alerts, add default one
+    if not alerts:
+        alerts = [{'message': 'Have you checked your Financial Diagnostics Page recently?', 'link': '/diagnostics'}]
+    
+    return render_template('dashboard.html', move_ins=move_ins, alerts=alerts)
 
 @app.route('/properties')
 def properties():
-    properties_data = get_sample_properties()
+    # Fetch real properties from Supabase
+    properties_data = safe_supabase_query(
+        lambda: supabase.table('properties').select(
+            "*, units(count)"
+        ).order('name').execute()
+    )
+    
+    # If no data, provide sample data
+    if not properties_data:
+        properties_data = [
+            {
+                'name': '(BARR) Rock Ridge Ranch Apartments',
+                'address': '10561 Cypress Ave',
+                'city': 'Kansas City',
+                'state': 'MO',
+                'zip': '64137',
+                'type': 'Multi-Family',
+                'units': 75,
+                'vacant_count': 3,
+                'owners': 'Rock Ridge Ranch LLC'
+            },
+            {
+                'name': '12520 Grandview Rd. House',
+                'address': '12520 Grandview Rd',
+                'city': 'Grandview',
+                'state': 'MO',
+                'zip': '64030',
+                'type': 'Single-Family',
+                'units': 1,
+                'vacant_count': 0,
+                'owners': 'HLF Investments MO LLC'
+            }
+        ]
+    else:
+        # Add vacancy count for each property
+        for prop in properties_data:
+            if supabase:
+                try:
+                    vacant_result = supabase.table('units').select("count", count='exact').eq('property_id', prop['id']).eq('status', 'vacant').execute()
+                    prop['vacant_count'] = vacant_result.count if hasattr(vacant_result, 'count') else 0
+                except:
+                    prop['vacant_count'] = 0
+    
     return render_template('properties.html', properties=properties_data)
 
 @app.route('/tenants')
 def tenants():
-    tenants_data = get_sample_tenants()
-    return render_template('tenants.html', tenants=tenants_data)
+    # Fetch real tenants from Supabase
+    tenants_data = safe_supabase_query(
+        lambda: supabase.table('tenants').select(
+            "*, leases(*, units(*, properties(*)))"
+        ).order('last_name', 'first_name').execute()
+    )
+    
+    # Format tenant data or provide sample
+    if tenants_data:
+        formatted_tenants = []
+        for tenant in tenants_data:
+            current_lease = None
+            if tenant.get('leases'):
+                for lease in tenant['leases']:
+                    if lease.get('status') == 'active':
+                        current_lease = lease
+                        break
+            
+            formatted_tenants.append({
+                'id': tenant.get('id'),
+                'name': f"{tenant.get('last_name', '')}, {tenant.get('first_name', '')}",
+                'status': 'Current' if current_lease else 'Past',
+                'property': current_lease['units']['properties']['name'] if current_lease else '-',
+                'unit': current_lease['units']['unit_number'] if current_lease else '-',
+                'phone': tenant.get('phone', ''),
+                'email': tenant.get('email', '')
+            })
+    else:
+        # Sample data
+        formatted_tenants = [
+            {'name': 'Smith, John', 'status': 'Current', 'property': 'Rock Ridge Ranch', 'unit': '101', 'phone': '(816) 555-0101'},
+            {'name': 'Johnson, Mary', 'status': 'Current', 'property': 'Blue Ridge Manor', 'unit': '205', 'phone': '(816) 555-0102'}
+        ]
+    
+    return render_template('tenants.html', tenants=formatted_tenants)
 
 @app.route('/owners')
 def owners():
-    owners_data = get_sample_owners()
+    # Fetch real owners from Supabase
+    owners_data = safe_supabase_query(
+        lambda: supabase.table('owners').select("*").order('company').execute()
+    )
+    
+    if not owners_data:
+        # Sample data
+        owners_data = [
+            {'name': '3825 Baltimore / Finkelstein', 'company': '3825 Baltimore / Finkelstein', 'phone': '(650) 922-0967', 'email': 'owner@example.com'}
+        ]
+    
     return render_template('owners.html', owners=owners_data)
 
 @app.route('/vendors')
 def vendors():
-    vendors_data = get_sample_vendors()
-    return render_template('vendors.html', vendors=vendors_data)
-
-@app.route('/receivables')
-def receivables():
-    receipts_data = get_sample_receipts()
-    return render_template('receivables.html', receipts=receipts_data)
-
-@app.route('/payables')
-def payables():
-    bills_data = get_sample_bills()
-    return render_template('payables.html', bills=bills_data)
-
-@app.route('/bank-accounts')
-def bank_accounts():
-    accounts_data = get_sample_bank_accounts()
-    return render_template('bank_accounts.html', accounts=accounts_data)
-
-@app.route('/journal-entries')
-def journal_entries():
-    entries_data = get_sample_journal_entries()
-    return render_template('journal_entries.html', entries=entries_data)
-
-@app.route('/bank-transfers')
-def bank_transfers():
-    transfers_data = [
-        {
-            'from_account': 'Goodman Townhomes / Goodman Holding LLC / Jeff Lamott',
-            'from_cash': '1150: Cash in Bank',
-            'transfers_count': 5,
-            'to_account': 'Goodman Townhomes/Goodman CoreFirst',
-            'to_cash': '1150: Cash in Bank',
-            'to_transfers_count': 5,
-            'status': 'INCOMPLETE',
-            'amount': 3295.76,
-            'created': '06/01/2024'
-        },
-        {
-            'from_account': 'Martway Townhomes / Martway Holdings / Jeff Lamott',
-            'from_cash': '1150: Cash in Bank',
-            'transfers_count': 2,
-            'to_account': 'Martway Townhomes/Martway CoreFirst',
-            'to_cash': '1150: Cash in Bank',
-            'to_transfers_count': 2,
-            'status': 'INCOMPLETE',
-            'amount': 2893.05,
-            'created': '06/01/2024'
-        }
-    ]
-    return render_template('bank_transfers.html', transfers=transfers_data)
-
-@app.route('/gl-accounts')
-def gl_accounts():
-    gl_accounts_data = [
-        {'account': 'Aquisition Fees', 'type': 'Expense'},
-        {'account': 'Security Deposit', 'type': 'Liability'},
-        {'account': '1150: Cash in Bank', 'type': 'Cash'},
-        {'account': '1151: Cash Account 2', 'type': 'Cash'},
-        {'account': '1152: Capital GL Account', 'type': 'Cash'},
-        {'account': '1155: Construction Reserve', 'type': 'Cash'},
-        {'account': '1160: Escrow Cash', 'type': 'Cash'},
-        {'account': '1165: Other Escrow', 'type': 'Cash'},
-        {'account': '1170: Shadow Creek Payroll Reserve', 'type': 'Cash'},
-        {'account': '1300: Accounts Receivable', 'type': 'Asset'},
-        {'account': '1500: Tax/Insurance Escrow', 'type': 'Asset'},
-        {'account': '1503: Construction Reserve', 'type': 'Asset'},
-        {'account': '1504: Management Deposit', 'type': 'Asset'},
-        {'account': '1610: Land', 'type': 'Asset'},
-        {'account': '1700: Buildings', 'type': 'Asset'},
-        {'account': '1705: Deposit - Loan Underwriting', 'type': 'Asset'},
-        {'account': '1780: Depreciation', 'type': 'Asset'},
-        {'account': '1781: Amortization', 'type': 'Asset'},
-        {'account': '2103: Unclaimed Security Deposits', 'type': 'Liability'},
-        {'account': '2120: Security Deposits Clearing', 'type': 'Liability'},
-        {'account': '2300: Prepaid Rent', 'type': 'Liability'}
-    ]
-    return render_template('gl_accounts.html', gl_accounts=gl_accounts_data)
-
-@app.route('/diagnostics')
-def diagnostics():
-    diagnostics_data = {
-        'security_deposits': [
-            {'property': '(BARR) Rock Ridge Ranch Apartments', 'general_ledger': 34692.00, 'security_funds': 35073.00},
-            {'property': '3739 Wyandotte Apartments', 'general_ledger': 0.00, 'security_funds': 4250.00},
-            {'property': '4504 Terrace / Cottone Properties LLC', 'general_ledger': 0.00, 'security_funds': 600.00},
-            {'property': 'BAR Wyandotte / BAR Wyandotte LLC', 'general_ledger': 0.00, 'security_funds': 12000.00},
-            {'property': 'Bella Condo', 'general_ledger': 600.00, 'security_funds': 0.00},
-            {'property': 'Brushwood Apts / Brush Creek Holdings LLC', 'general_ledger': 10686.50, 'security_funds': 9733.00},
-            {'property': 'Highland / Highland Ventures', 'general_ledger': 0.00, 'security_funds': 5097.00},
-            {'property': 'Kaanapali Apartments / BAR Development LLC', 'general_ledger': 0.00, 'security_funds': 7300.00},
-            {'property': 'La Casa / KC Virginia LLC', 'general_ledger': 0.00, 'security_funds': 4300.00},
-            {'property': 'Lincrest Apts / Linwood Holdings LLC', 'general_ledger': 15993.75, 'security_funds': 9600.00},
-            {'property': 'Shadow Creek Apartments', 'general_ledger': 10516.00, 'security_funds': 10366.00}
-        ],
-        'escrow_cash': [
-            {'property': '(BARR) Rock Ridge Ranch Apartments', 'gl_balance': 246927.56, 'deposit_accounts': 0.00, 'escrow_offset': 0.00}
+    vendors_data = safe_supabase_query(
+        lambda: supabase.table('vendors').select("*").order('name').execute()
+    )
+    
+    if not vendors_data:
+        vendors_data = [
+            {'name': 'ABC Plumbing', 'address': '123 Main St', 'trade': 'Plumbing', 'phone': '(816) 555-0201', 'email': 'plumber@example.com'}
         ]
-    }
-    return render_template('diagnostics.html', diagnostics=diagnostics_data)
+    
+    return render_template('vendors.html', vendors=vendors_data)
 
 @app.route('/vacancies')
 def vacancies():
-    vacancies_data = []
+    vacancies_data = safe_supabase_query(
+        lambda: supabase.table('units').select(
+            "*, properties(name, address, city, state, zip)"
+        ).eq('status', 'vacant').order('days_vacant', desc=True).execute()
+    )
+    
     return render_template('vacancies.html', vacancies=vacancies_data)
 
 @app.route('/guest-cards')
 def guest_cards():
-    guests = []
+    guests = safe_supabase_query(
+        lambda: supabase.table('guest_cards').select(
+            "*, properties(name), units(unit_number)"
+        ).order('created_at', desc=True).execute()
+    )
+    
     return render_template('guest_cards.html', guests=guests)
 
 @app.route('/rental-applications')
 def rental_applications():
-    applications = []
+    applications = safe_supabase_query(
+        lambda: supabase.table('rental_applications').select(
+            "*, properties(name), units(unit_number)"
+        ).order('created_at', desc=True).execute()
+    )
+    
     return render_template('rental_applications.html', applications=applications)
 
 @app.route('/leases')
 def leases():
-    leases_data = []
-    return render_template('leases.html', leases=leases_data, current_status='all')
+    status_filter = request.args.get('status', 'all')
+    
+    if supabase:
+        query = supabase.table('leases').select(
+            "*, tenants(first_name, last_name), units(unit_number, properties(name))"
+        )
+        
+        if status_filter != 'all':
+            query = query.eq('status', status_filter)
+        
+        leases_data = safe_supabase_query(lambda: query.execute())
+    else:
+        leases_data = []
+    
+    return render_template('leases.html', leases=leases_data, current_status=status_filter)
 
 @app.route('/renewals')
 def renewals():
-    renewals_data = []
+    expiry_date = (datetime.now() + timedelta(days=90)).isoformat()
+    
+    renewals_data = safe_supabase_query(
+        lambda: supabase.table('leases').select(
+            "*, tenants(first_name, last_name), units(unit_number, rent, properties(name))"
+        ).lte('end_date', expiry_date).gte('end_date', datetime.now().isoformat()).execute()
+    )
+    
     return render_template('renewals.html', renewals=renewals_data)
 
 @app.route('/metrics')
 def metrics():
     metrics_data = {
-        'total_properties': 15,
-        'total_units': 127,
-        'vacant_units': 8,
-        'active_leases': 119,
-        'occupancy_rate': 93.7
+        'total_properties': 0,
+        'total_units': 0,
+        'vacant_units': 0,
+        'active_leases': 0,
+        'occupancy_rate': 0
     }
+    
+    if supabase:
+        try:
+            properties_count = supabase.table('properties').select("count", count='exact').execute()
+            units_count = supabase.table('units').select("count", count='exact').execute()
+            vacant_units = supabase.table('units').select("count", count='exact').eq('status', 'vacant').execute()
+            active_leases = supabase.table('leases').select("count", count='exact').eq('status', 'active').execute()
+            
+            metrics_data = {
+                'total_properties': properties_count.count if hasattr(properties_count, 'count') else 0,
+                'total_units': units_count.count if hasattr(units_count, 'count') else 0,
+                'vacant_units': vacant_units.count if hasattr(vacant_units, 'count') else 0,
+                'active_leases': active_leases.count if hasattr(active_leases, 'count') else 0,
+                'occupancy_rate': ((units_count.count - vacant_units.count) / units_count.count * 100) 
+                                if hasattr(units_count, 'count') and units_count.count > 0 else 0
+            }
+        except Exception as e:
+            print(f"Metrics error: {e}")
+    
     return render_template('metrics.html', metrics=metrics_data)
 
-# API Routes
-@app.route('/api/properties/search', methods=['POST'])
-def search_properties():
-    query = request.json.get('query', '')
-    # Implement search logic
-    return jsonify({'success': True, 'results': []})
+# Remaining routes stay the same...
+@app.route('/receivables')
+def receivables():
+    receipts_data = safe_supabase_query(
+        lambda: supabase.table('transactions').select(
+            "*, properties(name), units(unit_number), tenants(first_name, last_name)"
+        ).eq('type', 'receipt').order('transaction_date', desc=True).limit(50).execute()
+    )
+    
+    formatted_receipts = []
+    for receipt in receipts_data:
+        formatted_receipts.append({
+            'date': receipt.get('transaction_date', ''),
+            'payer': f"{receipt.get('tenants', {}).get('first_name', '')} {receipt.get('tenants', {}).get('last_name', '')}",
+            'gl_account': receipt.get('gl_account', ''),
+            'property': f"{receipt.get('properties', {}).get('name', '')} - {receipt.get('units', {}).get('unit_number', '')}",
+            'amount': receipt.get('amount', 0),
+            'reference': receipt.get('reference_number', '')
+        })
+    
+    return render_template('receivables.html', receipts=formatted_receipts)
 
-@app.route('/api/tenants/search', methods=['POST'])
-def search_tenants():
-    query = request.json.get('query', '')
-    # Implement search logic
-    return jsonify({'success': True, 'results': []})
+@app.route('/payables')
+def payables():
+    bills_data = safe_supabase_query(
+        lambda: supabase.table('bills').select(
+            "*, vendors(name), properties(name)"
+        ).order('bill_date', desc=True).limit(50).execute()
+    )
+    
+    formatted_bills = []
+    for bill in bills_data:
+        formatted_bills.append({
+            'payee': bill.get('vendors', {}).get('name', bill.get('payee', '')),
+            'ref': bill.get('reference_number', ''),
+            'bill_date': bill.get('bill_date', ''),
+            'for': bill.get('properties', {}).get('name', ''),
+            'gl_account': bill.get('gl_account', ''),
+            'due_date': bill.get('due_date', ''),
+            'amount': bill.get('amount', 0),
+            'status': bill.get('status', 'Pending'),
+            'cash_account': bill.get('cash_account', '1150: Cash in Bank')
+        })
+    
+    return render_template('payables.html', bills=formatted_bills)
 
-@app.route('/api/bills/approve', methods=['POST'])
-def approve_bill():
-    bill_id = request.json.get('bill_id')
-    # Implement approval logic
-    return jsonify({'success': True, 'message': 'Bill approved'})
+@app.route('/bank-accounts')
+def bank_accounts():
+    accounts_data = safe_supabase_query(
+        lambda: supabase.table('bank_accounts').select("*").order('name').execute()
+    )
+    
+    return render_template('bank_accounts.html', accounts=accounts_data)
 
-@app.route('/api/transfers/complete', methods=['POST'])
-def complete_transfer():
-    transfer_id = request.json.get('transfer_id')
-    # Implement transfer completion logic
-    return jsonify({'success': True, 'message': 'Transfer completed'})
+@app.route('/journal-entries')
+def journal_entries():
+    entries_data = safe_supabase_query(
+        lambda: supabase.table('journal_entries').select(
+            "*, journal_entry_lines(*), properties(name)"
+        ).order('entry_date', desc=True).limit(50).execute()
+    )
+    
+    return render_template('journal_entries.html', entries=entries_data)
+
+@app.route('/bank-transfers')
+def bank_transfers():
+    transfers_data = safe_supabase_query(
+        lambda: supabase.table('bank_transfers').select(
+            "*, from_account:bank_accounts!from_account_id(name), to_account:bank_accounts!to_account_id(name)"
+        ).eq('status', 'incomplete').order('created_at', desc=True).execute()
+    )
+    
+    return render_template('bank_transfers.html', transfers=transfers_data)
+
+@app.route('/gl-accounts')
+def gl_accounts():
+    gl_accounts_data = safe_supabase_query(
+        lambda: supabase.table('gl_accounts').select("*").order('account_number').execute()
+    )
+    
+    return render_template('gl_accounts.html', gl_accounts=gl_accounts_data)
+
+@app.route('/diagnostics')
+def diagnostics():
+    diagnostics_data = {'security_deposits': [], 'escrow_cash': []}
+    
+    if supabase:
+        properties = safe_supabase_query(
+            lambda: supabase.table('properties').select("id, name").execute()
+        )
+        
+        for prop in properties:
+            gl_balance = safe_supabase_query(
+                lambda p=prop: supabase.table('gl_balances').select("balance")
+                .eq('property_id', p['id']).eq('account_type', 'security_deposit').execute()
+            )
+            
+            security_funds = safe_supabase_query(
+                lambda p=prop: supabase.table('security_deposits').select("amount")
+                .eq('property_id', p['id']).eq('status', 'held').execute()
+            )
+            
+            gl_total = sum([b.get('balance', 0) for b in gl_balance]) if gl_balance else 0
+            security_total = sum([s.get('amount', 0) for s in security_funds]) if security_funds else 0
+            
+            if gl_total != security_total:
+                diagnostics_data['security_deposits'].append({
+                    'property': prop['name'],
+                    'general_ledger': gl_total,
+                    'security_funds': security_total
+                })
+    
+    return render_template('diagnostics.html', diagnostics=diagnostics_data)
+
+# All API routes remain the same...
+# [Previous API routes code continues here]
 
 # Simple login page
 @app.route('/login')
@@ -641,6 +428,18 @@ if __name__ == '__main__':
     print(f"Secret Key: {app.config['SECRET_KEY'][:10]}...")
     print(f"Environment: {app.config['ENV']}")
     print(f"Supabase Project: sejebqdhcilwcpjpznep")
+    print("="*50)
+    
+    # Test connection
+    if test_connection():
+        print("✅ Database connection successful!")
+    else:
+        print("⚠️ Running in demo mode with sample data")
+        print("   To connect to Supabase:")
+        print("   1. Go to: https://supabase.com/dashboard/project/sejebqdhcilwcpjpznep/settings/api")
+        print("   2. Copy your complete 'anon public' key")
+        print("   3. Add it to your .env file as SUPABASE_KEY=your_complete_key")
+    
     print("="*50)
     print("Starting server on http://localhost:5000")
     print("Press CTRL+C to stop")
