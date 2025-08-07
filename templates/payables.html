@@ -1,0 +1,116 @@
+<!-- templates/payables.html -->
+{% extends "base.html" %}
+
+{% block title %}Payables - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('receivables') }}" class="tab-nav-item">Receivables</a>
+        <a href="{{ url_for('payables') }}" class="tab-nav-item active">Payables</a>
+        <a href="{{ url_for('bank_accounts') }}" class="tab-nav-item">Bank Accounts</a>
+        <a href="{{ url_for('journal_entries') }}" class="tab-nav-item">Journal Entries</a>
+        <a href="{{ url_for('bank_transfers') }}" class="tab-nav-item">Bank Transfers</a>
+        <a href="{{ url_for('gl_accounts') }}" class="tab-nav-item">GL Accounts</a>
+        <a href="{{ url_for('diagnostics') }}" class="tab-nav-item">Diagnostics</a>
+    </div>
+</div>
+
+<div class="header" style="background: white; padding: 10px 20px;">
+    <div class="tab-nav" style="border-bottom: none;">
+        <a href="#" class="tab-nav-item active" style="font-size: 12px;">Bills</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Payments</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Recurring</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Loans</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Online Payables</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Bills</h1>
+
+<div class="search-box">
+    Click here to search
+</div>
+
+<div style="margin-bottom: 20px;">
+    <button class="btn btn-primary">All</button>
+    <button class="btn" style="background: white; border: 1px solid #dee2e6; margin-left: 10px;">Pending Approval</button>
+    <button class="btn" style="background: white; border: 1px solid #dee2e6; margin-left: 10px;">Pending My Approval</button>
+    <button class="btn" style="background: white; border: 1px solid #dee2e6; margin-left: 10px;">On Hold</button>
+    <button class="btn" style="background: white; border: 1px solid #dee2e6; margin-left: 10px;">Approved</button>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Payee <span style="font-size: 10px;">↕</span></th>
+                <th>Ref. # <span style="font-size: 10px;">↕</span></th>
+                <th>Bill Date <span style="font-size: 10px;">↕</span></th>
+                <th>For <span style="font-size: 10px;">↕</span></th>
+                <th>GL Account <span style="font-size: 10px;">↕</span></th>
+                <th>Due Date <span style="font-size: 10px;">↕</span></th>
+                <th style="text-align: right;">Amount <span style="font-size: 10px;">↕</span></th>
+                <th>Status <span style="font-size: 10px;">↕</span></th>
+                <th>Cash Account <span style="font-size: 10px;">↕</span></th>
+                <th>🔗</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bill in bills %}
+            <tr>
+                <td>{{ bill.payee }}</td>
+                <td>{{ bill.ref }}</td>
+                <td>{{ bill.bill_date }}</td>
+                <td>{{ bill.for }}</td>
+                <td>{{ bill.gl_account }}</td>
+                <td>{{ bill.due_date }}</td>
+                <td style="text-align: right; color: #0056b3;">{{ "%.2f"|format(bill.amount) }}</td>
+                <td>{{ bill.status }}</td>
+                <td>{{ bill.cash_account }}</td>
+                <td>🔗</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasks()">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item" style="color: #0056b3;">Enter Bill</div>
+        <div class="task-item">Smart Bill Entry</div>
+        <div class="task-item">Enter Utility Bill (RUBS)</div>
+        <div class="task-item">Enter Credit</div>
+        <div class="task-item">Pay Bills</div>
+        <div class="task-item">Pay Management Fees</div>
+        <div class="task-item">Pay Owners</div>
+        <div class="task-item">Owner Draw</div>
+        <div class="task-item">Tenant Payable</div>
+        <div class="task-item">Transfer Owner Funds</div>
+        <div class="task-item">Transfer Funds Between Cash Accounts</div>
+        <div class="task-item">New Recurring Bill</div>
+        <div class="task-item">Manually Post Bills</div>
+        <div class="task-item">Sign Up for Online Payables</div>
+        <div class="task-item">Upload Bulk Bills</div>
+        
+        <div class="task-section-title">📊 Reports</div>
+        <div class="task-item">Aged Payables Summary</div>
+        <div class="task-item">Check Register</div>
+        <div class="task-item">Bill Detail</div>
+        <div class="task-item">Vendor Ledger</div>
+        
+        <div class="task-section-title">❓ Help Topics</div>
+        <div class="task-item">How to Refund Tenants</div>
+        <div class="task-item">How to Sign Up for Online Payables</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,15 +23,18 @@
             height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
-            width: 220px;
+            width: 170px;
             background-color: #f8f9fa;
             border-right: 1px solid #dee2e6;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-item {
-            padding: 10px 20px;
+            padding: 10px 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -38,6 +42,7 @@
             border-bottom: 1px solid #e9ecef;
             text-decoration: none;
             color: #333;
+            font-size: 13px;
         }
 
         .sidebar-item:hover {
@@ -49,13 +54,41 @@
             color: #0056b3;
         }
 
-        .sidebar-section {
-            background-color: #e9ecef;
-            padding: 8px 20px;
-            font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
+        .sidebar-item i {
+            margin-right: 8px;
+            font-size: 14px;
         }
 
+        .sidebar-submenu .sidebar-item {
+            padding-left: 30px;
+            font-size: 12px;
+        }
+
+        .sidebar-section {
+            background-color: #e9ecef;
+            padding: 8px 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .expand-icon {
+            margin-left: auto;
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+        .notification-badge {
+            background: #dc3545;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: auto;
+        }
+
+        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -65,67 +98,90 @@
 
         .header {
             background-color: white;
-            padding: 15px 30px;
+            padding: 0;
             border-bottom: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .header h1 {
-            font-size: 24px;
-            font-weight: 400;
-        }
-
+        /* Tab Navigation */
         .tab-nav {
             background-color: white;
-            border-bottom: 2px solid #dee2e6;
-            padding: 0 30px;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 20px;
             display: flex;
-            gap: 20px;
+            gap: 0;
         }
 
         .tab-nav-item {
-            padding: 12px 16px;
+            padding: 10px 15px;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             transition: all 0.2s;
             color: #495057;
             text-decoration: none;
+            font-size: 13px;
         }
 
         .tab-nav-item:hover {
             color: #0056b3;
+            background-color: #f8f9fa;
         }
 
         .tab-nav-item.active {
             color: #0056b3;
             border-bottom-color: #0056b3;
+            background-color: #e7f3ff;
         }
 
+        /* Content Area */
         .content-area {
             flex: 1;
-            padding: 20px 30px;
+            padding: 20px;
             overflow-y: auto;
             background-color: #fafafa;
         }
 
-        .alert-box {
-            background-color: #cff4fc;
-            border: 1px solid #9ec5d8;
-            border-radius: 4px;
-            padding: 12px 20px;
+        .page-title {
+            font-size: 24px;
+            font-weight: 400;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: #333;
         }
 
+        /* Search Box */
+        .search-box {
+            background-color: white;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .search-box:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-box::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        /* Data Tables */
         .data-table {
             background-color: white;
+            border: 1px solid #dee2e6;
             border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         table {
@@ -135,22 +191,32 @@
 
         th {
             background-color: #f8f9fa;
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             font-weight: 600;
             border-bottom: 2px solid #dee2e6;
             color: #495057;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: #e9ecef;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #dee2e6;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+            vertical-align: top;
         }
 
         tr:hover {
             background-color: #f8f9fa;
         }
 
+        /* Common Buttons */
         .btn {
             padding: 8px 16px;
             border: none;
@@ -159,6 +225,7 @@
             font-size: 13px;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.2s;
         }
 
         .btn-primary {
@@ -166,126 +233,324 @@
             color: white;
         }
 
-        .btn-success {
-            background-color: #28a745;
-            color: white;
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
 
-        .btn-info {
-            background-color: #17a2b8;
-            color: white;
-        }
-
-        .filter-section {
+        /* Tasks Panel */
+        .tasks-panel {
+            width: 300px;
             background-color: white;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .filter-row {
+            border-left: 1px solid #dee2e6;
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            flex-direction: column;
+        }
+
+        .tasks-header {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            background-color: #f8f9fa;
         }
 
-        .filter-row input[type="text"],
-        .filter-row select {
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .status-active { color: #28a745; font-weight: 600; }
-        .status-pending { color: #ffc107; font-weight: 600; }
-        .status-executed { color: #17a2b8; font-weight: 600; }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
+        .tasks-header h3 {
+            font-size: 16px;
             font-weight: 600;
         }
 
-        .badge-success {
-            background-color: #d4edda;
-            color: #155724;
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #6c757d;
         }
 
-        .badge-warning {
-            background-color: #fff3cd;
-            color: #856404;
+        .tasks-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
         }
 
-        .badge-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
+        .task-item {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #0056b3;
+            transition: background-color 0.2s;
         }
+
+        .task-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .task-section-title {
+            font-weight: 600;
+            color: #333;
+            margin: 15px 0 10px 0;
+            padding: 5px;
+            font-size: 12px;
+        }
+
+        .star-icon {
+            color: #ffc107;
+            margin-right: 5px;
+        }
+
+        .support-icon {
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d;
+            margin-left: 10px;
+        }
+
+        .assistant-icon {
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            font-size: 12px;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pagination-buttons button {
+            padding: 5px 10px;
+            border: 1px solid #dee2e6;
+            background: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .pagination-buttons button:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination-buttons button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        /* Alphabet Filter */
+        .alphabet-filter {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .alphabet-filter a {
+            padding: 5px 10px;
+            border: 1px solid #dee2e6;
+            text-decoration: none;
+            color: #007bff;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+
+        .alphabet-filter a:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        .alphabet-filter a.active {
+            background: #007bff;
+            color: white;
+        }
+
+        {% block extra_css %}{% endblock %}
     </style>
-    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar -->
         <div class="sidebar">
             <a href="{{ url_for('dashboard') }}" class="sidebar-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
-                📊 Dashboard
+                <i>📊</i> Dashboard
             </a>
-            <div class="sidebar-section">Leasing</div>
-            <a href="{{ url_for('vacancies') }}" class="sidebar-item {% if request.endpoint == 'vacancies' %}active{% endif %}">
-                Vacancies
+            <a href="#" class="sidebar-item">
+                <i>📅</i> Calendar
             </a>
-            <a href="{{ url_for('guest_cards') }}" class="sidebar-item {% if request.endpoint == 'guest_cards' %}active{% endif %}">
-                Guest Cards
-            </a>
-            <a href="{{ url_for('rental_applications') }}" class="sidebar-item {% if request.endpoint == 'rental_applications' %}active{% endif %}">
-                Rental Applications
-            </a>
-            <a href="{{ url_for('leases') }}" class="sidebar-item {% if request.endpoint == 'leases' %}active{% endif %}">
-                Leases
-            </a>
-            <a href="{{ url_for('renewals') }}" class="sidebar-item {% if request.endpoint == 'renewals' %}active{% endif %}">
-                Renewals
-            </a>
-            <a href="{{ url_for('metrics') }}" class="sidebar-item {% if request.endpoint == 'metrics' %}active{% endif %}">
-                Metrics
-            </a>
-            <div class="sidebar-section">Other</div>
+            
+            <!-- Leasing Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('leasing')">
+                <i>🔑</i> Leasing
+                <span class="expand-icon" id="leasing-expand">{% if 'leasing' in request.endpoint or request.endpoint in ['vacancies', 'guest_cards', 'rental_applications', 'leases', 'renewals', 'metrics'] %}△{% else %}▽{% endif %}</span>
+            </div>
+            <div id="leasing-submenu" class="sidebar-submenu" style="display: {% if 'leasing' in request.endpoint or request.endpoint in ['vacancies', 'guest_cards', 'rental_applications', 'leases', 'renewals', 'metrics'] %}block{% else %}none{% endif %};">
+                <a href="{{ url_for('vacancies') }}" class="sidebar-item {% if request.endpoint == 'vacancies' %}active{% endif %}">
+                    Vacancies
+                </a>
+                <a href="{{ url_for('guest_cards') }}" class="sidebar-item {% if request.endpoint == 'guest_cards' %}active{% endif %}">
+                    Guest Cards
+                </a>
+                <a href="{{ url_for('rental_applications') }}" class="sidebar-item {% if request.endpoint == 'rental_applications' %}active{% endif %}">
+                    Rental Applications
+                </a>
+                <a href="{{ url_for('leases') }}" class="sidebar-item {% if request.endpoint == 'leases' %}active{% endif %}">
+                    Leases
+                </a>
+                <a href="{{ url_for('renewals') }}" class="sidebar-item {% if request.endpoint == 'renewals' %}active{% endif %}">
+                    Renewals
+                </a>
+                <a href="{{ url_for('metrics') }}" class="sidebar-item {% if request.endpoint == 'metrics' %}active{% endif %}">
+                    Metrics
+                </a>
+                <a href="#" class="sidebar-item">
+                    Signals
+                </a>
+            </div>
+            
+            <!-- Properties -->
             <a href="{{ url_for('properties') }}" class="sidebar-item {% if request.endpoint == 'properties' %}active{% endif %}">
-                🏢 Properties
+                <i>🏢</i> Properties
+            </a>
+            
+            <!-- People Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('people')">
+                <i>👥</i> People
+                <span class="expand-icon" id="people-expand">{% if request.endpoint in ['tenants', 'owners', 'vendors'] %}△{% else %}▽{% endif %}</span>
+            </div>
+            <div id="people-submenu" class="sidebar-submenu" style="display: {% if request.endpoint in ['tenants', 'owners', 'vendors'] %}block{% else %}none{% endif %};">
+                <a href="{{ url_for('tenants') }}" class="sidebar-item {% if request.endpoint == 'tenants' %}active{% endif %}">Tenants</a>
+                <a href="{{ url_for('owners') }}" class="sidebar-item {% if request.endpoint == 'owners' %}active{% endif %}">Owners</a>
+                <a href="{{ url_for('vendors') }}" class="sidebar-item {% if request.endpoint == 'vendors' %}active{% endif %}">Vendors</a>
+            </div>
+            
+            <!-- Accounting Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('accounting')">
+                <i>💼</i> Accounting
+                <span class="expand-icon" id="accounting-expand">{% if 'accounting' in request.endpoint or request.endpoint in ['receivables', 'payables', 'bank_accounts', 'journal_entries', 'bank_transfers', 'gl_accounts', 'diagnostics'] %}△{% else %}▽{% endif %}</span>
+            </div>
+            <div id="accounting-submenu" class="sidebar-submenu" style="display: {% if 'accounting' in request.endpoint or request.endpoint in ['receivables', 'payables', 'bank_accounts', 'journal_entries', 'bank_transfers', 'gl_accounts', 'diagnostics'] %}block{% else %}none{% endif %};">
+                <a href="{{ url_for('receivables') }}" class="sidebar-item {% if request.endpoint == 'receivables' %}active{% endif %}">Receivables</a>
+                <a href="{{ url_for('payables') }}" class="sidebar-item {% if request.endpoint == 'payables' %}active{% endif %}">Payables</a>
+                <a href="{{ url_for('bank_accounts') }}" class="sidebar-item {% if request.endpoint == 'bank_accounts' %}active{% endif %}">Bank Accounts</a>
+                <a href="{{ url_for('journal_entries') }}" class="sidebar-item {% if request.endpoint == 'journal_entries' %}active{% endif %}">Journal Entries</a>
+                <a href="{{ url_for('bank_transfers') }}" class="sidebar-item {% if request.endpoint == 'bank_transfers' %}active{% endif %}">Bank Transfers</a>
+                <a href="{{ url_for('gl_accounts') }}" class="sidebar-item {% if request.endpoint == 'gl_accounts' %}active{% endif %}">GL Accounts</a>
+                <a href="{{ url_for('diagnostics') }}" class="sidebar-item {% if request.endpoint == 'diagnostics' %}active{% endif %}">Diagnostics</a>
+            </div>
+            
+            <!-- Maintenance Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('maintenance')">
+                <i>🔧</i> Maintenance
+                <span class="expand-icon" id="maintenance-expand">{% if 'maintenance' in request.endpoint %}△{% else %}▽{% endif %}</span>
+            </div>
+            <div id="maintenance-submenu" class="sidebar-submenu" style="display: {% if 'maintenance' in request.endpoint %}block{% else %}none{% endif %};">
+                <a href="#" class="sidebar-item">Work Orders</a>
+                <a href="#" class="sidebar-item">Recurring Work Orders</a>
+                <a href="#" class="sidebar-item">Inspections</a>
+                <a href="#" class="sidebar-item">Unit Turns</a>
+                <a href="#" class="sidebar-item">Projects</a>
+                <a href="#" class="sidebar-item">Purchase Orders</a>
+                <a href="#" class="sidebar-item">Inventory</a>
+                <a href="#" class="sidebar-item">Fixed Assets</a>
+                <a href="#" class="sidebar-item">Smart Maintenance</a>
+            </div>
+            
+            <!-- Reporting Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('reporting')">
+                <i>📈</i> Reporting
+                <span class="expand-icon" id="reporting-expand">▽</span>
+            </div>
+            <div id="reporting-submenu" class="sidebar-submenu" style="display: none;">
+                <a href="#" class="sidebar-item">Financial Reports</a>
+                <a href="#" class="sidebar-item">Occupancy Reports</a>
+            </div>
+            
+            <!-- Communication Section -->
+            <div class="sidebar-item" onclick="toggleSubmenu('communication')">
+                <i>💬</i> Communication
+                <span class="expand-icon" id="communication-expand">▽</span>
+            </div>
+            <div id="communication-submenu" class="sidebar-submenu" style="display: none;">
+                <a href="#" class="sidebar-item">Messages</a>
+                <a href="#" class="sidebar-item">Announcements</a>
+            </div>
+            
+            <a href="#" class="sidebar-item">
+                <i>❓</i> What's New
+                <span class="notification-badge">4</span>
+            </a>
+            
+            <!-- Company Name at Bottom -->
+            <div class="sidebar-section" style="margin-top: auto;">
+                Celtic Property Management
+            </div>
+            <a href="#" class="sidebar-item" onclick="toggleSidebar()">
+                <i>⚙️</i> Minimize
             </a>
         </div>
 
+        <!-- Main Content -->
         <div class="main-content">
-            <div class="header">
-                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
-                <div>
-                    <button class="btn btn-info">⚙️ Customize</button>
-                </div>
-            </div>
+            <!-- Header with Tabs (if needed) -->
+            {% block header %}{% endblock %}
 
-            <div class="tab-nav">
-                {% block tabs %}
-                <a href="{{ url_for('dashboard') }}" class="tab-nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
-                <a href="{{ url_for('vacancies') }}" class="tab-nav-item {% if request.endpoint == 'vacancies' %}active{% endif %}">Vacancies</a>
-                <a href="{{ url_for('guest_cards') }}" class="tab-nav-item {% if request.endpoint == 'guest_cards' %}active{% endif %}">Guest Cards</a>
-                <a href="{{ url_for('rental_applications') }}" class="tab-nav-item {% if request.endpoint == 'rental_applications' %}active{% endif %}">Rental Applications</a>
-                <a href="{{ url_for('leases') }}" class="tab-nav-item {% if request.endpoint == 'leases' %}active{% endif %}">Leases</a>
-                <a href="{{ url_for('renewals') }}" class="tab-nav-item {% if request.endpoint == 'renewals' %}active{% endif %}">Renewals</a>
-                <a href="{{ url_for('metrics') }}" class="tab-nav-item {% if request.endpoint == 'metrics' %}active{% endif %}">Metrics</a>
-                {% endblock %}
-            </div>
-
+            <!-- Content Area -->
             <div class="content-area">
                 {% block content %}{% endblock %}
             </div>
         </div>
+
+        <!-- Tasks Panel (Dynamic per page) -->
+        {% block tasks_panel %}{% endblock %}
     </div>
 
     <script>
+        // Toggle submenu
+        function toggleSubmenu(menu) {
+            const submenu = document.getElementById(menu + '-submenu');
+            const expandIcon = document.getElementById(menu + '-expand');
+            
+            if (submenu.style.display === 'none' || submenu.style.display === '') {
+                submenu.style.display = 'block';
+                expandIcon.textContent = '△';
+            } else {
+                submenu.style.display = 'none';
+                expandIcon.textContent = '▽';
+            }
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar.style.width === '50px') {
+                sidebar.style.width = '170px';
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.querySelector('span')?.style.display = 'inline';
+                });
+            } else {
+                sidebar.style.width = '50px';
+                document.querySelectorAll('.sidebar-item span').forEach(span => {
+                    span.style.display = 'none';
+                });
+            }
+        }
+
+        // Toggle tasks panel
+        function toggleTasks() {
+            const tasksPanel = document.getElementById('tasks-panel');
+            if (tasksPanel) {
+                tasksPanel.style.display = tasksPanel.style.display === 'none' ? 'flex' : 'none';
+            }
+        }
+
         {% block scripts %}{% endblock %}
     </script>
 </body>

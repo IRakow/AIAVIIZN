@@ -1,0 +1,110 @@
+<!-- templates/bank_accounts.html -->
+{% extends "base.html" %}
+
+{% block title %}Bank Accounts - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('receivables') }}" class="tab-nav-item">Receivables</a>
+        <a href="{{ url_for('payables') }}" class="tab-nav-item">Payables</a>
+        <a href="{{ url_for('bank_accounts') }}" class="tab-nav-item active">Bank Accounts</a>
+        <a href="{{ url_for('journal_entries') }}" class="tab-nav-item">Journal Entries</a>
+        <a href="{{ url_for('bank_transfers') }}" class="tab-nav-item">Bank Transfers</a>
+        <a href="{{ url_for('gl_accounts') }}" class="tab-nav-item">GL Accounts</a>
+        <a href="{{ url_for('diagnostics') }}" class="tab-nav-item">Diagnostics</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Bank Accounts</h1>
+
+<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+    <h3>Bank Changes In Progress</h3>
+    <div style="display: flex; gap: 20px; margin-top: 10px;">
+        <div>
+            <strong>Eaton Apartments operating</strong>
+            <span>→</span>
+        </div>
+        <div>
+            <strong>Eaton Escrow</strong><br>
+            <span style="font-size: 11px;">Properties<br>1 Property</span>
+        </div>
+        <div style="margin-left: auto;">
+            <button class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <input type="text" placeholder="Account Name" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+    <input type="text" placeholder="Bank" style="flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+    <button class="btn btn-primary">More Filters...</button>
+    <button class="btn" style="background: #f8f9fa; border: 1px solid #dee2e6;">Clear Filters</button>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Account Name <span style="font-size: 10px;">↕</span></th>
+                <th>Bank <span style="font-size: 10px;">↕</span></th>
+                <th>Account Number <span style="font-size: 10px;">↕</span></th>
+                <th>Last Reconciliation <span style="font-size: 10px;">↕</span></th>
+                <th>Payments Enabled <span style="font-size: 10px;">↕</span></th>
+                <th>Auto-Reconciliation <span style="font-size: 10px;">↕</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts %}
+            <tr>
+                <td style="color: #0056b3;">{{ account.name }}</td>
+                <td>{{ account.bank }}</td>
+                <td>{{ account.account_number }}</td>
+                <td>{{ account.last_reconciliation }}</td>
+                <td>
+                    {% if account.payments_enabled == 'ENABLED' %}
+                        <span style="color: #28a745; font-weight: 600;">ENABLED</span>
+                    {% else %}
+                        <span style="color: #dc3545; font-weight: 600;">NOT ENABLED</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if account.auto_reconciliation == 'PLAID' %}
+                        <span style="color: #28a745; font-weight: 600;">PLAID</span>
+                    {% else %}
+                        <span style="color: #dc3545; font-weight: 600;">NOT ENABLED</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasks()">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item" style="color: #0056b3;">New Bank Account</div>
+        <div class="task-item">New Bank Deposit</div>
+        <div class="task-item">Bank Feed</div>
+        <div class="task-item">Reconcile</div>
+        <div class="task-item">Close Accounting Period</div>
+        <div class="task-item">Enable Bank Accounts for Online Payments</div>
+        <div class="task-item">Link With Bank</div>
+        
+        <div class="task-section-title">📊 Reports</div>
+        <div class="task-item">Check Register</div>
+        <div class="task-item">Deposit Register</div>
+        <div class="task-item">Trust Account Balance</div>
+        <div class="task-item">Bank Account Association</div>
+    </div>
+</div>
+{% endblock %}

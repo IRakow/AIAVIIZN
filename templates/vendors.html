@@ -1,0 +1,45 @@
+<!-- templates/vendors.html -->
+{% extends "base.html" %}
+
+{% block title %}Vendors - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('tenants') }}" class="tab-nav-item">Tenants</a>
+        <a href="{{ url_for('owners') }}" class="tab-nav-item">Owners</a>
+        <a href="{{ url_for('vendors') }}" class="tab-nav-item active">Vendors</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Vendors</h1>
+
+<div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <div style="flex: 1;">
+        <label style="display: block; margin-bottom: 5px; font-size: 12px;">Vendor</label>
+        <input type="text" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+    </div>
+    <div style="flex: 1;">
+        <label style="display: block; margin-bottom: 5px; font-size: 12px;">Trade</label>
+        <select style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+            <option value="">All Trades</option>
+            <option>Plumbing</option>
+            <option>Electrical</option>
+            <option>HVAC</option>
+            <option>Roofing</option>
+        </select>
+    </div>
+    <div style="display: flex; align-items: end;">
+        <button class="btn btn-primary">More Filters...</button>
+        <button class="btn" style="margin-left: 10px; background: #f8f9fa; border: 1px solid #dee2e6;">Clear Filters</button>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name <span style="font-size: 10px; color: #6c757d;">↕</span></th>
+                <th>Address <span
