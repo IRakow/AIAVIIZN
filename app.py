@@ -283,4 +283,6 @@ def search():
     return render_template('search_results.html', results=results, query=query)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Get port from environment variable for Cloud Run
+    port = int(os.environ.get('PORT', 8080))
+    app.run(debug=False, host='0.0.0.0', port=port)
