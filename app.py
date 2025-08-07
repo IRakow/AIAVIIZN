@@ -10,16 +10,19 @@ from supabase import create_client, Client
 import json
 
 # Load environment variables
-load_dotenv()
+try:
+    load_dotenv()
+except:
+    pass  # .env file might not exist in production
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'f3cfe9ed8fae309f02079dbf'
-app.config['ENV'] = 'development'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'f3cfe9ed8fae309f02079dbf')
+app.config['ENV'] = os.environ.get('FLASK_ENV', 'production')
 CORS(app)
 
 # Your Supabase configuration - COMPLETE CREDENTIALS
-SUPABASE_URL = "https://sejebqdhcilwcpjpznep.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ"
+SUPABASE_URL = os.environ.get('SUPABASE_URL', "https://sejebqdhcilwcpjpznep.supabase.co")
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ")
 
 # Initialize Supabase client
 try:
@@ -445,4 +448,6 @@ if __name__ == '__main__':
     print("Press CTRL+C to stop")
     print("="*50 + "\n")
     
-    app.run(debug=True, port=5000)
+    # Only run the development server if this script is executed directly
+    if __name__ == "__main__":
+        app.run(debug=True, port=5000)
