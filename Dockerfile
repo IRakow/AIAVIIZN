@@ -1,23 +1,28 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Use Python 3.9 slim image
+FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy only necessary files
-COPY requirements.txt app.py ./
-COPY templates templates/
-COPY static static/
+# Copy requirements first for better caching
+COPY requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create non-root user for security
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+# Copy all application files
+COPY . .
+
+# Create templates directory if it doesn't exist
+RUN mkdir -p templates static
+
+# Set environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+ENV PORT=8080
 
 # Expose port
 EXPOSE 8080
 
-# Run gunicorn with app.py
-CMD exec gunicorn --bind :8080 --workers 1 --threads 8 --timeout 0 app:app
+# Run the application with gunicorn
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
