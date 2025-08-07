@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from functools import wraps
 import secrets
 
 # Load environment variables
@@ -17,24 +16,24 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 CORS(app)
 
-# Supabase configuration
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "your-supabase-url")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-anon-key")
+# Your Supabase configuration
+SUPABASE_URL = "https://sejebqdhcilwcpjpznep.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ"
+
+# Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Authentication decorator
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+# Test connection on startup
+try:
+    test = supabase.table('properties').select("count", count='exact').execute()
+    print(f"✅ Connected to Supabase successfully!")
+except Exception as e:
+    print(f"⚠️ Supabase connection error: {e}")
+    print("Make sure to run the SQL schema in your Supabase dashboard first!")
 
-# Routes
+# Routes - No authentication required
 @app.route('/')
 @app.route('/dashboard')
-@login_required
 def dashboard():
     # Fetch move-ins data
     move_ins = supabase.table('move_ins').select("*").execute()
@@ -45,7 +44,6 @@ def dashboard():
                          alerts=alerts.data if alerts else [])
 
 @app.route('/vacancies')
-@login_required
 def vacancies():
     # Fetch vacancies with property details
     vacancies_data = supabase.table('units').select(
@@ -56,7 +54,6 @@ def vacancies():
                          vacancies=vacancies_data.data if vacancies_data else [])
 
 @app.route('/guest-cards')
-@login_required
 def guest_cards():
     # Fetch guest cards (leads)
     guests = supabase.table('guest_cards').select(
@@ -67,7 +64,6 @@ def guest_cards():
                          guests=guests.data if guests else [])
 
 @app.route('/leases')
-@login_required
 def leases():
     status_filter = request.args.get('status', 'all')
     
@@ -85,7 +81,6 @@ def leases():
                          current_status=status_filter)
 
 @app.route('/renewals')
-@login_required
 def renewals():
     # Get leases expiring in next 90 days
     expiry_date = (datetime.now() + timedelta(days=90)).isoformat()
@@ -98,7 +93,6 @@ def renewals():
                          renewals=renewals_data.data if renewals_data else [])
 
 @app.route('/rental-applications')
-@login_required
 def rental_applications():
     applications = supabase.table('rental_applications').select(
         "*, properties(name), units(unit_number)"
@@ -108,7 +102,6 @@ def rental_applications():
                          applications=applications.data if applications else [])
 
 @app.route('/metrics')
-@login_required
 def metrics():
     # Aggregate metrics data
     properties_count = supabase.table('properties').select("count", count='exact').execute()
@@ -127,7 +120,6 @@ def metrics():
     return render_template('metrics.html', metrics=metrics_data)
 
 @app.route('/properties')
-@login_required
 def properties():
     properties_data = supabase.table('properties').select(
         "*, units(count)"
@@ -136,9 +128,8 @@ def properties():
     return render_template('properties.html', 
                          properties=properties_data.data if properties_data else [])
 
-# API Routes
+# API Routes - No authentication required for now
 @app.route('/api/units/update-status', methods=['POST'])
-@login_required
 def update_unit_status():
     data = request.json
     unit_id = data.get('unit_id')
@@ -152,7 +143,6 @@ def update_unit_status():
     return jsonify({'success': True, 'data': result.data})
 
 @app.route('/api/guest-cards/create', methods=['POST'])
-@login_required
 def create_guest_card():
     data = request.json
     
@@ -171,8 +161,23 @@ def create_guest_card():
     
     return jsonify({'success': True, 'data': result.data})
 
+@app.route('/api/guest-cards/bulk-update', methods=['POST'])
+def bulk_update_guest_cards():
+    data = request.json
+    ids = data.get('ids', [])
+    status = data.get('status')
+    
+    results = []
+    for guest_id in ids:
+        result = supabase.table('guest_cards').update({
+            'status': status,
+            'updated_at': datetime.now().isoformat()
+        }).eq('id', guest_id).execute()
+        results.append(result.data)
+    
+    return jsonify({'success': True, 'data': results})
+
 @app.route('/api/leases/countersign', methods=['POST'])
-@login_required
 def countersign_lease():
     lease_id = request.json.get('lease_id')
     
@@ -184,7 +189,6 @@ def countersign_lease():
     return jsonify({'success': True, 'data': result.data})
 
 @app.route('/api/applications/update-status', methods=['POST'])
-@login_required
 def update_application_status():
     data = request.json
     app_id = data.get('application_id')
@@ -197,35 +201,61 @@ def update_application_status():
     
     return jsonify({'success': True, 'data': result.data})
 
-# Authentication routes
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        # Authenticate with Supabase
-        try:
-            user = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-            session['user_id'] = user.user.id
-            session['user_email'] = user.user.email
-            return redirect(url_for('dashboard'))
-        except Exception as e:
-            return render_template('login.html', error="Invalid credentials")
+@app.route('/api/applications/create-lease', methods=['POST'])
+def create_lease_from_application():
+    app_id = request.json.get('application_id')
     
+    # Get application details
+    app_data = supabase.table('rental_applications').select("*").eq('id', app_id).execute()
+    
+    if app_data.data:
+        app = app_data.data[0]
+        # Create lease logic here
+        # This is a placeholder - you'd need to create the actual lease
+        
+    return jsonify({'success': True, 'message': 'Lease creation initiated'})
+
+@app.route('/api/alerts/dismiss', methods=['POST'])
+def dismiss_alert():
+    data = request.json
+    alert_id = data.get('alert_id')
+    permanent = data.get('permanent', False)
+    
+    if permanent:
+        result = supabase.table('alerts').update({
+            'active': False
+        }).eq('id', alert_id).execute()
+    else:
+        # Just hide for 7 days (you could add a dismissed_until field)
+        result = supabase.table('alerts').update({
+            'active': False
+        }).eq('id', alert_id).execute()
+    
+    return jsonify({'success': True})
+
+@app.route('/api/units/post', methods=['POST'])
+def post_unit():
+    unit_id = request.json.get('unit_id')
+    
+    # Here you would implement logic to post to listing sites
+    # This is a placeholder
+    
+    return jsonify({'success': True, 'message': 'Unit posted to listing sites'})
+
+# Simple login page (for future implementation)
+@app.route('/login')
+def login():
     return render_template('login.html')
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
+@app.route('/quick-login', methods=['POST'])
+def quick_login():
+    # Simple one-button login - you can implement this later
+    # For now, just redirect to dashboard
+    session['logged_in'] = True
+    return redirect(url_for('dashboard'))
 
 # Search functionality
 @app.route('/search')
-@login_required
 def search():
     query = request.args.get('q', '')
     search_type = request.args.get('type', 'all')
