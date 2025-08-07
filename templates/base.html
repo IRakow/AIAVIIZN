@@ -292,6 +292,29 @@
         .assistant-btn:hover {
             transform: scale(1.1);
         }
+        
+        /* Fix for Dashboard menu highlighting */
+        .sidebar-header a {
+            color: white !important;
+            text-decoration: none;
+        }
+        
+        .sidebar-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* When on dashboard page, highlight the header */
+        body.dashboard-page .sidebar-header {
+            background: #1a252f;
+            border-left: 4px solid #3498db;
+        }
+        
+        /* Fix active menu items */
+        .menu-item.active {
+            background: #3498db !important;
+            color: white !important;
+            border-left: 4px solid #2980b9;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -605,6 +628,37 @@
         // Handle assistant button click
         document.querySelector('.assistant-btn').addEventListener('click', function() {
             alert('AI Assistant - Coming Soon!');
+        });
+        
+        // Add class to body based on current page
+        const currentPath = window.location.pathname;
+        
+        // Check if we're on dashboard
+        if (currentPath === '/' || currentPath === '/dashboard') {
+            document.body.classList.add('dashboard-page');
+            
+            // Make dashboard header clickable and highlighted
+            const sidebarHeader = document.querySelector('.sidebar-header');
+            if (sidebarHeader) {
+                sidebarHeader.style.cursor = 'pointer';
+                sidebarHeader.onclick = function() {
+                    window.location.href = '/dashboard';
+                };
+            }
+        }
+        
+        // Fix active states for menu items
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            if (item.href === window.location.href) {
+                item.classList.add('active');
+                
+                // Auto-expand parent section
+                const parentSection = item.closest('.menu-section');
+                if (parentSection) {
+                    parentSection.classList.add('expanded');
+                }
+            }
         });
     </script>
     
