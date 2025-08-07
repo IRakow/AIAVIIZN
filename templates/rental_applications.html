@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Rental Applications - Property Management{% endblock %}
+{% block page_title %}Rental Applications{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <form method="get">
+        <div class="filter-row">
+            <input type="text" name="search" placeholder="Search applications..." style="width: 100%;" value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Applicant Name</th>
+                <th>Property - Unit</th>
+                <th>Application Date</th>
+                <th>Status</th>
+                <th>Credit Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.applicant_name }}</td>
+                <td>
+                    {% if app.properties %}
+                        {{ app.properties.name }}
+                        {% if app.units %} - {{ app.units.unit_number }}{% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ app.application_date.strftime('%m/%d/%Y') if app.application_date else '-' }}</td>
+                <td>
+                    {% if app.status == 'under_review' %}
+                        <span class="badge badge-info">Under Review</span>
+                    {% elif app.status == 'approved' %}
+                        <span class="badge badge-success">Approved</span>
+                    {% elif app.status == 'denied' %}
+                        <span class="badge badge-danger">Denied</span>
+                    {% elif app.status == 'pending' %}
+                        <span class="badge badge-warning">Pending Info</span>
+                    {% else %}
+                        {{ app.status|capitalize }}
+                    {% endif %}
+                </td>
+                <td>{{ app.credit_score if app.credit_score else '-' }}</td>
+                <td>
+                    {% if app.status == 'pending' or app.status == 'under_review' %}
+                        <button class="btn btn-primary" onclick="reviewApplication('{{ app.id }}')">Review</button>
+                    {% elif app.status == 'approved' %}
+                        <button class="btn btn-success" onclick="createLease('{{ app.id }}')">Create Lease</button>
+                    {% else %}
+                        <button class="btn btn-info" onclick="viewApplication('{{ app.id }}')">View</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No applications found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function reviewApplication(appId) {
+    window.location.href = `/applications/review/${appId}`;
+}
+
+function createLease(appId) {
+    if (confirm('Create a lease for this approved application?')) {
+        fetch('/api/applications/create-lease', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({application_id: appId})
+        }).then(response => {
+            if (response.ok) {
+                alert('Lease created successfully!');
+                window.location.href = '/leases';
+            }
+        });
+    }
+}
+
+function viewApplication(appId) {
+    window.location.href = `/applications/view/${appId}`;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Renewals - Property Management{% endblock %}
+{% block page_title %}Renewals{% endblock %}
+
+{% block content %}
+<div class="filter-section" style="background-color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+    <h3>Filter your renewals with the options below:</h3>
+    <form method="get">
+        <div class="filter-row">
+            <input type="text" name="properties" placeholder="Properties">
+            <select name="tenant">
+                <option value="">Search by tenant</option>
+            </select>
+        </div>
+        <div class="filter-row">
+            <label>Status:</label>
+            <label><input type="checkbox" name="eligible" checked> Eligible</label>
+            <label><input type="checkbox" name="pending"> Pending</label>
+            <label><input type="checkbox" name="prepared"> Prepared not Sent</label>
+        </div>
+        <div class="filter-row">
+            <label>Lease Expirations Eligible for Renewal:</label>
+            <input type="date" name="from_date" value="{{ from_date }}">
+            <span>to</span>
+            <input type="date" name="to_date" value="{{ to_date }}">
+        </div>
+        <div class="filter-row">
+            <label><input type="checkbox" name="month_to_month" checked> Include month to month tenants</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property - Unit ↕</th>
+                <th>Tenants</th>
+                <th>Expiration ↕</th>
+                <th>Current Rent</th>
+                <th>New Rent 💡</th>
+                <th>Status ↕</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for renewal in renewals %}
+            <tr>
+                <td>{{ renewal.units.properties.name }} - {{ renewal.units.unit_number }}</td>
+                <td>{{ renewal.tenants.first_name }} {{ renewal.tenants.last_name }}</td>
+                <td>{{ renewal.end_date.strftime('%m/%d/%Y') if renewal.end_date else '--' }}</td>
+                <td>${{ "%.2f"|format(renewal.units.rent) }}</td>
+                <td>--</td>
+                <td>
+                    {% if renewal.status == 'sent' %}
+                        Out For Signing<br>
+                        Sent ({{ renewal.offer_sent_date.strftime('%m/%d/%Y') if renewal.offer_sent_date else '' }})
+                    {% elif renewal.status == 'eligible' %}
+                        Eligible<br>
+                        <a href="#" onclick="prepareRenewal('{{ renewal.id }}')">Prepare Renewal Offer</a>
+                    {% else %}
+                        {{ renewal.status|capitalize }}
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn btn-sm" onclick="viewDetails('{{ renewal.id }}')">↓</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 20px;">No renewals found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function prepareRenewal(renewalId) {
+    // Implement renewal preparation logic
+    alert('Preparing renewal for ID: ' + renewalId);
+}
+
+function viewDetails(renewalId) {
+    // Implement view details logic
+    alert('Viewing details for renewal ID: ' + renewalId);
+}
+</script>
+{% endblock %}

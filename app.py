@@ -5,12 +5,16 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import os
+from dotenv import load_dotenv
 from supabase import create_client, Client
 from functools import wraps
 import secrets
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(16)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 CORS(app)
 
 # Supabase configuration

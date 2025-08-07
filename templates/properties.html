@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Properties - Property Management{% endblock %}
+{% block page_title %}Properties{% endblock %}
+
+{% block content %}
+<div class="filter-section">
+    <div class="filter-row">
+        <button class="btn btn-primary" onclick="addProperty()">+ New Property</button>
+        <button class="btn btn-info" onclick="addPropertyGroup()">+ New Property Group</button>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name ↕</th>
+                <th>Type ↕</th>
+                <th>Units</th>
+                <th>Vacant</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for property in properties %}
+            <tr>
+                <td><strong>{{ property.name }}</strong></td>
+                <td>{{ property.type }}</td>
+                <td>{{ property.units_count }}</td>
+                <td>
+                    {% set vacant_count = property.units|selectattr('status', 'equalto', 'vacant')|list|length if property.units else 0 %}
+                    <span style="color: {% if vacant_count > 0 %}#dc3545{% else %}#28a745{% endif %};">
+                        {{ vacant_count }}
+                    </span>
+                </td>
+                <td>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip }}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editProperty('{{ property.id }}')">Edit</button>
+                    <button class="btn btn-sm btn-info" onclick="viewProperty('{{ property.id }}')">View</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No properties found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function addProperty() {
+    window.location.href = '/properties/new';
+}
+
+function editProperty(propertyId) {
+    window.location.href = `/properties/edit/${propertyId}`;
+}
+
+function viewProperty(propertyId) {
+    window.location.href = `/properties/view/${propertyId}`;
+}
+</script>
+{% endblock %}
