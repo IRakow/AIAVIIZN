@@ -1,0 +1,25 @@
+Required files:
+- app.py ✓
+- requirements.txt ✓
+- Dockerfile ✓
+- .env ✓
+- templates/base.html ✓
+- templates/dashboard.html ✓
+- templates/properties.html ✓
+- templates/tenants.html ✓
+- templates/owners.html ✓
+- templates/vendors.html ✓
+- templates/guest_cards.html ✓
+- templates/vacancies.html ✓
+- templates/leases.html ✓
+- templates/renewals.html ✓
+- templates/rental_applications.html ✓
+- templates/metrics.html ✓
+- templates/receivables.html ✓
+- templates/payables.html ✓
+- templates/bank_accounts.html ✓
+- templates/journal_entries.html ✓
+- templates/bank_transfers.html ✓
+- templates/gl_accounts.html ✓
+- templates/diagnostics.html ✓
+- templates/login.html ✓
