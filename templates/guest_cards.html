@@ -1,91 +1,273 @@
 {% extends "base.html" %}
 
 {% block title %}Guest Cards - Property Management{% endblock %}
-{% block page_title %}Guest Cards{% endblock %}
 
 {% block extra_css %}
 <style>
-    .guest-actions {
+    /* Search Box */
+    .search-box {
+        background-color: white;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        padding: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .search-box:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-box::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid white;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
         flex-wrap: wrap;
+        align-items: center;
     }
 
-    .guest-actions button {
-        padding: 8px 16px;
+    .action-label {
+        margin-right: 10px;
+        color: #666;
+        font-size: 12px;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
         border: 1px solid #007bff;
         background-color: white;
         color: #007bff;
-        border-radius: 4px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .sort-icon {
+        margin-left: 5px;
+        color: #6c757d;
+    }
+
+    .guest-name {
+        color: #0056b3;
         cursor: pointer;
     }
 
-    .guest-actions button:hover {
-        background-color: #007bff;
-        color: white;
+    .guest-name:hover {
+        text-decoration: underline;
+    }
+
+    .activity-type {
+        font-weight: 600;
     }
 </style>
 {% endblock %}
 
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasks-panel">
+    <div class="tasks-header">
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasks()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #6c757d;">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item">New Guest Card</div>
+        <div class="task-item">Bulk Guest Cards</div>
+        <div class="task-item">Set Showing Availability</div>
+        <div class="task-item">Manage Lockboxes</div>
+        <div class="task-item">Showings With CodeBox</div>
+        
+        <div class="task-section-title">📅 Calendar</div>
+        <div class="task-item">View Calendar</div>
+        
+        <div class="task-section-title">📊 Reports</div>
+        <div class="task-item">Guest Card Interests</div>
+        <div class="task-item">Guest Card Inquiries</div>
+        <div class="task-item">Prospect Source Tracking</div>
+        <div class="task-item">Owner Leasing</div>
+        <div class="task-item">Premium Listing Billing Detail</div>
+        <div class="task-item">Leasing Agent Performance</div>
+        <div class="task-item">Leasing Funnel Performance</div>
+        
+        <div class="task-section-title">❓ Help Topics</div>
+        <div class="task-item">Using Guest Cards</div>
+        <div class="task-item">Premium Listing</div>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="filter-section">
-    <form method="get">
-        <div class="filter-row">
-            <input type="text" name="search" placeholder="Click here to search" style="width: 100%;" value="{{ request.args.get('search', '') }}">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
+<h1 class="page-title">Guest Cards</h1>
+
+<!-- Search Box -->
+<div class="search-box" onclick="openSearch()">
+    Click here to search
 </div>
 
-<div class="guest-actions">
-    <button onclick="bulkAction('active')">Mark Active</button>
-    <button onclick="bulkAction('inactive')">Mark Inactive</button>
-    <button onclick="bulkAction('waitlisted')">Mark Waitlisted</button>
-    <button onclick="sendEmail()">Send Email</button>
-    <button onclick="assignUser()">Assign User</button>
-    <button onclick="sendApplicationLink()">Send Application Link</button>
-    <button onclick="sendShowingLink()">Send Showing Link</button>
-    <button onclick="sendText()">Send Text</button>
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <span class="action-label">Bulk Actions</span>
+    <button class="action-btn" onclick="bulkAction('active')">Mark Active</button>
+    <button class="action-btn" onclick="bulkAction('inactive')">Mark Inactive</button>
+    <button class="action-btn" onclick="bulkAction('waitlisted')">Mark Waitlisted</button>
+    <button class="action-btn" onclick="sendBulkEmail()">Send Email</button>
+    <button class="action-btn" onclick="assignUser()">Assign User</button>
+    <button class="action-btn" onclick="sendApplicationLink()">Send Application Link</button>
+    <button class="action-btn" onclick="sendShowingLink()">Send Showing Link</button>
+    <button class="action-btn" onclick="sendText()">Send Text</button>
 </div>
 
+<!-- Data Table -->
 <div class="data-table">
     <table>
         <thead>
             <tr>
-                <th><input type="checkbox" id="select-all"></th>
-                <th>Name ↕</th>
-                <th>Interested In ↕</th>
-                <th>Latest Interest ↕</th>
-                <th>Most Recent Activity ↕</th>
-                <th>Source ↕</th>
+                <th style="width: 30px;"><input type="checkbox" id="select-all"></th>
+                <th>Name <span class="sort-icon">⇅</span></th>
+                <th>Interested In <span class="sort-icon">⇅</span></th>
+                <th>Latest Interest <span class="sort-icon">⇅</span></th>
+                <th>Most Recent Activity <span class="sort-icon">⇅</span></th>
+                <th>Source <span class="sort-icon">⇅</span></th>
             </tr>
         </thead>
         <tbody>
-            {% for guest in guests %}
-            <tr>
-                <td><input type="checkbox" class="guest-check" value="{{ guest.id }}"></td>
-                <td>{{ guest.name }}</td>
-                <td>
-                    {% if guest.properties %}
-                        {{ guest.properties.name }}
-                        {% if guest.units %} - {{ guest.units.unit_number }}{% endif %}
-                    {% else %}
-                        {{ guest.interested_in }}
-                    {% endif %}
-                </td>
-                <td>{{ guest.latest_interest_date.strftime('%m/%d/%Y') if guest.latest_interest_date else '-' }}</td>
-                <td>
-                    {{ guest.last_activity }}<br>
-                    {{ guest.last_activity_date.strftime('%m/%d/%Y') if guest.last_activity_date else '-' }}
-                </td>
-                <td>{{ guest.source }}</td>
-            </tr>
+            {% if guests %}
+                {% for guest in guests %}
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox" value="{{ guest.id }}"></td>
+                    <td class="guest-name">{{ guest.name }}</td>
+                    <td>
+                        {% if guest.properties %}
+                            {{ guest.properties.name }}
+                            {% if guest.units %} - {{ guest.units.unit_number }}{% endif %}
+                        {% else %}
+                            {{ guest.interested_in or '-' }}
+                        {% endif %}
+                    </td>
+                    <td>{{ guest.latest_interest_date or '-' }}</td>
+                    <td>
+                        {% if guest.last_activity %}
+                            <span class="activity-type">{{ guest.last_activity }}</span><br>
+                            {{ guest.last_activity_date or '-' }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ guest.source or '-' }}</td>
+                </tr>
+                {% endfor %}
             {% else %}
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">No guest cards found</td>
-            </tr>
-            {% endfor %}
+                <!-- Sample data for demonstration -->
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Thomas, Mary</td>
+                    <td>Longmeadow Apartments - #15C</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Showing</span><br>08/11/2025</td>
+                    <td>call</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Washington, Felecia</td>
+                    <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Pearl St. Apts / GBA1947 LLC</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Showing</span><br>08/11/2025</td>
+                    <td>call</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Lopez, Gabriel</td>
+                    <td>Longmeadow Apartments - #15C</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Showing</span><br>08/14/2025</td>
+                    <td>call</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Munoz, Jazheel</td>
+                    <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Phog Apartments / Meiners Development Co. - 3900 #09<br>Phog Apartments / Meiners Development Co. - 3900 #04</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Showing</span><br>08/08/2025</td>
+                    <td>call</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Burt, Makila</td>
+                    <td>Lodge Apartments</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
+                    <td>Apartments.com</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Cudney, Arieann</td>
+                    <td>Indian Creek Townhomes - 11622 Bluejacket St.<br>Goodman Townhomes</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Email Sent</span><br>08/07/2025</td>
+                    <td>Zillow Rental Network</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Strickland, Tori</td>
+                    <td>Blue Ridge Manor</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Pre-qualification Form Submitted</span><br>08/07/2025</td>
+                    <td>Apartments.com</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Simpson, Tamara</td>
+                    <td>Pleasant Valley Apts / Best Beach - 6504 #9</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
+                    <td>add a roommate</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Davidson, Jake</td>
+                    <td>Charlotte Park Apartments - 807 #2E</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
+                    <td>Zillow Rental Network</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Bittaye, Baboucar</td>
+                    <td>Villas of Mur-Len / TSI Villas of Mur-Len - 303 P</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
+                    <td>drive by</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td class="guest-name">Boose, Dasean</td>
+                    <td>(BARR) Rock Ridge Ranch Apartments - 49A</td>
+                    <td>08/07/2025</td>
+                    <td><span class="activity-type">Showing</span><br>08/08/2025</td>
+                    <td>call</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
@@ -93,55 +275,125 @@
 
 {% block scripts %}
 <script>
-document.getElementById('select-all').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.guest-check');
-    checkboxes.forEach(cb => cb.checked = this.checked);
-});
-
-function getSelectedGuests() {
-    const selected = [];
-    document.querySelectorAll('.guest-check:checked').forEach(cb => {
-        selected.push(cb.value);
+    // Select all checkbox functionality
+    document.getElementById('select-all').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
     });
-    return selected;
-}
 
-function bulkAction(status) {
-    const selected = getSelectedGuests();
-    if (selected.length === 0) {
-        alert('Please select at least one guest card');
-        return;
+    // Individual checkbox click
+    document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allCheckboxes = document.querySelectorAll('.row-checkbox');
+            const selectAllCheckbox = document.getElementById('select-all');
+            const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+            const someChecked = Array.from(allCheckboxes).some(cb => cb.checked);
+            
+            selectAllCheckbox.checked = allChecked;
+            selectAllCheckbox.indeterminate = someChecked && !allChecked;
+        });
+    });
+
+    // Get selected guests
+    function getSelectedGuests() {
+        const selected = [];
+        document.querySelectorAll('.row-checkbox:checked').forEach(cb => {
+            if (cb.value) selected.push(cb.value);
+        });
+        return selected;
     }
-    
-    fetch('/api/guest-cards/bulk-update', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ids: selected, status: status})
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
+
+    // Bulk actions
+    function bulkAction(status) {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        
+        fetch('/api/guest-cards/bulk-update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ids: selected, status: status})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Updated ${selected.length} guest card(s) to ${status}`);
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Other actions
+    function openSearch() {
+        const searchQuery = prompt('Enter search query:');
+        if (searchQuery) {
+            window.location.href = `/guest-cards?search=${encodeURIComponent(searchQuery)}`;
+        }
+    }
+
+    function sendBulkEmail() {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        alert(`Email feature will send to ${selected.length} selected guest(s)`);
+    }
+
+    function assignUser() {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        const user = prompt('Enter user name to assign:');
+        if (user) {
+            alert(`Assigned ${selected.length} guest(s) to ${user}`);
+        }
+    }
+
+    function sendApplicationLink() {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        alert(`Application link will be sent to ${selected.length} selected guest(s)`);
+    }
+
+    function sendShowingLink() {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        alert(`Showing link will be sent to ${selected.length} selected guest(s)`);
+    }
+
+    function sendText() {
+        const selected = getSelectedGuests();
+        if (selected.length === 0) {
+            alert('Please select at least one guest card');
+            return;
+        }
+        alert(`Text message will be sent to ${selected.length} selected guest(s)`);
+    }
+
+    // Sort columns
+    document.querySelectorAll('th').forEach(header => {
+        if (header.querySelector('.sort-icon')) {
+            header.addEventListener('click', function() {
+                console.log('Sorting by:', this.textContent);
+                // Implement sorting logic
+            });
         }
     });
-}
-
-function sendEmail() {
-    const selected = getSelectedGuests();
-    if (selected.length === 0) {
-        alert('Please select at least one guest card');
-        return;
-    }
-    // Implement email sending logic
-    alert('Email feature coming soon');
-}
-
-function sendApplicationLink() {
-    const selected = getSelectedGuests();
-    if (selected.length === 0) {
-        alert('Please select at least one guest card');
-        return;
-    }
-    // Implement application link sending
-    alert('Application link sent to selected guests');
-}
 </script>
 {% endblock %}

@@ -3,7 +3,41 @@
 {% block title %}Renewals - Property Management{% endblock %}
 {% block page_title %}Renewals{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+<style>
+    /* Renewals specific styles */
+    .filter-section h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .filter-row label {
+        margin-right: 15px;
+        display: inline-block;
+    }
+    
+    .filter-row input[type="checkbox"] {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
+<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
+<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
+<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
+<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
+<a href="{{ url_for('renewals') }}" class="tab-nav-item active">Renewals</a>
+<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+{% endblock %}
+
+{% block tasks_panel %}
+<!-- Renewals doesn't need tasks panel -->
+{% endblock %}
+
+{% block content %>
 <div class="filter-section" style="background-color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
     <h3>Filter your renewals with the options below:</h3>
     <form method="get">

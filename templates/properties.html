@@ -3,7 +3,42 @@
 {% block title %}Properties - Property Management{% endblock %}
 {% block page_title %}Properties{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+<style>
+    /* Properties specific styles */
+    .filter-row button {
+        margin-right: 10px;
+    }
+    
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+        color: white;
+    }
+    
+    .btn-info:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
+<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
+<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
+<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
+<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
+<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
+<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+<a href="{{ url_for('properties') }}" class="tab-nav-item active">Properties</a>
+{% endblock %}
+
+{% block tasks_panel %}
+<!-- Properties doesn't need tasks panel -->
+{% endblock %}
+
+{% block content %>
 <div class="filter-section">
     <div class="filter-row">
         <button class="btn btn-primary" onclick="addProperty()">+ New Property</button>

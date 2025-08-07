@@ -3,6 +3,50 @@
 {% block title %}Dashboard - Property Management{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Dashboard specific styles */
+    .alert-box {
+        background-color: #cff4fc;
+        border: 1px solid #9ec5d8;
+        border-radius: 4px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .feedback-section {
+        background-color: white;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .feedback-section h2 {
+        color: #28a745;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('dashboard') }}" class="tab-nav-item active">Dashboard</a>
+<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
+<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
+<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
+<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
+<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
+<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+{% endblock %}
+
+{% block tasks_panel %}
+<!-- Dashboard doesn't need tasks panel -->
+{% endblock %}
+
 {% block content %}
 {% if alerts %}
     {% for alert in alerts %}
@@ -19,9 +63,9 @@
     {% endfor %}
 {% endif %}
 
-<div style="background-color: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<div class="feedback-section">
     <button class="btn btn-info" style="float: right;">📧 FEEDBACK</button>
-    <h2 style="color: #28a745; font-size: 16px; margin-bottom: 10px;">NEW - Move Ins Updated</h2>
+    <h2>NEW - Move Ins Updated</h2>
     <p>We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
 </div>
 

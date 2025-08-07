@@ -3,7 +3,53 @@
 {% block title %}Rental Applications - Property Management{% endblock %}
 {% block page_title %}Rental Applications{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+<style>
+    /* Rental Applications specific styles */
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
+<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
+<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
+<a href="{{ url_for('rental_applications') }}" class="tab-nav-item active">Rental Applications</a>
+<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
+<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
+<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+{% endblock %}
+
+{% block tasks_panel %}
+<!-- Rental Applications doesn't need tasks panel -->
+{% endblock %}
+
+{% block content %>
 <div class="filter-section">
     <form method="get">
         <div class="filter-row">

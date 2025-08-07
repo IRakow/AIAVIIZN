@@ -3,6 +3,38 @@
 {% block title %}Leases - Property Management{% endblock %}
 {% block page_title %}Leases{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Leases specific styles */
+    .filter-row .btn {
+        margin-right: 10px;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    
+    .status-executed {
+        color: #28a745;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
+<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
+<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
+<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
+<a href="{{ url_for('leases') }}" class="tab-nav-item active">Leases</a>
+<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
+<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+{% endblock %}
+
+{% block tasks_panel %}
+<!-- Leases doesn't need tasks panel -->
+{% endblock %}
+
 {% block content %}
 <div class="filter-section">
     <div class="filter-row">
