@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Inspections{% endblock %}
+{% block content %}
+<h2>Inspections</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Type</th>
+                <th>Scheduled Date</th>
+                <th>Inspector</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inspection in inspections %}
+            <tr>
+                <td>{{ inspection.property }}</td>
+                <td>{{ inspection.unit }}</td>
+                <td>{{ inspection.type }}</td>
+                <td>{{ inspection.scheduled_date }}</td>
+                <td>{{ inspection.inspector }}</td>
+                <td>{{ inspection.status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align: center;">No inspections scheduled</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

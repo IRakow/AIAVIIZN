@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Company Settings{% endblock %}
+{% block content %}
+<h2>Company Settings</h2>
+<div style="background: white; padding: 20px; border-radius: 8px;">
+    <form>
+        <div style="margin-bottom: 15px;">
+            <label>Company Name:</label><br>
+            <input type="text" value="{{ settings.company_name }}" style="width: 100%; padding: 8px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Address:</label><br>
+            <input type="text" value="{{ settings.address }}" style="width: 100%; padding: 8px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Phone:</label><br>
+            <input type="text" value="{{ settings.phone }}" style="width: 100%; padding: 8px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Email:</label><br>
+            <input type="email" value="{{ settings.email }}" style="width: 100%; padding: 8px;">
+        </div>
+        <button type="submit" class="btn-primary">Save Settings</button>
+    </form>
+</div>
+{% endblock %}

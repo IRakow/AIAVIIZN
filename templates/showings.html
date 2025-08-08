@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Showings{% endblock %}
+{% block content %}
+<h2>Property Showings</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Prospect</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Agent</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for showing in showings %}
+            <tr>
+                <td>{{ showing.property }}</td>
+                <td>{{ showing.unit }}</td>
+                <td>{{ showing.prospect }}</td>
+                <td>{{ showing.date }}</td>
+                <td>{{ showing.time }}</td>
+                <td>{{ showing.agent }}</td>
+                <td>{{ showing.status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" style="text-align: center;">No showings scheduled</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

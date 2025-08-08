@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Recurring Work Orders{% endblock %}
+{% block content %}
+<h2>Recurring Work Orders</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Frequency</th>
+                <th>Properties</th>
+                <th>Next Due</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in recurring_orders %}
+            <tr>
+                <td>{{ order.description }}</td>
+                <td>{{ order.frequency }}</td>
+                <td>{{ order.properties }}</td>
+                <td>{{ order.next_due }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align: center;">No recurring work orders found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

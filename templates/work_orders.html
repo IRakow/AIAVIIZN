@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Work Orders{% endblock %}
+{% block content %}
+<h2>Work Orders</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Tenant</th>
+                <th>Issue</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in work_orders %}
+            <tr>
+                <td>{{ order.property }}</td>
+                <td>{{ order.unit }}</td>
+                <td>{{ order.tenant }}</td>
+                <td>{{ order.issue }}</td>
+                <td>{{ order.priority }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.created_date }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" style="text-align: center;">No work orders found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

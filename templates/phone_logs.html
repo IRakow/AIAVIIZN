@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Phone Logs{% endblock %}
+{% block content %}
+<h2>Phone Logs</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Contact</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Notes</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in phone_logs %}
+            <tr>
+                <td>{{ log.contact }}</td>
+                <td>{{ log.phone }}</td>
+                <td>{{ log.type }}</td>
+                <td>{{ log.duration }}</td>
+                <td>{{ log.notes }}</td>
+                <td>{{ log.date }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align: center;">No phone logs found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Rent Roll{% endblock %}
+{% block content %}
+<h2>Rent Roll Report</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Tenant</th>
+                <th>Rent</th>
+                <th>Balance</th>
+                <th>Next Due</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in rent_roll %}
+            <tr>
+                <td>{{ item.property }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.tenant }}</td>
+                <td>${{ item.rent }}</td>
+                <td>${{ item.balance }}</td>
+                <td>{{ item.next_due }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align: center;">No data available</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
