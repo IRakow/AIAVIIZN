@@ -2,211 +2,44 @@
 
 {% block title %}Dashboard{% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Dashboard specific styles */
-    .dashboard-header {
-        background: white;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .dashboard-header h1 {
-        font-size: 24px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-    
-    .alert-box {
-        background-color: #cff4fc;
-        border: 1px solid #9ec5d8;
-        border-radius: 4px;
-        padding: 12px 20px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .feedback-section {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .feedback-section h2 {
-        color: #28a745;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-    
-    .filter-section {
-        background: white;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .filter-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .filter-row input[type="text"] {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    
-    .filter-row select {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background: white;
-    }
-    
-    .data-table {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .data-table table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .data-table th {
-        background: #f8f9fa;
-        padding: 12px;
-        text-align: left;
-        font-weight: 600;
-        color: #495057;
-        font-size: 13px;
-        border-bottom: 2px solid #dee2e6;
-    }
-    
-    .data-table td {
-        padding: 12px;
-        border-bottom: 1px solid #e9ecef;
-        font-size: 13px;
-    }
-    
-    .data-table tr:hover {
-        background: #f8f9fa;
-    }
-    
-    .status-executed {
-        color: #28a745;
-        font-weight: 500;
-    }
-    
-    .status-active {
-        color: #007bff;
-        font-weight: 500;
-    }
-    
-    .badge {
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-    
-    .badge-success {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .badge-info {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-    
-    .badge-warning {
-        background: #fff3cd;
-        color: #856404;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.2s;
-    }
-    
-    .btn-primary {
-        background: #007bff;
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: #0056b3;
-    }
-    
-    .btn-info {
-        background: #17a2b8;
-        color: white;
-    }
-    
-    .btn-info:hover {
-        background: #138496;
-    }
-</style>
-{% endblock %}
-
 {% block tabs %}
-<!-- Tab Navigation -->
-<div class="tab-nav">
-    <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
-    <a href="{{ url_for('vacancies') }}">Vacancies</a>
-    <a href="{{ url_for('guest_cards') }}">Guest Cards</a>
-    <a href="{{ url_for('rental_applications') }}">Rental Applications</a>
-    <a href="{{ url_for('leases') }}">Leases</a>
-    <a href="{{ url_for('renewals') }}">Renewals</a>
-    <a href="{{ url_for('metrics') }}">Metrics</a>
-</div>
+<a href="/dashboard" class="tab-nav-item active">Dashboard</a>
+<a href="/vacancies" class="tab-nav-item">Vacancies</a>
+<a href="/guest-cards" class="tab-nav-item">Guest Cards</a>
+<a href="/rental-applications" class="tab-nav-item">Rental Applications</a>
+<a href="/leases" class="tab-nav-item">Leases</a>
+<a href="/renewals" class="tab-nav-item">Renewals</a>
+<a href="/metrics" class="tab-nav-item">Metrics</a>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h1>Property Management Dashboard</h1>
-    <p>Welcome to your property management system</p>
-</div>
-
+<!-- Alert Box -->
 {% if alerts %}
     {% for alert in alerts %}
     <div class="alert-box">
         <span>ℹ️</span>
         <span>{{ alert.message }} 
-        {% if alert.link %}<a href="{{ alert.link }}">Click here</a>{% endif %}
+        {% if alert.link %}<a href="{{ alert.link }}" style="color: #0056b3;">Click here</a>{% endif %}
         {% if alert.dismissible %}
-        | <a href="#" onclick="dismissAlert('{{ alert.id }}')">Remind me in 7 days</a> 
-        | <a href="#" onclick="dismissAlert('{{ alert.id }}', true)">Don't show this message again</a>
+        | <a href="#" onclick="dismissAlert('{{ alert.id }}')" style="color: #0056b3;">Remind me in 7 days</a> 
+        | <a href="#" onclick="dismissAlert('{{ alert.id }}', true)" style="color: #0056b3;">Don't show this message again</a>
         {% endif %}
         </span>
     </div>
     {% endfor %}
 {% endif %}
 
-<div class="feedback-section">
+<!-- Feedback Section -->
+<div style="background-color: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <button class="btn btn-info" style="float: right;">📧 FEEDBACK</button>
-    <h2>NEW - Move Ins Updated</h2>
-    <p>We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+    <h2 style="color: #28a745; font-size: 16px; margin-bottom: 10px;">NEW - Move Ins Updated</h2>
+    <p style="font-size: 14px; color: #495057;">We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+    <div style="clear: both;"></div>
 </div>
 
+<!-- Filter Section -->
 <div class="filter-section">
-    <form method="get" action="{{ url_for('dashboard') }}">
+    <form method="get" action="/dashboard">
         <div class="filter-row">
             <input type="text" name="search" placeholder="Search by property, unit or group" value="{{ request.args.get('search', '') }}">
             <select name="status">
@@ -216,112 +49,117 @@
                 <option value="executed" {% if request.args.get('status') == 'executed' %}selected{% endif %}>Executed</option>
             </select>
             <button type="submit" class="btn btn-primary">Search</button>
-            <label style="display: flex; align-items: center; gap: 5px;">
+            <label style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
                 <input type="checkbox" name="show_finished" {% if request.args.get('show_finished') %}checked{% endif %}>
-                <span>Show Finished Move Ins</span>
+                <span style="font-size: 13px;">Show Finished Move Ins</span>
             </label>
         </div>
     </form>
 </div>
 
+<!-- Data Table -->
 <div class="data-table">
     <table>
         <thead>
             <tr>
-                <th>Future Tenant ↕</th>
-                <th>Property - Unit ↕</th>
-                <th>Lease ↕</th>
-                <th>Portal ↕</th>
-                <th>Balance ↕</th>
+                <th>Future Tenant <span style="font-size: 10px;">↕</span></th>
+                <th>Property - Unit <span style="font-size: 10px;">↕</span></th>
+                <th>Lease <span style="font-size: 10px;">↕</span></th>
+                <th>Portal <span style="font-size: 10px;">↕</span></th>
+                <th>Balance <span style="font-size: 10px;">↕</span></th>
                 <th>Insurance</th>
-                <th>Move In Date ↕</th>
+                <th>Move In Date <span style="font-size: 10px;">↕</span></th>
             </tr>
         </thead>
         <tbody>
-            {% for move_in in move_ins %}
-            <tr>
-                <td>{{ move_in.tenant.last_name }}, {{ move_in.tenant.first_name }}</td>
-                <td>{{ move_in.property.name }} - {{ move_in.unit.unit_number }}</td>
-                <td>
-                    {% if move_in.lease_status == 'executed' %}
-                        <span class="status-executed">Fully Executed</span>
-                    {% elif move_in.lease_status == 'pending' %}
-                        Out for Signing
-                    {% else %}
-                        Ready to Countersign
-                    {% endif %}
-                </td>
-                <td><span class="status-active">{{ move_in.portal_status|capitalize }}</span></td>
-                <td>${{ "%.2f"|format(move_in.balance) }}</td>
-                <td>
-                    {% if move_in.insurance_status == 'covered' %}
-                        <span class="badge badge-success">Covered</span>
-                    {% elif move_in.insurance_status == 'pending' %}
-                        <span class="badge badge-info">Pending</span>
-                    {% else %}
-                        <span class="badge badge-warning">Not Covered</span>
-                    {% endif %}
-                </td>
-                <td>{{ move_in.move_in_date.strftime('%m/%d/%Y') if move_in.move_in_date else '-' }}</td>
-            </tr>
+            {% if move_ins %}
+                {% for move_in in move_ins %}
+                <tr>
+                    <td>{{ move_in.tenants.last_name }}, {{ move_in.tenants.first_name }}</td>
+                    <td>{{ move_in.units.properties.name }} - {{ move_in.units.unit_number }}</td>
+                    <td>
+                        {% if move_in.lease_status == 'executed' %}
+                            <span class="status-executed">Fully Executed</span>
+                        {% elif move_in.lease_status == 'pending' %}
+                            Out for Signing
+                        {% else %}
+                            Ready to Countersign
+                        {% endif %}
+                    </td>
+                    <td><span class="status-active">{{ move_in.portal_status|capitalize }}</span></td>
+                    <td>${{ "%.2f"|format(move_in.balance) }}</td>
+                    <td>
+                        {% if move_in.insurance_status == 'covered' %}
+                            <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Covered</span>
+                        {% elif move_in.insurance_status == 'pending' %}
+                            <span style="background: #d1ecf1; color: #0c5460; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Pending</span>
+                        {% else %}
+                            <span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ move_in.move_in_date.strftime('%m/%d/%Y') if move_in.move_in_date else '-' }}</td>
+                </tr>
+                {% endfor %}
             {% else %}
-            <tr>
-                <td colspan="7" style="text-align: center; padding: 20px;">No move-ins scheduled</td>
-            </tr>
-            {% endfor %}
+                <!-- Sample data for demo -->
+                <tr>
+                    <td>Sainge, Samuel</td>
+                    <td>Campbell Apartments - 3403 #4</td>
+                    <td>Ready to Countersign</td>
+                    <td><span class="status-active">Active</span></td>
+                    <td>$400.00</td>
+                    <td><span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span></td>
+                    <td>07/25/2025</td>
+                </tr>
+                <tr>
+                    <td>Bell, Telia R.</td>
+                    <td>Villas of Mur-Len - 205 U</td>
+                    <td>Out for Signing</td>
+                    <td><span class="status-active">Active</span></td>
+                    <td>$0.00</td>
+                    <td><span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span></td>
+                    <td>08/01/2025</td>
+                </tr>
+                <tr>
+                    <td>Carlson, Eric A.</td>
+                    <td>Campbell Apartments - 3403 #4</td>
+                    <td><span class="status-executed">Fully Executed</span></td>
+                    <td><span class="status-active">Active</span></td>
+                    <td>-$727.74</td>
+                    <td><span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Covered</span></td>
+                    <td>08/08/2025</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
 {% endblock %}
 
 {% block tasks_panel %}
-<!-- Custom tasks panel for dashboard -->
 <div class="tasks-panel" id="tasksPanel">
     <div class="tasks-header">
-        <h3>Quick Actions</h3>
-        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasksPanel()">×</button>
     </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Move-In Tasks</div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Schedule Move-In</span>
-        </div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Create Lease</span>
-        </div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Process Application</span>
-        </div>
-    </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Reports</div>
-        <div class="task-item">
-            <span>Vacancy Report</span>
-        </div>
-        <div class="task-item">
-            <span>Move-In Schedule</span>
-        </div>
-        <div class="task-item">
-            <span>Lease Status Report</span>
-        </div>
-    </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Quick Links</div>
-        <div class="task-item">
-            <span>Add New Property</span>
-        </div>
-        <div class="task-item">
-            <span>Add New Tenant</span>
-        </div>
-        <div class="task-item">
-            <span>View Calendar</span>
-        </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item">Create Vacancies List</div>
+        <div class="task-item">New Rental Application</div>
+        <div class="task-item">New Guest Card</div>
+        <div class="task-item">Lease Templates</div>
+        <div class="task-item">Bulk Update Vacancy Posting Contact Info</div>
+        
+        <div class="task-section-title">📊 Reports</div>
+        <div class="task-item">Unit Vacancy Detail</div>
+        <div class="task-item">Rental Applications</div>
+        <div class="task-item">Guest Card Interests</div>
+        <div class="task-item">Owner Leasing</div>
+        <div class="task-item">Premium Listing Billing Detail</div>
+        
+        <div class="task-section-title">❓ Help Topics</div>
+        <div class="task-item">Post & Unpost Vacancies</div>
+        <div class="task-item">Marketing Campaigns</div>
+        <div class="task-item">Premium Listing</div>
     </div>
 </div>
 {% endblock %}

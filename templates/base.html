@@ -19,7 +19,7 @@
             overflow: hidden;
         }
         
-        /* Sidebar Styles */
+        /* Sidebar Styles - EXACT MATCH */
         .sidebar {
             width: 220px;
             background: #2c3e50;
@@ -35,11 +35,19 @@
             padding: 20px;
             background: #1a252f;
             border-bottom: 1px solid #34495e;
+            cursor: pointer;
+        }
+        
+        .sidebar-header:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .sidebar-header h2 {
             font-size: 18px;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .sidebar-menu {
@@ -63,10 +71,6 @@
         
         .menu-section-header:hover {
             background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .menu-section-header.active {
-            background: rgba(52, 152, 219, 0.2);
         }
         
         .menu-section-title {
@@ -125,12 +129,7 @@
         .menu-item.active {
             background: #3498db;
             color: white;
-        }
-        
-        .menu-item.has-badge {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-left: 4px solid #2980b9;
         }
         
         .badge {
@@ -140,6 +139,7 @@
             padding: 2px 6px;
             border-radius: 10px;
             font-weight: bold;
+            margin-left: auto;
         }
         
         .sidebar-footer {
@@ -149,7 +149,7 @@
             color: rgba(255, 255, 255, 0.6);
         }
         
-        /* Main Content */
+        /* Main Container */
         .main-container {
             flex: 1;
             display: flex;
@@ -157,7 +157,7 @@
             overflow: hidden;
         }
         
-        /* Tab Navigation */
+        /* Tab Navigation - EXACT MATCH */
         .tab-nav {
             background: white;
             border-bottom: 1px solid #ddd;
@@ -168,7 +168,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        .tab-nav a {
+        .tab-nav-item {
             padding: 15px 20px;
             text-decoration: none;
             color: #666;
@@ -178,18 +178,18 @@
             white-space: nowrap;
         }
         
-        .tab-nav a:hover {
+        .tab-nav-item:hover {
             color: #333;
             background: #f8f9fa;
         }
         
-        .tab-nav a.active {
+        .tab-nav-item.active {
             color: #3498db;
             border-bottom-color: #3498db;
             font-weight: 500;
         }
         
-        /* Content Area with Tasks Panel */
+        /* Content Wrapper */
         .content-wrapper {
             flex: 1;
             display: flex;
@@ -203,13 +203,15 @@
             background: #f5f5f5;
         }
         
-        /* Right Tasks Panel */
+        /* Right Tasks Panel - EXACT MATCH */
         .tasks-panel {
             width: 250px;
             background: white;
             border-left: 1px solid #ddd;
             overflow-y: auto;
             transition: margin-right 0.3s;
+            display: flex;
+            flex-direction: column;
         }
         
         .tasks-panel.collapsed {
@@ -231,23 +233,32 @@
             color: #333;
         }
         
-        .tasks-toggle {
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
             cursor: pointer;
-            padding: 5px;
-            color: #666;
+            color: #6c757d;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .tasks-section {
-            border-bottom: 1px solid #eee;
+        .tasks-content {
+            flex: 1;
+            overflow-y: auto;
         }
         
-        .tasks-section-title {
+        .task-section-title {
             padding: 12px 15px;
             font-size: 12px;
             font-weight: 600;
             color: #666;
-            text-transform: uppercase;
             background: #fafafa;
+            border-bottom: 1px solid #eee;
         }
         
         .task-item {
@@ -256,18 +267,163 @@
             color: #333;
             cursor: pointer;
             transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            border-bottom: 1px solid #f5f5f5;
         }
         
         .task-item:hover {
             background: #f8f9fa;
         }
         
-        .task-icon {
-            color: #ffc107;
-            font-size: 14px;
+        .task-item.active {
+            color: #0056b3;
+            font-weight: 500;
+        }
+        
+        /* Common Styles */
+        .page-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        /* Data Tables - EXACT MATCH */
+        .data-table {
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            font-size: 13px;
+            color: #212529;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Search Box */
+        .search-box {
+            background: white;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .search-box:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Alert Box */
+        .alert-box {
+            background-color: #cff4fc;
+            border: 1px solid #9ec5d8;
+            border-radius: 4px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .filter-row input[type="text"],
+        .filter-row select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .filter-row label {
+            font-size: 13px;
+            color: #495057;
+            margin-right: 5px;
+        }
+        
+        /* Status Badges */
+        .status-executed {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            color: #007bff;
+            font-weight: 600;
         }
         
         /* Assistant Button */
@@ -292,39 +448,14 @@
         .assistant-btn:hover {
             transform: scale(1.1);
         }
-        
-        /* Fix for Dashboard menu highlighting */
-        .sidebar-header a {
-            color: white !important;
-            text-decoration: none;
-        }
-        
-        .sidebar-header:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* When on dashboard page, highlight the header */
-        body.dashboard-page .sidebar-header {
-            background: #1a252f;
-            border-left: 4px solid #3498db;
-        }
-        
-        /* Fix active menu items */
-        .menu-item.active {
-            background: #3498db !important;
-            color: white !important;
-            border-left: 4px solid #2980b9;
-        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>
-                <a href="/dashboard" style="color: white; text-decoration: none;">🏠 Dashboard</a>
-            </h2>
+        <div class="sidebar-header" onclick="window.location.href='/dashboard'">
+            <h2><span>🏠</span> Dashboard</h2>
         </div>
         
         <div class="sidebar-menu">
@@ -358,9 +489,9 @@
                 </div>
                 <div class="menu-items">
                     <a href="/properties" class="menu-item {{ 'active' if request.endpoint == 'properties' }}">Properties</a>
-                    <a href="/metrics" class="menu-item has-badge {{ 'active' if request.endpoint == 'metrics' }}">
+                    <a href="/metrics" class="menu-item {{ 'active' if request.endpoint == 'metrics' }}" style="display: flex; align-items: center;">
                         <span>What's New</span>
-                        <span class="badge">4</span>
+                        <span class="badge" style="margin-left: auto;">4</span>
                     </a>
                 </div>
             </div>
@@ -477,6 +608,7 @@
                     <a href="/company-settings" class="menu-item">Company Settings</a>
                     <a href="/users" class="menu-item">Users</a>
                     <a href="/document-templates" class="menu-item">Document Templates</a>
+                    <a href="/logout" class="menu-item">Logout</a>
                 </div>
             </div>
         </div>
@@ -488,77 +620,28 @@
     
     <!-- Main Container -->
     <div class="main-container">
-        {% block tabs %}
-        <!-- Tab navigation if needed -->
+        {% block header %}
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            {% block tabs %}{% endblock %}
+        </div>
         {% endblock %}
         
         <div class="content-wrapper">
             <!-- Main Content -->
             <div class="content">
-                {% block content %}
-                <!-- Page content goes here -->
-                {% endblock %}
+                {% block content %}{% endblock %}
             </div>
             
             <!-- Right Tasks Panel -->
             {% block tasks_panel %}
             <div class="tasks-panel" id="tasksPanel">
                 <div class="tasks-header">
-                    <h3>Tasks & Actions</h3>
-                    <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+                    <h3>Tasks</h3>
+                    <button class="close-btn" onclick="toggleTasksPanel()">×</button>
                 </div>
-                
-                <!-- Default tasks - override in child templates -->
-                <div class="tasks-section">
-                    <div class="tasks-section-title">Quick Actions</div>
-                    <div class="task-item">
-                        <span class="task-icon">⭐</span>
-                        <span>Add New Property</span>
-                    </div>
-                    <div class="task-item">
-                        <span class="task-icon">⭐</span>
-                        <span>Create Lease</span>
-                    </div>
-                    <div class="task-item">
-                        <span class="task-icon">⭐</span>
-                        <span>Record Payment</span>
-                    </div>
-                </div>
-                
-                <div class="tasks-section">
-                    <div class="tasks-section-title">Reports</div>
-                    <div class="task-item">
-                        <span>Rent Roll</span>
-                    </div>
-                    <div class="task-item">
-                        <span>Vacancy Report</span>
-                    </div>
-                    <div class="task-item">
-                        <span>Income Statement</span>
-                    </div>
-                </div>
-                
-                <div class="tasks-section">
-                    <div class="tasks-section-title">Calendar</div>
-                    <div class="task-item">
-                        <span>View Calendar</span>
-                    </div>
-                    <div class="task-item">
-                        <span>Schedule Showing</span>
-                    </div>
-                </div>
-                
-                <div class="tasks-section">
-                    <div class="tasks-section-title">Help Topics</div>
-                    <div class="task-item">
-                        <span>Getting Started</span>
-                    </div>
-                    <div class="task-item">
-                        <span>Video Tutorials</span>
-                    </div>
-                    <div class="task-item">
-                        <span>Contact Support</span>
-                    </div>
+                <div class="tasks-content">
+                    <!-- Default tasks content -->
                 </div>
             </div>
             {% endblock %}
@@ -629,41 +712,8 @@
         document.querySelector('.assistant-btn').addEventListener('click', function() {
             alert('AI Assistant - Coming Soon!');
         });
-        
-        // Add class to body based on current page
-        const currentPath = window.location.pathname;
-        
-        // Check if we're on dashboard
-        if (currentPath === '/' || currentPath === '/dashboard') {
-            document.body.classList.add('dashboard-page');
-            
-            // Make dashboard header clickable and highlighted
-            const sidebarHeader = document.querySelector('.sidebar-header');
-            if (sidebarHeader) {
-                sidebarHeader.style.cursor = 'pointer';
-                sidebarHeader.onclick = function() {
-                    window.location.href = '/dashboard';
-                };
-            }
-        }
-        
-        // Fix active states for menu items
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            if (item.href === window.location.href) {
-                item.classList.add('active');
-                
-                // Auto-expand parent section
-                const parentSection = item.closest('.menu-section');
-                if (parentSection) {
-                    parentSection.classList.add('expanded');
-                }
-            }
-        });
     </script>
     
-    {% block scripts %}
-    <!-- Page specific scripts -->
-    {% endblock %}
+    {% block scripts %}{% endblock %}
 </body>
 </html>
