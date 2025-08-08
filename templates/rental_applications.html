@@ -1,146 +1,340 @@
 {% extends "base.html" %}
 
-{% block title %}Rental Applications - Property Management{% endblock %}
-{% block page_title %}Rental Applications{% endblock %}
+{% block title %}Rental Applications{% endblock %}
 
-{% block extra_css %}
+{% block tabs %}
+<div class="tab-nav">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/vacancies">Vacancies</a>
+    <a href="/guest-cards">Guest Cards</a>
+    <a href="/rental-applications" class="active">Rental Applications</a>
+    <a href="/leases">Leases</a>
+    <a href="/renewals">Renewals</a>
+    <a href="/metrics">Metrics</a>
+</div>
+{% endblock %}
+
+{% block content %}
 <style>
-    /* Rental Applications specific styles */
-    .badge {
+    .applications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .filter-bar {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .filter-bar select, .filter-bar input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+        padding: 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .status-badge {
         padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-denied {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-processing {
+        background: #cce5ff;
+        color: #004085;
+    }
+    
+    .score-good {
+        color: #28a745;
         font-weight: 600;
     }
     
-    .badge-info {
-        background-color: #17a2b8;
+    .score-fair {
+        color: #ffc107;
+        font-weight: 600;
+    }
+    
+    .score-poor {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    
+    .btn-review {
+        background: #17a2b8;
         color: white;
     }
     
-    .badge-success {
-        background-color: #28a745;
+    .btn-approve {
+        background: #28a745;
         color: white;
-    }
-    
-    .badge-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-    
-    .badge-warning {
-        background-color: #ffc107;
-        color: #212529;
     }
 </style>
-{% endblock %}
 
-{% block tabs %}
-<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
-<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
-<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
-<a href="{{ url_for('rental_applications') }}" class="tab-nav-item active">Rental Applications</a>
-<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
-<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
-<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
-{% endblock %}
+<div class="applications-header">
+    <h2>Rental Applications</h2>
+    <button class="btn-primary" onclick="newApplication()">+ New Application</button>
+</div>
 
-{% block tasks_panel %}
-<!-- Rental Applications doesn't need tasks panel -->
-{% endblock %}
-
-{% block content %>
-<div class="filter-section">
-    <form method="get">
-        <div class="filter-row">
-            <input type="text" name="search" placeholder="Search applications..." style="width: 100%;" value="{{ request.args.get('search', '') }}">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </form>
+<div class="filter-bar">
+    <label>Status:</label>
+    <select id="statusFilter">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="denied">Denied</option>
+        <option value="processing">Processing</option>
+    </select>
+    
+    <label>Property:</label>
+    <select id="propertyFilter">
+        <option value="all">All Properties</option>
+        <option value="sunset">Sunset Apartments</option>
+        <option value="oak-grove">Oak Grove</option>
+    </select>
+    
+    <label>Date Range:</label>
+    <input type="date" id="fromDate">
+    <span>to</span>
+    <input type="date" id="toDate">
+    
+    <button class="btn-primary" onclick="applyFilters()">Filter</button>
 </div>
 
 <div class="data-table">
     <table>
         <thead>
             <tr>
-                <th>Applicant Name</th>
-                <th>Property - Unit</th>
-                <th>Application Date</th>
-                <th>Status</th>
+                <th>Applicant ↕</th>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Application Date ↕</th>
                 <th>Credit Score</th>
+                <th>Income</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for app in applications %}
             <tr>
-                <td>{{ app.applicant_name }}</td>
                 <td>
-                    {% if app.properties %}
-                        {{ app.properties.name }}
-                        {% if app.units %} - {{ app.units.unit_number }}{% endif %}
+                    <strong>
+                        {% if app.guest_cards %}
+                            {{ app.guest_cards.first_name }} {{ app.guest_cards.last_name }}
+                        {% else %}
+                            Unknown Applicant
+                        {% endif %}
+                    </strong>
+                    <br>
+                    <small style="color: #666;">
+                        {% if app.guest_cards %}
+                            {{ app.guest_cards.email }}
+                        {% endif %}
+                    </small>
+                </td>
+                <td>
+                    {% if app.units and app.units.properties %}
+                        {{ app.units.properties.name }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td>{{ app.application_date.strftime('%m/%d/%Y') if app.application_date else '-' }}</td>
                 <td>
-                    {% if app.status == 'under_review' %}
-                        <span class="badge badge-info">Under Review</span>
-                    {% elif app.status == 'approved' %}
-                        <span class="badge badge-success">Approved</span>
-                    {% elif app.status == 'denied' %}
-                        <span class="badge badge-danger">Denied</span>
-                    {% elif app.status == 'pending' %}
-                        <span class="badge badge-warning">Pending Info</span>
+                    {% if app.units %}
+                        {{ app.units.unit_number }}
                     {% else %}
-                        {{ app.status|capitalize }}
+                        -
                     {% endif %}
                 </td>
-                <td>{{ app.credit_score if app.credit_score else '-' }}</td>
+                <td>{{ app.created_at[:10] if app.created_at else '-' }}</td>
                 <td>
-                    {% if app.status == 'pending' or app.status == 'under_review' %}
-                        <button class="btn btn-primary" onclick="reviewApplication('{{ app.id }}')">Review</button>
-                    {% elif app.status == 'approved' %}
-                        <button class="btn btn-success" onclick="createLease('{{ app.id }}')">Create Lease</button>
+                    {% if app.score %}
+                        {% if app.score >= 700 %}
+                            <span class="score-good">{{ app.score }}</span>
+                        {% elif app.score >= 600 %}
+                            <span class="score-fair">{{ app.score }}</span>
+                        {% else %}
+                            <span class="score-poor">{{ app.score }}</span>
+                        {% endif %}
                     {% else %}
-                        <button class="btn btn-info" onclick="viewApplication('{{ app.id }}')">View</button>
+                        -
+                    {% endif %}
+                </td>
+                <td>${{ "{:,.0f}".format(app.monthly_income) if app.monthly_income else '-' }}</td>
+                <td>
+                    <span class="status-badge status-{{ app.status or 'pending' }}">
+                        {{ app.status or 'pending' }}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn-sm btn-review" onclick="reviewApplication('{{ app.id }}')">Review</button>
+                    {% if app.status == 'approved' %}
+                    <button class="btn-sm btn-approve" onclick="createLease('{{ app.id }}')">Create Lease</button>
                     {% endif %}
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">No applications found</td>
+                <td colspan="8" style="text-align: center; padding: 20px;">No applications found</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
+function newApplication() {
+    window.location.href = '/rental-applications/new';
+}
+
 function reviewApplication(appId) {
-    window.location.href = `/applications/review/${appId}`;
+    window.location.href = `/rental-applications/review/${appId}`;
 }
 
 function createLease(appId) {
     if (confirm('Create a lease for this approved application?')) {
-        fetch('/api/applications/create-lease', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({application_id: appId})
-        }).then(response => {
-            if (response.ok) {
-                alert('Lease created successfully!');
-                window.location.href = '/leases';
-            }
-        });
+        window.location.href = `/leases/new?application_id=${appId}`;
     }
 }
 
-function viewApplication(appId) {
-    window.location.href = `/applications/view/${appId}`;
+function applyFilters() {
+    // In a real app, this would filter the table or make an API call
+    console.log('Applying filters...');
 }
 </script>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasksPanel">
+    <div class="tasks-header">
+        <h3>Application Actions</h3>
+        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Quick Actions</div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>New Application</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Run Credit Check</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Background Check</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Export Applications</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Reports</div>
+        <div class="task-item">
+            <span>Application Summary</span>
+        </div>
+        <div class="task-item">
+            <span>Conversion Rate</span>
+        </div>
+        <div class="task-item">
+            <span>Average Processing Time</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Settings</div>
+        <div class="task-item">
+            <span>Application Criteria</span>
+        </div>
+        <div class="task-item">
+            <span>Auto-Approval Rules</span>
+        </div>
+        <div class="task-item">
+            <span>Email Templates</span>
+        </div>
+    </div>
+</div>
 {% endblock %}

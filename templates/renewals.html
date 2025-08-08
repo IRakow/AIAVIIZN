@@ -1,127 +1,282 @@
 {% extends "base.html" %}
 
-{% block title %}Renewals - Property Management{% endblock %}
-{% block page_title %}Renewals{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* Renewals specific styles */
-    .filter-section h3 {
-        font-size: 16px;
-        margin-bottom: 15px;
-        color: #333;
-    }
-    
-    .filter-row label {
-        margin-right: 15px;
-        display: inline-block;
-    }
-    
-    .filter-row input[type="checkbox"] {
-        margin-right: 5px;
-    }
-</style>
-{% endblock %}
+{% block title %}Renewals{% endblock %}
 
 {% block tabs %}
-<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
-<a href="{{ url_for('vacancies') }}" class="tab-nav-item">Vacancies</a>
-<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
-<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
-<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
-<a href="{{ url_for('renewals') }}" class="tab-nav-item active">Renewals</a>
-<a href="{{ url_for('metrics') }}" class="tab-nav-item">Metrics</a>
+<div class="tab-nav">
+    <a href="/renewals" class="active">Renewals</a>
+</div>
 {% endblock %}
 
-{% block tasks_panel %}
-<!-- Renewals doesn't need tasks panel -->
-{% endblock %}
+{% block content %}
+<style>
+    .renewals-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .filter-bar {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .filter-bar select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+        padding: 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-renewed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-not-renewing {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .rent-increase {
+        color: #28a745;
+        font-weight: 600;
+    }
+</style>
 
-{% block content %>
-<div class="filter-section" style="background-color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
-    <h3>Filter your renewals with the options below:</h3>
-    <form method="get">
-        <div class="filter-row">
-            <input type="text" name="properties" placeholder="Properties">
-            <select name="tenant">
-                <option value="">Search by tenant</option>
-            </select>
-        </div>
-        <div class="filter-row">
-            <label>Status:</label>
-            <label><input type="checkbox" name="eligible" checked> Eligible</label>
-            <label><input type="checkbox" name="pending"> Pending</label>
-            <label><input type="checkbox" name="prepared"> Prepared not Sent</label>
-        </div>
-        <div class="filter-row">
-            <label>Lease Expirations Eligible for Renewal:</label>
-            <input type="date" name="from_date" value="{{ from_date }}">
-            <span>to</span>
-            <input type="date" name="to_date" value="{{ to_date }}">
-        </div>
-        <div class="filter-row">
-            <label><input type="checkbox" name="month_to_month" checked> Include month to month tenants</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+<div class="renewals-header">
+    <h2>Lease Renewals</h2>
+    <button class="btn-primary" onclick="processRenewals()">Process Selected Renewals</button>
+</div>
+
+<div class="filter-bar">
+    <label>Property:</label>
+    <select id="propertyFilter">
+        <option value="all">All Properties</option>
+        <option value="rock-ridge">Rock Ridge Ranch</option>
+        <option value="blue-ridge">Blue Ridge Manor</option>
+    </select>
+    
+    <label>Expiring Within:</label>
+    <select id="expiryFilter">
+        <option value="30">30 Days</option>
+        <option value="60">60 Days</option>
+        <option value="90" selected>90 Days</option>
+        <option value="120">120 Days</option>
+    </select>
+    
+    <label>Status:</label>
+    <select id="statusFilter">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="renewed">Renewed</option>
+        <option value="not-renewing">Not Renewing</option>
+    </select>
 </div>
 
 <div class="data-table">
     <table>
         <thead>
             <tr>
-                <th>Property - Unit ↕</th>
-                <th>Tenants</th>
-                <th>Expiration ↕</th>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                <th>Tenant</th>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Lease Expires</th>
                 <th>Current Rent</th>
-                <th>New Rent 💡</th>
-                <th>Status ↕</th>
+                <th>Proposed Rent</th>
+                <th>Increase</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for renewal in renewals %}
             <tr>
-                <td>{{ renewal.units.properties.name }} - {{ renewal.units.unit_number }}</td>
-                <td>{{ renewal.tenants.first_name }} {{ renewal.tenants.last_name }}</td>
-                <td>{{ renewal.end_date.strftime('%m/%d/%Y') if renewal.end_date else '--' }}</td>
-                <td>${{ "%.2f"|format(renewal.units.rent) }}</td>
-                <td>--</td>
+                <td><input type="checkbox" class="renewal-checkbox" value="{{ renewal.id }}"></td>
+                <td><strong>{{ renewal.tenants.first_name }} {{ renewal.tenants.last_name }}</strong></td>
+                <td>{{ renewal.units.properties.name }}</td>
+                <td>{{ renewal.units.unit_number }}</td>
+                <td>{{ renewal.end_date }}</td>
+                <td>${{ renewal.units.rent }}</td>
+                <td>${{ renewal.proposed_rent or (renewal.units.rent * 1.03)|int }}</td>
+                <td class="rent-increase">+{{ ((renewal.proposed_rent or (renewal.units.rent * 1.03)|int) - renewal.units.rent) }}</td>
                 <td>
-                    {% if renewal.status == 'sent' %}
-                        Out For Signing<br>
-                        Sent ({{ renewal.offer_sent_date.strftime('%m/%d/%Y') if renewal.offer_sent_date else '' }})
-                    {% elif renewal.status == 'eligible' %}
-                        Eligible<br>
-                        <a href="#" onclick="prepareRenewal('{{ renewal.id }}')">Prepare Renewal Offer</a>
-                    {% else %}
-                        {{ renewal.status|capitalize }}
-                    {% endif %}
+                    <span class="status-badge status-{{ renewal.renewal_status or 'pending' }}">
+                        {{ renewal.renewal_status or 'pending' }}
+                    </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm" onclick="viewDetails('{{ renewal.id }}')">↓</button>
+                    <button onclick="viewRenewal('{{ renewal.id }}')" style="padding: 4px 8px; font-size: 12px;">View</button>
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="7" style="text-align: center; padding: 20px;">No renewals found</td>
+                <td colspan="10" style="text-align: center; padding: 20px;">No renewals found</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
-function prepareRenewal(renewalId) {
-    // Implement renewal preparation logic
-    alert('Preparing renewal for ID: ' + renewalId);
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.renewal-checkbox');
+    checkboxes.forEach(cb => cb.checked = selectAll.checked);
 }
 
-function viewDetails(renewalId) {
-    // Implement view details logic
-    alert('Viewing details for renewal ID: ' + renewalId);
+function processRenewals() {
+    const selected = document.querySelectorAll('.renewal-checkbox:checked');
+    if (selected.length === 0) {
+        alert('Please select at least one renewal to process');
+        return;
+    }
+    
+    const ids = Array.from(selected).map(cb => cb.value);
+    console.log('Processing renewals:', ids);
+    alert(`Processing ${ids.length} renewal(s)...`);
+}
+
+function viewRenewal(renewalId) {
+    window.location.href = `/renewals/${renewalId}`;
+}
+
+// Filter handling
+document.getElementById('propertyFilter').addEventListener('change', applyFilters);
+document.getElementById('expiryFilter').addEventListener('change', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+function applyFilters() {
+    // In a real app, this would filter the table or make an API call
+    console.log('Filters applied');
 }
 </script>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasksPanel">
+    <div class="tasks-header">
+        <h3>Renewal Actions</h3>
+        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Bulk Actions</div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Send Renewal Notices</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Generate Renewal Leases</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Update Rent Amounts</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Export to Excel</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Templates</div>
+        <div class="task-item">
+            <span>60-Day Notice</span>
+        </div>
+        <div class="task-item">
+            <span>30-Day Notice</span>
+        </div>
+        <div class="task-item">
+            <span>Renewal Offer Letter</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Reports</div>
+        <div class="task-item">
+            <span>Renewal Summary</span>
+        </div>
+        <div class="task-item">
+            <span>Expiring Leases</span>
+        </div>
+        <div class="task-item">
+            <span>Rent Increase Analysis</span>
+        </div>
+    </div>
+</div>
 {% endblock %}
