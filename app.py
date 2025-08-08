@@ -368,12 +368,125 @@ def gl_accounts():
 @app.route('/diagnostics')
 def diagnostics():
     """Diagnostics page"""
-    diagnostics_data = {
-        'checks': [],
-        'warnings': [],
-        'errors': []
-    }
-    return render_template('diagnostics.html', diagnostics=diagnostics_data)
+    try:
+        # Fetch security deposit funds mismatch data
+        security_deposit_mismatches = []
+        if supabase:
+            # Query for properties with security deposit mismatches
+            deposit_response = supabase.table('properties').select(
+                'id, name, address',
+                'gl_accounts!inner(account_type, balance)',
+                'security_deposits(amount)'
+            ).eq('gl_accounts.account_type', 'security_deposit').execute()
+            
+            for prop in deposit_response.data:
+                gl_balance = sum([acc['balance'] for acc in prop.get('gl_accounts', [])])
+                deposit_balance = sum([dep['amount'] for dep in prop.get('security_deposits', [])])
+                
+                if abs(gl_balance - deposit_balance) > 0.01:  # Significant difference
+                    security_deposit_mismatches.append({
+                        'property_name': prop['name'],
+                        'gl_balance': gl_balance,
+                        'deposit_balance': deposit_balance
+                    })
+        
+        # Fetch escrow cash account balance mismatch data
+        escrow_mismatches = []
+        if supabase:
+            # Query for escrow account mismatches
+            escrow_response = supabase.table('properties').select(
+                'id, name, address',
+                'gl_accounts!inner(account_type, balance)',
+                'bank_accounts(account_type, balance)'
+            ).eq('gl_accounts.account_type', 'escrow').execute()
+            
+            for prop in escrow_response.data:
+                escrow_gl_balance = sum([acc['balance'] for acc in prop.get('gl_accounts', []) if acc['account_type'] == 'escrow'])
+                deposit_gl_balance = sum([acc['balance'] for acc in prop.get('gl_accounts', []) if acc['account_type'] == 'security_deposit'])
+                all_gl_balance = sum([acc['balance'] for acc in prop.get('gl_accounts', [])])
+                
+                escrow_mismatches.append({
+                    'property_name': prop['name'],
+                    'escrow_gl_balance': escrow_gl_balance,
+                    'deposit_gl_balance': deposit_gl_balance,
+                    'all_gl_balance': all_gl_balance
+                })
+        
+        # Define diagnostic sections
+        diagnostic_sections = [
+            {
+                'id': 'security_deposit_mismatch',
+                'title': 'Security Deposit Funds Mismatch',
+                'expanded': True,
+                'data': security_deposit_mismatches
+            },
+            {
+                'id': 'escrow_mismatch',
+                'title': 'Escrow Cash Account Balance Mismatch',
+                'expanded': True,
+                'data': escrow_mismatches
+            },
+            {
+                'id': 'security_clearing',
+                'title': 'Non-Zero Security Clearing Account Balances',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'negative_fees',
+                'title': 'Negative Balance on Additional Fee GL Accounts',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'positive_fees',
+                'title': 'Positive Balance on Additional Fee GL Accounts',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'unused_prepayments',
+                'title': 'Tenants and Homeowners With Unused Prepayments / Open Charges / Open Credits',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'prepayment_mismatch',
+                'title': 'Prepayment Balance Mismatch',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'reconciliation_lapses',
+                'title': 'Bank Account Reconciliation Lapses Over 60 Days',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'past_tenant_prepayments',
+                'title': 'Unused Prepayments for Past Tenants',
+                'expanded': False,
+                'data': []
+            },
+            {
+                'id': 'non_prepay_accounts',
+                'title': 'Unused Prepayments Associated with a Non-Prepay GL Account',
+                'expanded': False,
+                'data': []
+            }
+        ]
+        
+    except Exception as e:
+        print(f"Error fetching diagnostics data: {e}")
+        security_deposit_mismatches = []
+        escrow_mismatches = []
+        diagnostic_sections = []
+    
+    # Fetch diagnostic data from Supabase
+    return render_template('diagnostics.html', 
+                         security_deposit_mismatches=security_deposit_mismatches,
+                         escrow_mismatches=escrow_mismatches,
+                         diagnostic_sections=diagnostic_sections)
 
 # ============================================
 # MAINTENANCE SECTION

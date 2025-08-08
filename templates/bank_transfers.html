@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Transfers - AIVIIZN{% endblock %}
+
+{% block tabs %}
+<div class="tab-nav">
+    <a href="/receivables">Receivables</a>
+    <a href="/payables">Payables</a>
+    <a href="/bank-accounts">Bank Accounts</a>
+    <a href="/journal-entries">Journal Entries</a>
+    <a href="/bank-transfers" class="active">Bank Transfers</a>
+    <a href="/gl-accounts">GL Accounts</a>
+    <a href="/diagnostics">Diagnostics</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        background: white;
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .page-header h1 {
+        font-size: 24px;
+        margin: 0;
+    }
+    
+    .action-bar {
+        background: white;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 4px;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+    
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    
+    .filter-row label {
+        min-width: 120px;
+        font-size: 14px;
+        color: #495057;
+    }
+    
+    .filter-row input,
+    .filter-row select {
+        flex: 1;
+        max-width: 300px;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .data-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .data-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .data-table td {
+        padding: 12px;
+        font-size: 13px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+    
+    .empty-state h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="page-header">
+    <h1>Bank Transfers</h1>
+</div>
+
+<div class="action-bar">
+    <div>
+        <button class="btn-primary" onclick="newTransfer()">+ New Transfer</button>
+        <button class="btn-primary" style="background: #6c757d; margin-left: 10px;">Import Transfers</button>
+    </div>
+    <div>
+        <button class="btn-primary" style="background: #28a745;">Export to Excel</button>
+    </div>
+</div>
+
+<div class="filter-section">
+    <h3 style="font-size: 16px; margin-bottom: 15px;">Filter Transfers</h3>
+    <div class="filter-row">
+        <label>Date Range:</label>
+        <input type="date" id="startDate">
+        <span>to</span>
+        <input type="date" id="endDate">
+    </div>
+    <div class="filter-row">
+        <label>From Account:</label>
+        <select>
+            <option value="">All Accounts</option>
+            <option>Operating Account</option>
+            <option>Security Deposits</option>
+            <option>Reserve Account</option>
+        </select>
+    </div>
+    <div class="filter-row">
+        <label>To Account:</label>
+        <select>
+            <option value="">All Accounts</option>
+            <option>Operating Account</option>
+            <option>Security Deposits</option>
+            <option>Reserve Account</option>
+        </select>
+    </div>
+    <div class="filter-row">
+        <button class="btn-primary">Apply Filters</button>
+        <button style="background: white; border: 1px solid #ced4da; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Clear</button>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Transfer Date ↕</th>
+                <th>Reference # ↕</th>
+                <th>From Account ↕</th>
+                <th>To Account ↕</th>
+                <th>Amount ↕</th>
+                <th>Description</th>
+                <th>Status ↕</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if transfers %}
+                {% for transfer in transfers %}
+                <tr>
+                    <td>{{ transfer.date }}</td>
+                    <td>{{ transfer.reference }}</td>
+                    <td>{{ transfer.from_account }}</td>
+                    <td>{{ transfer.to_account }}</td>
+                    <td style="text-align: right; font-weight: 600;">${{ transfer.amount }}</td>
+                    <td>{{ transfer.description }}</td>
+                    <td>
+                        <span style="color: #28a745; font-weight: 600;">{{ transfer.status }}</span>
+                    </td>
+                    <td>
+                        <button style="font-size: 12px; padding: 4px 8px;">View</button>
+                        <button style="font-size: 12px; padding: 4px 8px;">Edit</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="8">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💸</div>
+                        <h3>No Bank Transfers Found</h3>
+                        <p>You haven't recorded any bank transfers yet.<br>
+                        Click "New Transfer" to record your first transfer between accounts.</p>
+                        <button class="btn-primary" onclick="newTransfer()">Create Your First Transfer</button>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function newTransfer() {
+    // Open new transfer modal
+    alert('New Transfer feature coming soon!');
+}
+</script>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasksPanel">
+    <div class="tasks-header">
+        <h3>Bank Transfer Tasks</h3>
+        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Quick Actions</div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>New Transfer</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Transfer to Owner</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Transfer Between Properties</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Recurring Transfers</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Reports</div>
+        <div class="task-item">
+            <span>Transfer History</span>
+        </div>
+        <div class="task-item">
+            <span>Monthly Transfer Summary</span>
+        </div>
+        <div class="task-item">
+            <span>Inter-Account Report</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Help Topics</div>
+        <div class="task-item">
+            <span>Recording Transfers</span>
+        </div>
+        <div class="task-item">
+            <span>Trust Account Rules</span>
+        </div>
+        <div class="task-item">
+            <span>Transfer Best Practices</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

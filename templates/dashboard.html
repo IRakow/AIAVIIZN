@@ -1,186 +1,503 @@
+<!-- templates/dashboard/dashboard.html -->
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
-
-{% block tabs %}
-<a href="/dashboard" class="tab-nav-item active">Dashboard</a>
-<a href="/vacancies" class="tab-nav-item">Vacancies</a>
-<a href="/guest-cards" class="tab-nav-item">Guest Cards</a>
-<a href="/rental-applications" class="tab-nav-item">Rental Applications</a>
-<a href="/leases" class="tab-nav-item">Leases</a>
-<a href="/renewals" class="tab-nav-item">Renewals</a>
-<a href="/metrics" class="tab-nav-item">Metrics</a>
-{% endblock %}
+{% block title %}Dashboard - AIVIIZN{% endblock %}
 
 {% block content %}
-<!-- Alert Box -->
-{% if alerts %}
-    {% for alert in alerts %}
-    <div class="alert-box">
-        <span>ℹ️</span>
-        <span>{{ alert.message }} 
-        {% if alert.link %}<a href="{{ alert.link }}" style="color: #0056b3;">Click here</a>{% endif %}
-        {% if alert.dismissible %}
-        | <a href="#" onclick="dismissAlert('{{ alert.id }}')" style="color: #0056b3;">Remind me in 7 days</a> 
-        | <a href="#" onclick="dismissAlert('{{ alert.id }}', true)" style="color: #0056b3;">Don't show this message again</a>
-        {% endif %}
-        </span>
+<div class="page-content">
+    <!-- Dashboard Alert -->
+    <div class="dashboard-header">
+        <div>
+            <strong>ℹ️</strong> Have you checked your Financial Diagnostics Page recently? 
+            <a href="{{ url_for('diagnostics') }}" style="color: #0c5460;">Click here</a> to check up on your Financial Health. 
+            <a href="#" style="color: #0c5460;">Remind me in 7 days</a> | 
+            <a href="#" style="color: #0c5460;">I'm fine... don't show this message again</a>
+        </div>
+        <button class="btn-close" style="background: none; border: none; cursor: pointer;">✕</button>
     </div>
-    {% endfor %}
-{% endif %}
 
-<!-- Feedback Section -->
-<div style="background-color: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <button class="btn btn-info" style="float: right;">📧 FEEDBACK</button>
-    <h2 style="color: #28a745; font-size: 16px; margin-bottom: 10px;">NEW - Move Ins Updated</h2>
-    <p style="font-size: 14px; color: #495057;">We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
-    <div style="clear: both;"></div>
-</div>
+    <!-- Move Ins Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Move Ins
+        </div>
+        
+        <div class="dashboard-header" style="background: #cfe2ff; border-color: #b6d4fe; color: #004085; margin-bottom: 15px;">
+            <div>
+                <strong>NEW</strong> Move Ins Updated<br>
+                We've added some key information to help track the progress of your move-ins. What additional information would you like to see?
+            </div>
+            <button class="btn btn-outline" style="padding: 4px 12px;">FEEDBACK</button>
+        </div>
 
-<!-- Filter Section -->
-<div class="filter-section">
-    <form method="get" action="/dashboard">
-        <div class="filter-row">
-            <input type="text" name="search" placeholder="Search by property, unit or group" value="{{ request.args.get('search', '') }}">
-            <select name="status">
-                <option value="">Lease Status</option>
-                <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
-                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
-                <option value="executed" {% if request.args.get('status') == 'executed' %}selected{% endif %}>Executed</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Search</button>
-            <label style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
-                <input type="checkbox" name="show_finished" {% if request.args.get('show_finished') %}checked{% endif %}>
-                <span style="font-size: 13px;">Show Finished Move Ins</span>
+        <div class="filter-controls">
+            <div class="filter-group">
+                <select class="filter-select">
+                    <option>Search by property, unit or group</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select class="filter-select">
+                    <option>Lease Status</option>
+                </select>
+            </div>
+            <button class="btn btn-outline">⚙️ Customize</button>
+            <label style="margin-left: 10px;">
+                <input type="checkbox"> Show Finished Move Ins
             </label>
         </div>
-    </form>
-</div>
 
-<!-- Data Table -->
-<div class="data-table">
-    <table>
-        <thead>
-            <tr>
-                <th>Future Tenant <span style="font-size: 10px;">↕</span></th>
-                <th>Property - Unit <span style="font-size: 10px;">↕</span></th>
-                <th>Lease <span style="font-size: 10px;">↕</span></th>
-                <th>Portal <span style="font-size: 10px;">↕</span></th>
-                <th>Balance <span style="font-size: 10px;">↕</span></th>
-                <th>Insurance</th>
-                <th>Move In Date <span style="font-size: 10px;">↕</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if move_ins %}
-                {% for move_in in move_ins %}
+        <table class="dashboard-table">
+            <thead>
                 <tr>
-                    <td>{{ move_in.tenants.last_name }}, {{ move_in.tenants.first_name }}</td>
-                    <td>{{ move_in.units.properties.name }} - {{ move_in.units.unit_number }}</td>
-                    <td>
-                        {% if move_in.lease_status == 'executed' %}
-                            <span class="status-executed">Fully Executed</span>
-                        {% elif move_in.lease_status == 'pending' %}
-                            Out for Signing
-                        {% else %}
-                            Ready to Countersign
-                        {% endif %}
-                    </td>
-                    <td><span class="status-active">{{ move_in.portal_status|capitalize }}</span></td>
-                    <td>${{ "%.2f"|format(move_in.balance) }}</td>
-                    <td>
-                        {% if move_in.insurance_status == 'covered' %}
-                            <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Covered</span>
-                        {% elif move_in.insurance_status == 'pending' %}
-                            <span style="background: #d1ecf1; color: #0c5460; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Pending</span>
-                        {% else %}
-                            <span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ move_in.move_in_date.strftime('%m/%d/%Y') if move_in.move_in_date else '-' }}</td>
+                    <th>Future Tenant</th>
+                    <th>Property - Unit</th>
+                    <th>Lease</th>
+                    <th>Portal</th>
+                    <th>Balance</th>
+                    <th>Insurance</th>
+                    <th>Move In Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for move_in in metrics.move_ins[:10] %}
+                <tr>
+                    <td><a href="#" style="color: #0d6efd;">{{ move_in.tenant_name }}</a></td>
+                    <td>{{ move_in.property_name }} - {{ move_in.unit_number }}</td>
+                    <td><span class="status-badge status-active">Fully Executed</span></td>
+                    <td><span class="status-badge status-active">Active</span></td>
+                    <td>${{ "{:,.2f}".format(move_in.balance_due) }}</td>
+                    <td>{% if move_in.insurance_verified %}Covered{% else %}Not Covered{% endif %}</td>
+                    <td>{{ move_in.move_in_date }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #666; padding: 20px;">No upcoming move-ins</td>
                 </tr>
                 {% endfor %}
-            {% else %}
-                <!-- Sample data for demo -->
+            </tbody>
+        </table>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px;">
+            <span>Displaying: 1-{{ metrics.move_ins|length }} of {{ metrics.move_ins|length }}</span>
+            <div>
+                <button class="btn btn-outline" style="padding: 4px 8px;">◀</button>
+                <button class="btn btn-outline" style="padding: 4px 8px;">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Outs Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Move Outs
+        </div>
+        
+        <table class="dashboard-table">
+            <thead>
                 <tr>
-                    <td>Sainge, Samuel</td>
-                    <td>Campbell Apartments - 3403 #4</td>
-                    <td>Ready to Countersign</td>
-                    <td><span class="status-active">Active</span></td>
-                    <td>$400.00</td>
-                    <td><span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span></td>
-                    <td>07/25/2025</td>
+                    <th>Tenant Name</th>
+                    <th>Move Out Type</th>
+                    <th>Property - Unit</th>
+                    <th>Move Out Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for move_out in metrics.move_outs[:10] %}
+                <tr>
+                    <td><a href="#" style="color: #0d6efd;">{{ move_out.tenant_name }}</a></td>
+                    <td>{{ move_out.move_out_type }}</td>
+                    <td>{{ move_out.property_name }} - {{ move_out.unit_number }}</td>
+                    <td>{{ move_out.move_out_date }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #666; padding: 20px;">No upcoming move-outs</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Online Payments Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Online Payments
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <!-- Online Payment Statistics -->
+            <div>
+                <h4 style="margin-bottom: 15px;">Online Payment Statistics ℹ️</h4>
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 36px; font-weight: bold; color: #0d6efd;">90%</div>
+                        <div style="font-size: 12px; color: #666;">Payments Collected Online</div>
+                    </div>
+                    <div style="width: 2px; height: 60px; background: #dee2e6;"></div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 36px; font-weight: bold; color: #0d6efd;">92%</div>
+                        <div style="font-size: 12px; color: #666;">Units Paid Online</div>
+                    </div>
+                </div>
+                
+                <div style="background: #d1ecf1; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                    Want to increase Online Payments? <a href="#" style="color: #0c5460;">See who's not paying online</a>
+                </div>
+                
+                <h5>Online Portal Adoption</h5>
+                <div style="background: #e8f5e9; height: 40px; border-radius: 4px; position: relative; margin-bottom: 10px;">
+                    <div style="background: #4caf50; height: 100%; width: 90%; border-radius: 4px;"></div>
+                    <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-weight: bold;">90%</span>
+                    <span style="position: absolute; left: 10px; bottom: -20px; font-size: 11px;">ACTIVATED ℹ️</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                    <div>
+                        <div style="background: #ffc107; height: 40px; width: 80px; border-radius: 4px; margin-bottom: 5px;"></div>
+                        <div style="font-size: 11px;">5%</div>
+                        <div style="font-size: 11px; color: #666;">NON-ACTIVATED ℹ️</div>
+                    </div>
+                    <div>
+                        <div style="background: #dc3545; height: 40px; width: 80px; border-radius: 4px; margin-bottom: 5px;"></div>
+                        <div style="font-size: 11px;">5%</div>
+                        <div style="font-size: 11px; color: #666;">NO EMAIL ℹ️</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications -->
+            <div>
+                <h4 style="margin-bottom: 15px;">Notifications</h4>
+                
+                <div style="margin-bottom: 20px;">
+                    <h5>Activities</h5>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px; font-weight: bold; color: #0d6efd;">24</span>
+                        <span style="font-size: 12px; color: #666;">Due in the next 7 days</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h5>Bills</h5>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px; font-weight: bold;">0</span>
+                        <span style="font-size: 12px; color: #666;">Pending approval</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h5>Purchase Orders</h5>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <span style="font-size: 24px; font-weight: bold;">0</span>
+                            <span style="font-size: 12px; color: #666;">Pending my approval</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 24px; font-weight: bold;">0</span>
+                            <span style="font-size: 12px; color: #666;">Pending approval</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid #dee2e6; padding-top: 15px;">
+                    <h5>Notifications Feed</h5>
+                    <div style="font-size: 12px; color: #666; padding: 10px 0;">
+                        No new notifications
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leasing Activity Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Leasing Activity (Last 30 Days)
+        </div>
+        
+        <div style="background: #d1ecf1; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+            <strong>NEW</strong> You reviewed 56 screening reports last month. Confirm applicants' ability to pay with 
+            <a href="#" style="color: #0c5460;">Income Verification</a>.
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 30px;">
+            <!-- Guest Cards Chart -->
+            <div>
+                <h5>Guest Cards</h5>
+                <div style="position: relative; height: 200px;">
+                    <canvas id="guestCardsChart"></canvas>
+                </div>
+                <div style="text-align: center; font-size: 24px; font-weight: bold; color: #0d6efd;">371</div>
+                <div style="text-align: center; font-size: 11px; color: #666;">TOTAL</div>
+            </div>
+            
+            <!-- Rental Applications Chart -->
+            <div>
+                <h5>Rental Applications</h5>
+                <div style="position: relative; height: 200px;">
+                    <canvas id="rentalAppsChart"></canvas>
+                </div>
+                <div style="text-align: center; font-size: 24px; font-weight: bold; color: #0d6efd;">64</div>
+                <div style="text-align: center; font-size: 11px; color: #666;">TOTAL</div>
+            </div>
+            
+            <!-- Online Leases -->
+            <div>
+                <h5>Online Leases</h5>
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold; color: #0d6efd;">9</div>
+                        <div style="font-size: 11px; color: #666;">Out for Signing</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold; color: #0d6efd;">2</div>
+                        <div style="font-size: 11px; color: #666;">Ready to Countersign</div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #0d6efd;">37</div>
+                    <div style="font-size: 11px; color: #666;">Fully Executed</div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Lease Expirations -->
+            <div>
+                <h5>Upcoming Lease Expirations</h5>
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold; color: #0d6efd;">41</div>
+                        <div style="font-size: 11px; color: #666;">Expiring This Month</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: bold; color: #0d6efd;">74</div>
+                        <div style="font-size: 11px; color: #666;">Expiring Next Month</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Statistics -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+            <h5>Current Statistics</h5>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-size: 18px; font-weight: bold; color: #0d6efd;">36</span>
+                    <span style="font-size: 12px; color: #666;">Units Posted Online</span>
+                </div>
+                <div>
+                    <span style="font-size: 18px; font-weight: bold; color: #0d6efd;">66 days</span>
+                    <span style="font-size: 12px; color: #666;">Average Turnover Time</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Performance Metrics Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Key Performance Metrics
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #0d6efd;">${{ "{:,.2f}".format(metrics.monthly_income) }}</div>
+                <div style="font-size: 12px; color: #666;">Total Income</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #dc3545;">${{ "{:,.2f}".format(metrics.monthly_expenses) }}</div>
+                <div style="font-size: 12px; color: #666;">Total Expense</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 32px; font-weight: bold; color: #28a745;">${{ "{:,.2f}".format(metrics.monthly_income * 12) }}</div>
+                <div style="font-size: 12px; color: #666;">Total Market Rent</div>
+            </div>
+        </div>
+        
+        <!-- Income/Expense Chart -->
+        <div style="height: 300px; background: #f8f9fa; border-radius: 4px; padding: 20px;">
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px; gap: 10px;">
+            <button class="btn btn-outline">📊 GRAPH</button>
+            <button class="btn btn-outline">📋 TABLE</button>
+        </div>
+    </div>
+
+    <!-- Portfolio Summary Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Portfolio Summary
+        </div>
+        
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Beds</th>
+                    <th>Units</th>
+                    <th>Rented</th>
+                    <th>Available ℹ️</th>
+                    <th>Vacant Unrented</th>
+                    <th>Avg Days Vacant</th>
+                    <th>Move Ins</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>56</td>
+                    <td>47</td>
+                    <td>11</td>
+                    <td>9</td>
+                    <td>80.44</td>
+                    <td>2</td>
                 </tr>
                 <tr>
-                    <td>Bell, Telia R.</td>
-                    <td>Villas of Mur-Len - 205 U</td>
-                    <td>Out for Signing</td>
-                    <td><span class="status-active">Active</span></td>
-                    <td>$0.00</td>
-                    <td><span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Not Covered</span></td>
-                    <td>08/01/2025</td>
+                    <td>1</td>
+                    <td>307</td>
+                    <td>278</td>
+                    <td>40</td>
+                    <td>29</td>
+                    <td>254.52</td>
+                    <td>7</td>
                 </tr>
                 <tr>
-                    <td>Carlson, Eric A.</td>
-                    <td>Campbell Apartments - 3403 #4</td>
-                    <td><span class="status-executed">Fully Executed</span></td>
-                    <td><span class="status-active">Active</span></td>
-                    <td>-$727.74</td>
-                    <td><span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Covered</span></td>
-                    <td>08/08/2025</td>
+                    <td>2</td>
+                    <td>749</td>
+                    <td>699</td>
+                    <td>71</td>
+                    <td>50</td>
+                    <td>109.42</td>
+                    <td>10</td>
                 </tr>
-            {% endif %}
-        </tbody>
-    </table>
+                <tr>
+                    <td>3</td>
+                    <td>94</td>
+                    <td>87</td>
+                    <td>9</td>
+                    <td>7</td>
+                    <td>231.43</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0.00</td>
+                    <td>0</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold;">
+                    <td></td>
+                    <td>1214</td>
+                    <td>1119</td>
+                    <td>131</td>
+                    <td>95</td>
+                    <td></td>
+                    <td>20</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Delinquencies Section -->
+    <div class="dashboard-section">
+        <div class="section-title">
+            <span class="collapse-arrow">▼</span>
+            Delinquencies
+        </div>
+        
+        <div style="display: flex; justify-content: space-around; align-items: center; padding: 30px; background: #f8f9fa; border-radius: 4px;">
+            <div style="text-align: center;">
+                <div style="font-size: 48px; font-weight: bold; color: #0d6efd;">185</div>
+                <div style="font-size: 12px; color: #666;">0-30 DAYS</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 48px; font-weight: bold; color: #ffc107;">31</div>
+                <div style="font-size: 12px; color: #666;">31-60 DAYS</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 48px; font-weight: bold; color: #dc3545;">110</div>
+                <div style="font-size: 12px; color: #666;">61+ DAYS</div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
-{% block tasks_panel %}
-<div class="tasks-panel" id="tasksPanel">
-    <div class="tasks-header">
-        <h3>Tasks</h3>
-        <button class="close-btn" onclick="toggleTasksPanel()">×</button>
+{% block rightpanel %}
+<div class="right-panel">
+    <div class="panel-header">
+        Tasks
+        <span class="panel-close">✕</span>
     </div>
-    <div class="tasks-content">
-        <div class="task-section-title">⭐ Tasks</div>
-        <div class="task-item">Create Vacancies List</div>
-        <div class="task-item">New Rental Application</div>
-        <div class="task-item">New Guest Card</div>
-        <div class="task-item">Lease Templates</div>
-        <div class="task-item">Bulk Update Vacancy Posting Contact Info</div>
-        
-        <div class="task-section-title">📊 Reports</div>
-        <div class="task-item">Unit Vacancy Detail</div>
-        <div class="task-item">Rental Applications</div>
-        <div class="task-item">Guest Card Interests</div>
-        <div class="task-item">Owner Leasing</div>
-        <div class="task-item">Premium Listing Billing Detail</div>
-        
-        <div class="task-section-title">❓ Help Topics</div>
-        <div class="task-item">Post & Unpost Vacancies</div>
-        <div class="task-item">Marketing Campaigns</div>
-        <div class="task-item">Premium Listing</div>
+    
+    <div class="panel-section">
+        <div class="panel-section-title">⭐ Tasks</div>
+        <button class="btn btn-primary" style="width: 100%;">Add Personal Calendar</button>
+        <div style="margin-top: 10px;">
+            <span style="background: #0d6efd; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px;">NEW</span>
+        </div>
+        <a href="#" class="panel-link">Set Showing Availability</a>
+    </div>
+    
+    <div class="panel-section">
+        <div class="panel-section-title">📊 Reports</div>
+        <a href="#" class="panel-link">Delinquency</a>
+        <a href="#" class="panel-link">Tenant Ledger</a>
+        <a href="#" class="panel-link">Income Statement</a>
+        <a href="#" class="panel-link">Unit Vacancy Detail</a>
+        <a href="#" class="panel-link">Rent Roll</a>
+        <a href="#" class="panel-link">Cash Flow</a>
+        <a href="#" class="panel-link">Lease Expiration Detail By Month</a>
+        <a href="#" class="panel-link">Balance Sheet</a>
+        <a href="#" class="panel-link">Business Metrics</a>
+    </div>
+    
+    <div class="panel-section">
+        <div class="panel-section-title">✉️ Letters</div>
+        <a href="#" class="panel-link">3-Day Notices</a>
+    </div>
+    
+    <div class="panel-section">
+        <div class="panel-section-title">🏢 Account</div>
+        <a href="#" class="panel-link">Property Groups</a>
+        <a href="#" class="panel-link">New User</a>
+    </div>
+    
+    <div class="panel-section">
+        <div class="panel-section-title">❓ Help Topics</div>
+        <a href="#" class="panel-link">Using the Dashboard</a>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-function dismissAlert(alertId, permanent = false) {
-    fetch('/api/alerts/dismiss', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            alert_id: alertId,
-            permanent: permanent
-        })
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        }
+    // Toggle sections
+    document.querySelectorAll('.section-title').forEach(title => {
+        title.addEventListener('click', function() {
+            this.classList.toggle('collapsed');
+            const content = this.nextElementSibling;
+            if (content) {
+                content.style.display = this.classList.contains('collapsed') ? 'none' : 'block';
+            }
+        });
     });
-}
+    
+    // Close panel
+    document.querySelector('.panel-close')?.addEventListener('click', function() {
+        document.querySelector('.right-panel').style.display = 'none';
+    });
 </script>
 {% endblock %}
