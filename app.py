@@ -376,6 +376,15 @@ def gl_accounts():
     
     return render_template('gl_accounts.html', gl_accounts=gl_accounts_data)
 
+@app.route('/calendar')
+def calendar():
+    # Calendar view placeholder
+    events = safe_supabase_query(
+        lambda: supabase.table('calendar_events').select("*").execute()
+    ) if supabase else []
+    
+    return render_template('calendar.html', events=events)
+
 @app.route('/diagnostics')
 def diagnostics():
     diagnostics_data = {'security_deposits': [], 'escrow_cash': []}
@@ -410,6 +419,75 @@ def diagnostics():
 
 # All API routes remain the same...
 # [Previous API routes code continues here]
+
+# Additional routes for sidebar menu items
+@app.route('/leasing_vacancies')
+def leasing_vacancies():
+    return redirect(url_for('vacancies'))
+
+@app.route('/leasing_metrics')
+def leasing_metrics():
+    return redirect(url_for('metrics'))
+
+@app.route('/signals')
+def signals():
+    return render_template('signals.html')
+
+@app.route('/work_orders')
+def work_orders():
+    return render_template('work_orders.html')
+
+@app.route('/recurring_work_orders')
+def recurring_work_orders():
+    return render_template('recurring_work_orders.html')
+
+@app.route('/inspections')
+def inspections():
+    return render_template('inspections.html')
+
+@app.route('/unit_turns')
+def unit_turns():
+    return render_template('unit_turns.html')
+
+@app.route('/projects')
+def projects():
+    return render_template('projects.html')
+
+@app.route('/purchase_orders')
+def purchase_orders():
+    return render_template('purchase_orders.html')
+
+@app.route('/inventory')
+def inventory():
+    return render_template('inventory.html')
+
+@app.route('/fixed_assets')
+def fixed_assets():
+    return render_template('fixed_assets.html')
+
+@app.route('/smart_maintenance')
+def smart_maintenance():
+    return render_template('smart_maintenance.html')
+
+@app.route('/reporting')
+def reporting():
+    return render_template('reporting.html')
+
+@app.route('/letters')
+def letters():
+    return render_template('letters.html')
+
+@app.route('/forms')
+def forms():
+    return render_template('forms.html')
+
+@app.route('/inbox')
+def inbox():
+    return render_template('inbox.html')
+
+@app.route('/whats_new')
+def whats_new():
+    return render_template('whats_new.html')
 
 # Simple login page
 @app.route('/login')
