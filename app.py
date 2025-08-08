@@ -376,6 +376,221 @@ def diagnostics():
     return render_template('diagnostics.html', diagnostics=diagnostics_data)
 
 # ============================================
+# MAINTENANCE SECTION
+# ============================================
+
+@app.route('/work-orders')
+def work_orders():
+    """Work orders page"""
+    work_orders_data = [
+        {
+            'id': '1',
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'tenant': 'John Smith',
+            'issue': 'Leaky faucet',
+            'priority': 'Medium',
+            'status': 'Open',
+            'created_date': datetime.now().date().isoformat()
+        }
+    ]
+    return render_template('work_orders.html', work_orders=work_orders_data)
+
+@app.route('/recurring-work-orders')
+def recurring_work_orders():
+    """Recurring work orders page"""
+    recurring_orders = [
+        {
+            'id': '1',
+            'description': 'HVAC Filter Change',
+            'frequency': 'Monthly',
+            'properties': 'All Properties',
+            'next_due': (datetime.now().date() + timedelta(days=15)).isoformat()
+        }
+    ]
+    return render_template('recurring_work_orders.html', recurring_orders=recurring_orders)
+
+@app.route('/inspections')
+def inspections():
+    """Inspections page"""
+    inspections_data = [
+        {
+            'id': '1',
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'type': 'Move-out',
+            'scheduled_date': (datetime.now().date() + timedelta(days=7)).isoformat(),
+            'inspector': 'Jane Doe',
+            'status': 'Scheduled'
+        }
+    ]
+    return render_template('inspections.html', inspections=inspections_data)
+
+# ============================================
+# MARKETING SECTION
+# ============================================
+
+@app.route('/listings')
+def listings():
+    """Listings page"""
+    listings_data = [
+        {
+            'id': '1',
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'rent': 1500,
+            'available_date': datetime.now().date().isoformat(),
+            'listed_on': ['Zillow', 'Apartments.com'],
+            'status': 'Active'
+        }
+    ]
+    return render_template('listings.html', listings=listings_data)
+
+@app.route('/showings')
+def showings():
+    """Showings page"""
+    showings_data = [
+        {
+            'id': '1',
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'prospect': 'Jane Smith',
+            'date': (datetime.now().date() + timedelta(days=2)).isoformat(),
+            'time': '2:00 PM',
+            'agent': 'Mike Johnson',
+            'status': 'Scheduled'
+        }
+    ]
+    return render_template('showings.html', showings=showings_data)
+
+# ============================================
+# COMMUNICATIONS SECTION
+# ============================================
+
+@app.route('/emails')
+def emails():
+    """Emails page"""
+    emails_data = [
+        {
+            'id': '1',
+            'to': 'tenant@example.com',
+            'subject': 'Rent Reminder',
+            'date': datetime.now().date().isoformat(),
+            'status': 'Sent'
+        }
+    ]
+    return render_template('emails.html', emails=emails_data)
+
+@app.route('/letters')
+def letters():
+    """Letters page"""
+    letters_data = [
+        {
+            'id': '1',
+            'recipient': 'John Smith',
+            'type': 'Late Notice',
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'date': datetime.now().date().isoformat(),
+            'status': 'Printed'
+        }
+    ]
+    return render_template('letters.html', letters=letters_data)
+
+@app.route('/phone-logs')
+def phone_logs():
+    """Phone logs page"""
+    phone_logs_data = [
+        {
+            'id': '1',
+            'contact': 'John Smith',
+            'phone': '555-0123',
+            'type': 'Incoming',
+            'duration': '5 min',
+            'notes': 'Maintenance request',
+            'date': datetime.now().isoformat()
+        }
+    ]
+    return render_template('phone_logs.html', phone_logs=phone_logs_data)
+
+# ============================================
+# REPORTS SECTION
+# ============================================
+
+@app.route('/rent-roll')
+def rent_roll():
+    """Rent roll report page"""
+    rent_roll_data = [
+        {
+            'property': 'Sunset Apartments',
+            'unit': '101',
+            'tenant': 'John Smith',
+            'rent': 1500,
+            'balance': 0,
+            'next_due': (datetime.now().date() + timedelta(days=30)).isoformat()
+        }
+    ]
+    return render_template('rent_roll.html', rent_roll=rent_roll_data)
+
+@app.route('/financial-reports')
+def financial_reports():
+    """Financial reports page"""
+    return render_template('financial_reports.html')
+
+@app.route('/vacancy-reports')
+def vacancy_reports():
+    """Vacancy reports page"""
+    vacancy_data = {
+        'total_units': 100,
+        'vacant_units': 10,
+        'vacancy_rate': 10.0,
+        'avg_days_vacant': 30
+    }
+    return render_template('vacancy_reports.html', vacancy_data=vacancy_data)
+
+# ============================================
+# ADMINISTRATION SECTION
+# ============================================
+
+@app.route('/company-settings')
+def company_settings():
+    """Company settings page"""
+    settings = {
+        'company_name': 'Celtic Property Management',
+        'address': '123 Main St',
+        'phone': '555-0100',
+        'email': 'info@celticpm.com'
+    }
+    return render_template('company_settings.html', settings=settings)
+
+@app.route('/users')
+def users():
+    """Users management page"""
+    users_data = [
+        {
+            'id': '1',
+            'name': 'Admin User',
+            'email': 'admin@celticpm.com',
+            'role': 'Administrator',
+            'status': 'Active'
+        }
+    ]
+    return render_template('users.html', users=users_data)
+
+@app.route('/document-templates')
+def document_templates():
+    """Document templates page"""
+    templates = [
+        {
+            'id': '1',
+            'name': 'Standard Lease Agreement',
+            'type': 'Lease',
+            'last_modified': datetime.now().date().isoformat()
+        }
+    ]
+    return render_template('document_templates.html', templates=templates)
+
+# ============================================
 # API ENDPOINTS
 # ============================================
 
