@@ -1,59 +1,71 @@
-# Complete Property Management System - app.py
-# This file has ALL routes working
+# Complete app.py with all necessary imports and setup
+# Place this at the top of your app.py file
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
-from flask_cors import CORS
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask_session import Session
+from supabase import create_client, Client
+from functools import wraps
 from datetime import datetime, timedelta
 import os
-from dotenv import load_dotenv
-from functools import wraps
+import redis
+import secrets
+import json
+import traceback
 
-# Load environment variables
-load_dotenv()
-
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
+app.config['DEBUG'] = os.environ.get('FLASK_ENV') == 'development'
 
-# Configuration
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'f3cfe9ed8fae309f02079dbf')
-app.config['FLASK_ENV'] = os.environ.get('FLASK_ENV', 'development')
+# Session configuration (optional - can use simple sessions instead of Redis)
+app.config['SESSION_TYPE'] = 'filesystem'  # Use filesystem instead of Redis for simplicity
+app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
+Session(app)
 
 # Supabase configuration
-SUPABASE_URL = os.environ.get('SUPABASE_URL', "https://sejebqdhcilwcpjpznep.supabase.co")
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ")
+SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://sejebqdhcilwcpjpznep.supabase.co')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ')
 
-# Try to initialize Supabase client
+# Initialize Supabase client
 try:
-    from supabase import create_client, Client
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("✅ Connected to Supabase successfully!")
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    print("✅ Supabase connected successfully")
 except Exception as e:
     print(f"⚠️ Supabase connection failed: {e}")
     supabase = None
 
-# ============================================
-# AUTHENTICATION HELPERS
-# ============================================
-
+# Authentication decorator
 def login_required(f):
-    """Decorator to require login for routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            # For development, auto-login
-            session['user_id'] = 'default-user-id'
-            session['company_id'] = 'default-company-id'
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
+# Helper function to get current user
 def get_current_user():
-    """Get the current logged-in user"""
-    return {
-        'id': session.get('user_id', 'default-user-id'),
-        'company_id': session.get('company_id', 'default-company-id'),
-        'email': session.get('email', 'admin@aiviizn.com'),
-        'name': session.get('name', 'Admin User')
-    }
+    if 'user_id' in session:
+        return {
+            'id': session.get('user_id'),
+            'email': session.get('user_email', 'user@example.com'),
+            'role': session.get('user_role', 'viewer'),
+            'company_id': session.get('company_id', 'default-company-id')
+        }
+    return None
+
+# For development/testing - auto-login a test user
+@app.before_request
+def auto_login_for_development():
+    """Auto-login for development - remove in production"""
+    if app.config['DEBUG'] and 'user_id' not in session:
+        session['user_id'] = 'test-user-id'
+        session['user_email'] = 'test@aiviizn.com'
+        session['user_role'] = 'admin'
+        session['company_id'] = 'test-company-id'
 
 # ============================================
 # MAIN ROUTES
