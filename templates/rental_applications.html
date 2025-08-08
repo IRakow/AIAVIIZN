@@ -3,15 +3,13 @@
 {% block title %}Rental Applications{% endblock %}
 
 {% block tabs %}
-<div class="tab-nav">
-    <a href="/dashboard">Dashboard</a>
-    <a href="/vacancies">Vacancies</a>
-    <a href="/guest-cards">Guest Cards</a>
-    <a href="/rental-applications" class="active">Rental Applications</a>
-    <a href="/leases">Leases</a>
-    <a href="/renewals">Renewals</a>
-    <a href="/metrics">Metrics</a>
-</div>
+<a href="/dashboard" class="tab-nav-item">Dashboard</a>
+<a href="/vacancies" class="tab-nav-item">Vacancies</a>
+<a href="/guest-cards" class="tab-nav-item">Guest Cards</a>
+<a href="/rental-applications" class="tab-nav-item active">Rental Applications</a>
+<a href="/leases" class="tab-nav-item">Leases</a>
+<a href="/renewals" class="tab-nav-item">Renewals</a>
+<a href="/metrics" class="tab-nav-item">Metrics</a>
 {% endblock %}
 
 {% block content %}
@@ -23,20 +21,6 @@
         margin-bottom: 20px;
     }
     
-    .btn-primary {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    
-    .btn-primary:hover {
-        background: #0056b3;
-    }
-    
     .filter-bar {
         background: white;
         padding: 15px;
@@ -45,46 +29,21 @@
         display: flex;
         gap: 15px;
         align-items: center;
-    }
-    
-    .filter-bar select, .filter-bar input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        font-size: 13px;
-    }
-    
-    .data-table {
-        background: white;
-        border-radius: 5px;
-        overflow: hidden;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    .filter-bar select, 
+    .filter-bar input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
     }
     
-    th {
-        background: #f8f9fa;
-        padding: 12px;
-        text-align: left;
+    .filter-bar label {
         font-size: 13px;
-        font-weight: 600;
         color: #495057;
-        border-bottom: 2px solid #dee2e6;
-    }
-    
-    td {
-        padding: 12px;
-        font-size: 13px;
-        color: #212529;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    tr:hover {
-        background: #f8f9fa;
+        font-weight: 500;
     }
     
     .status-badge {
@@ -148,11 +107,16 @@
         background: #28a745;
         color: white;
     }
+    
+    .btn-deny {
+        background: #dc3545;
+        color: white;
+    }
 </style>
 
 <div class="applications-header">
-    <h2>Rental Applications</h2>
-    <button class="btn-primary" onclick="newApplication()">+ New Application</button>
+    <h1 class="page-title">Rental Applications</h1>
+    <button class="btn btn-primary" onclick="newApplication()">+ New Application</button>
 </div>
 
 <div class="filter-bar">
@@ -170,6 +134,7 @@
         <option value="all">All Properties</option>
         <option value="sunset">Sunset Apartments</option>
         <option value="oak-grove">Oak Grove</option>
+        <option value="city-view">City View</option>
     </select>
     
     <label>Date Range:</label>
@@ -177,7 +142,7 @@
     <span>to</span>
     <input type="date" id="toDate">
     
-    <button class="btn-primary" onclick="applyFilters()">Filter</button>
+    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
 </div>
 
 <div class="data-table">
@@ -189,7 +154,7 @@
                 <th>Unit</th>
                 <th>Application Date ↕</th>
                 <th>Credit Score</th>
-                <th>Income</th>
+                <th>Monthly Income</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -208,7 +173,8 @@
                     <br>
                     <small style="color: #666;">
                         {% if app.guest_cards %}
-                            {{ app.guest_cards.email }}
+                            {{ app.guest_cards.email }}<br>
+                            {{ app.guest_cards.phone }}
                         {% endif %}
                     </small>
                 </td>
@@ -248,14 +214,19 @@
                 </td>
                 <td>
                     <button class="btn-sm btn-review" onclick="reviewApplication('{{ app.id }}')">Review</button>
-                    {% if app.status == 'approved' %}
+                    {% if app.status == 'pending' %}
+                    <button class="btn-sm btn-approve" onclick="updateStatus('{{ app.id }}', 'approved')">Approve</button>
+                    <button class="btn-sm btn-deny" onclick="updateStatus('{{ app.id }}', 'denied')">Deny</button>
+                    {% elif app.status == 'approved' %}
                     <button class="btn-sm btn-approve" onclick="createLease('{{ app.id }}')">Create Lease</button>
                     {% endif %}
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="8" style="text-align: center; padding: 20px;">No applications found</td>
+                <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                    No rental applications found. Click "New Application" to get started.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -277,64 +248,95 @@ function createLease(appId) {
     }
 }
 
-function applyFilters() {
-    // In a real app, this would filter the table or make an API call
-    console.log('Applying filters...');
+function updateStatus(appId, status) {
+    if (confirm(`Are you sure you want to ${status} this application?`)) {
+        fetch('/api/applications/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                application_id: appId,
+                status: status
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to update status');
+            }
+        });
+    }
 }
+
+function applyFilters() {
+    const status = document.getElementById('statusFilter').value;
+    const property = document.getElementById('propertyFilter').value;
+    const fromDate = document.getElementById('fromDate').value;
+    const toDate = document.getElementById('toDate').value;
+    
+    // Build query string
+    const params = new URLSearchParams();
+    if (status !== 'all') params.append('status', status);
+    if (property !== 'all') params.append('property', property);
+    if (fromDate) params.append('from', fromDate);
+    if (toDate) params.append('to', toDate);
+    
+    // Reload with filters
+    window.location.href = '/rental-applications?' + params.toString();
+}
+
+// Set filter values from URL params on load
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('status')) {
+        document.getElementById('statusFilter').value = urlParams.get('status');
+    }
+    if (urlParams.has('property')) {
+        document.getElementById('propertyFilter').value = urlParams.get('property');
+    }
+    if (urlParams.has('from')) {
+        document.getElementById('fromDate').value = urlParams.get('from');
+    }
+    if (urlParams.has('to')) {
+        document.getElementById('toDate').value = urlParams.get('to');
+    }
+});
 </script>
 {% endblock %}
 
 {% block tasks_panel %}
 <div class="tasks-panel" id="tasksPanel">
     <div class="tasks-header">
-        <h3>Application Actions</h3>
-        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+        <h3>Application Tasks</h3>
+        <button class="close-btn" onclick="toggleTasksPanel()">×</button>
     </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Quick Actions</div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>New Application</span>
-        </div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Run Credit Check</span>
-        </div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Background Check</span>
-        </div>
-        <div class="task-item">
-            <span class="task-icon">⭐</span>
-            <span>Export Applications</span>
-        </div>
-    </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Reports</div>
-        <div class="task-item">
-            <span>Application Summary</span>
-        </div>
-        <div class="task-item">
-            <span>Conversion Rate</span>
-        </div>
-        <div class="task-item">
-            <span>Average Processing Time</span>
-        </div>
-    </div>
-    
-    <div class="tasks-section">
-        <div class="tasks-section-title">Settings</div>
-        <div class="task-item">
-            <span>Application Criteria</span>
-        </div>
-        <div class="task-item">
-            <span>Auto-Approval Rules</span>
-        </div>
-        <div class="task-item">
-            <span>Email Templates</span>
-        </div>
+    <div class="tasks-content">
+        <div class="task-section-title">Quick Actions</div>
+        <div class="task-item" onclick="newApplication()">+ New Application</div>
+        <div class="task-item">Run Credit Check</div>
+        <div class="task-item">Background Check</div>
+        <div class="task-item">Request References</div>
+        
+        <div class="task-section-title">Bulk Actions</div>
+        <div class="task-item">Export Applications</div>
+        <div class="task-item">Send Follow-ups</div>
+        <div class="task-item">Archive Old Applications</div>
+        
+        <div class="task-section-title">Reports</div>
+        <div class="task-item">Application Summary</div>
+        <div class="task-item">Conversion Rate</div>
+        <div class="task-item">Average Processing Time</div>
+        <div class="task-item">Denial Reasons</div>
+        
+        <div class="task-section-title">Settings</div>
+        <div class="task-item">Application Criteria</div>
+        <div class="task-item">Auto-Approval Rules</div>
+        <div class="task-item">Email Templates</div>
+        <div class="task-item">Application Fees</div>
     </div>
 </div>
 {% endblock %}
