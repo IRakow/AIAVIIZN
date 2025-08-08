@@ -234,9 +234,174 @@ def dashboard():
                          metrics=metrics, 
                          user=user)
 
-@app.route('/login')
+# Debug version of login route to see what's happening
+# Replace your login route in app.py with this one
+
+import json
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from supabase import create_client, Client
+import os
+
+# Supabase configuration - YOUR KEYS
+SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co'
+SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ'
+
+# Initialize Supabase client with proper error handling
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    print("✅ Supabase client created successfully")
+    print(f"   URL: {SUPABASE_URL}")
+    print(f"   Key: {SUPABASE_ANON_KEY[:20]}...")
+except Exception as e:
+    print(f"❌ Failed to create Supabase client: {e}")
+    supabase = None
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        print("\n" + "="*50)
+        print(f"🔐 LOGIN ATTEMPT")
+        print(f"   Email: {email}")
+        print(f"   Password length: {len(password) if password else 0}")
+        print("="*50)
+        
+        if not supabase:
+            print("❌ Supabase client is None!")
+            flash('Database connection error. Please try again.', 'danger')
+            return render_template('auth/login.html')
+        
+        try:
+            # Attempt Supabase authentication
+            print("📡 Calling Supabase auth.sign_in_with_password...")
+            
+            auth_response = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+            
+            print(f"📦 Response received: {auth_response}")
+            
+            if auth_response and auth_response.user:
+                # Authentication successful!
+                user = auth_response.user
+                session_data = auth_response.session
+                
+                print(f"✅ Authentication successful!")
+                print(f"   User ID: {user.id}")
+                print(f"   User Email: {user.email}")
+                print(f"   Email Confirmed: {user.email_confirmed_at}")
+                
+                # Set session variables
+                session['user_id'] = user.id
+                session['user_email'] = user.email
+                session['user_role'] = user.role if hasattr(user, 'role') else 'user'
+                session['company_id'] = 'default-company'  # You can fetch this from a users table
+                
+                if session_data:
+                    session['access_token'] = session_data.access_token
+                    session['refresh_token'] = session_data.refresh_token
+                    print(f"   Session tokens stored")
+                
+                flash('Successfully logged in!', 'success')
+                
+                # Redirect to dashboard or next page
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('dashboard'))
+                
+            else:
+                print("❌ No user in response - authentication failed")
+                flash('Invalid email or password', 'danger')
+                
+        except Exception as e:
+            error_str = str(e)
+            print(f"❌ Authentication error: {error_str}")
+            print(f"   Error type: {type(e).__name__}")
+            
+            # Parse the error message for specific issues
+            if 'Invalid login credentials' in error_str:
+                flash('Invalid email or password. Please check your credentials.', 'danger')
+            elif 'Email not confirmed' in error_str:
+                flash('Please confirm your email address before logging in. Check your inbox for the confirmation link.', 'warning')
+            elif 'User not found' in error_str:
+                flash('No account found with this email address.', 'danger')
+            else:
+                # Show the actual error in development
+                flash(f'Login error: {error_str}', 'danger')
+                
+    return render_template('auth/login.html')
+
+# Test route to verify Supabase connection
+@app.route('/test-supabase')
+def test_supabase():
+    """Test route to verify Supabase is working"""
+    results = {
+        'client_exists': supabase is not None,
+        'url': SUPABASE_URL,
+        'key_preview': SUPABASE_ANON_KEY[:20] + '...' if SUPABASE_ANON_KEY else None
+    }
+    
+    if supabase:
+        try:
+            # Try to fetch from a table to test connection
+            response = supabase.table('users').select('*').limit(1).execute()
+            results['table_query'] = 'Success'
+            results['data'] = response.data if response else None
+        except Exception as e:
+            results['table_query'] = f'Failed: {str(e)}'
+    
+    return f"<pre>{json.dumps(results, indent=2)}</pre>"
+
+# Alternative login method using direct API call
+@app.route('/login-direct', methods=['GET', 'POST'])
+def login_direct():
+    """Direct API login for testing"""
+    if request.method == 'POST':
+        import requests
+        
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Direct API call to Supabase
+        url = f"{SUPABASE_URL}/auth/v1/token?grant_type=password"
+        headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Content-Type": "application/json"
+        }
+        data = {
+            "email": email,
+            "password": password
+        }
+        
+        print(f"🔧 Direct API call to: {url}")
+        
+        try:
+            response = requests.post(url, json=data, headers=headers)
+            print(f"📡 Response status: {response.status_code}")
+            print(f"📦 Response body: {response.text}")
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Set session
+                session['user_id'] = result.get('user', {}).get('id')
+                session['user_email'] = result.get('user', {}).get('email')
+                session['access_token'] = result.get('access_token')
+                session['user_role'] = 'user'
+                session['company_id'] = 'default-company'
+                
+                flash('Login successful!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                error = response.json().get('error_description', 'Login failed')
+                flash(f'Error: {error}', 'danger')
+                
+        except Exception as e:
+            flash(f'Connection error: {str(e)}', 'danger')
+            
+    return render_template('auth/login.html')
 
 @app.route('/quick-login', methods=['POST'])
 def quick_login():
