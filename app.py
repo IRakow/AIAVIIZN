@@ -70,6 +70,16 @@ def login():
     
     return render_template('auth/login.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # For now, just redirect to login
+        # In production, you'd handle registration here
+        flash('Registration feature coming soon! Please use demo login.', 'info')
+        return redirect(url_for('login'))
+    
+    return render_template('auth/register.html')
+
 @app.route('/logout')
 def logout():
     session.clear()
