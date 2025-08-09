@@ -4,627 +4,791 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AIVIIZN Property Management{% endblock %}</title>
+    <title>{% block title %}AVIIZN - Property Management System{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
     <style>
+        :root {
+            --primary-blue: #0B5394;
+            --dark-blue: #073763;
+            --light-blue: #4A90E2;
+            --sidebar-bg: #F8F9FA;
+            --sidebar-text: #495057;
+            --sidebar-hover: #E9ECEF;
+            --border-color: #DEE2E6;
+            --text-primary: #212529;
+            --text-secondary: #6C757D;
+            --success-green: #28A745;
+            --warning-yellow: #FFC107;
+            --danger-red: #DC3545;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 13px;
-            color: #333;
-            background: #f5f5f5;
-            height: 100vh;
-            overflow: hidden;
+            color: var(--text-primary);
+            background-color: #FFFFFF;
         }
-
-        .app-container {
+        
+        /* Top Navigation Bar */
+        .top-navbar {
+            background-color: var(--primary-blue);
+            height: 40px;
             display: flex;
-            height: 100vh;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
         }
-
-        /* Left Sidebar Container */
-        .sidebar-container {
-            width: 200px;
-            background: #f8f9fa;
-            border-right: 1px solid #dee2e6;
+        
+        .top-navbar .nav-tabs {
+            border: none;
+            margin-bottom: 0;
+            height: 40px;
+        }
+        
+        .top-navbar .nav-link {
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            background: transparent;
+            border-radius: 0;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .top-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .top-navbar .nav-link.active {
+            background-color: #FFFFFF;
+            color: var(--primary-blue);
+        }
+        
+        /* Main Layout Container */
+        .main-container {
+            display: flex;
+            margin-top: 40px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 180px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
+            position: fixed;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
         }
-
-        /* Company Logo */
-        .company-logo {
-            padding: 15px;
+        
+        .sidebar-brand {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
             text-align: center;
+        }
+        
+        .sidebar-brand h1 {
+            font-size: 24px;
             font-weight: 700;
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 18px;
-            letter-spacing: 2px;
-            color: #0d6efd;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+            margin: 0;
         }
-
-        /* Search Bar */
-        .sidebar-search {
-            padding: 10px;
-            background: #0d6efd;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .sidebar-search input {
-            width: 100%;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 12px;
-            outline: none;
-        }
-
-        .sidebar-search input::placeholder {
-            color: #999;
-        }
-
-        /* Sidebar Menu */
+        
         .sidebar-menu {
             flex: 1;
             overflow-y: auto;
-            padding: 0;
         }
-
-        .menu-item {
+        
+        .sidebar-item {
+            border-bottom: 1px solid #E9ECEF;
+        }
+        
+        .sidebar-link {
             display: flex;
             align-items: center;
             padding: 10px 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 13px;
-            color: #333;
+            color: var(--sidebar-text);
             text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-
-        .menu-item:hover {
-            background: #e9ecef;
+        
+        .sidebar-link:hover {
+            background-color: var(--sidebar-hover);
+            color: var(--primary-blue);
         }
-
-        .menu-item.active {
-            background: #cfe2ff;
+        
+        .sidebar-link.active {
+            background-color: #E3F2FD;
+            color: var(--primary-blue);
+            font-weight: 500;
         }
-
-        .menu-icon {
+        
+        .sidebar-link i {
             width: 20px;
             margin-right: 10px;
-            text-align: center;
+            font-size: 14px;
         }
-
-        .menu-badge {
-            margin-left: auto;
-            background: #dc3545;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: bold;
+        
+        .sidebar-dropdown {
+            display: none;
+            background-color: #FFFFFF;
         }
-
-        .submenu {
-            background: white;
-            border-left: 3px solid #e9ecef;
-            margin-left: 20px;
+        
+        .sidebar-dropdown.show {
+            display: block;
         }
-
-        .submenu .menu-item {
-            padding: 8px 15px;
+        
+        .sidebar-dropdown .sidebar-link {
+            padding-left: 45px;
             font-size: 12px;
         }
-
-        .menu-expand-icon {
-            margin-left: auto;
-            font-size: 10px;
-            transition: transform 0.3s;
-        }
-
-        .menu-item.expanded .menu-expand-icon {
-            transform: rotate(90deg);
-        }
-
-        /* Footer */
-        .sidebar-footer {
-            padding: 10px;
-            border-top: 1px solid #dee2e6;
-            background: #f8f9fa;
+        
+        .sidebar-company {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
             font-size: 11px;
-            color: #666;
-            text-align: center;
+            color: var(--text-secondary);
         }
-
-        /* Main Content Area */
-        .main-container {
+        
+        .sidebar-minimize {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .sidebar-minimize button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        /* Content Area */
+        .content-wrapper {
+            margin-left: 180px;
+            margin-right: 380px; /* Space for both right sidebars */
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            background-color: #FFFFFF;
         }
-
-        /* Top Navigation Bar */
-        .top-nav {
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 50px;
+        
+        .content-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #FFFFFF;
         }
-
-        .nav-tabs {
-            display: flex;
-            gap: 30px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .nav-tab {
-            color: #666;
-            text-decoration: none;
-            padding: 5px 0;
-            border-bottom: 2px solid transparent;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .nav-tab:hover {
-            color: #333;
-        }
-
-        .nav-tab.active {
-            color: #0d6efd;
-            border-bottom-color: #0d6efd;
-        }
-
-        .top-nav-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #0d6efd;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .content-header h2 {
+            font-size: 20px;
             font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
         }
-
-        /* Page Content */
-        .page-content {
+        
+        .content-body {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background: white;
+            background-color: #F8F9FA;
         }
-
-        /* Right Panel */
-        .right-panel {
-            width: 300px;
-            background: white;
-            border-left: 1px solid #dee2e6;
+        
+        /* Right Sidebars Container */
+        .right-sidebars-container {
+            display: flex;
+            position: fixed;
+            right: 0;
+            top: 40px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* First Right Sidebar (Context Menu) */
+        .right-sidebar-context {
+            width: 180px;
+            background-color: #FFFFFF;
+            border-left: 1px solid var(--border-color);
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-header {
             padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8f9fa;
         }
-
-        .panel-close {
-            cursor: pointer;
-            color: #666;
-            font-size: 18px;
-        }
-
-        .panel-section {
+        
+        /* Second Right Sidebar (Tasks) */
+        .right-sidebar-tasks {
+            width: 200px;
+            background-color: #F8F9FA;
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
             padding: 15px;
-            border-bottom: 1px solid #e9ecef;
         }
-
-        .panel-section-title {
-            font-weight: 600;
-            margin-bottom: 10px;
+        
+        .right-sidebar-context h5,
+        .right-sidebar-tasks h5 {
             font-size: 13px;
-            color: #333;
-        }
-
-        .panel-link {
-            color: #0d6efd;
-            text-decoration: none;
-            font-size: 12px;
-            display: block;
-            padding: 3px 0;
-        }
-
-        .panel-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Dashboard Specific Styles */
-        .dashboard-header {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 4px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            color: #0c5460;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dashboard-section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e9ecef;
             display: flex;
             align-items: center;
         }
-
-        .section-title .collapse-arrow {
+        
+        .right-sidebar-context h5 i,
+        .right-sidebar-tasks h5 i {
             margin-right: 8px;
+            color: var(--primary-blue);
+        }
+        
+        .right-sidebar-context .menu-item,
+        .right-sidebar-tasks .task-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F0F0;
             font-size: 12px;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: color 0.2s;
         }
-
-        .section-title.collapsed .collapse-arrow {
-            transform: rotate(-90deg);
+        
+        .right-sidebar-context .menu-item:hover,
+        .right-sidebar-tasks .task-item:hover {
+            color: var(--primary-blue);
         }
-
-        /* Dashboard Tables */
-        .dashboard-table {
-            width: 100%;
-            border-collapse: collapse;
+        
+        .right-sidebar-tasks .task-section {
+            margin-top: 15px;
+        }
+        
+        .right-sidebar-tasks .task-section-title {
+            font-size: 11px;
+            color: #6C757D;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .right-sidebar-context .support-section,
+        .right-sidebar-tasks .support-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .starred-item::before {
+            content: "★";
+            color: #FFC107;
+            margin-right: 5px;
+        }
+        
+        .unstarred-item::before {
+            content: "☆";
+            color: #DEE2E6;
+            margin-right: 5px;
+        }
+        
+        /* Dashboard Button */
+        .dashboard-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
             font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 15px;
         }
-
-        .dashboard-table th {
-            background: #f8f9fa;
+        
+        .dashboard-btn:hover {
+            background-color: var(--dark-blue);
+        }
+        
+        .dashboard-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Tables */
+        .data-table {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .data-table table {
+            width: 100%;
+            font-size: 12px;
+        }
+        
+        .data-table th {
+            background-color: #F8F9FA;
+            color: var(--text-primary);
+            font-weight: 600;
             padding: 10px;
             text-align: left;
-            font-weight: 500;
-            border-bottom: 2px solid #dee2e6;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #666;
-        }
-
-        .dashboard-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .dashboard-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            border-bottom: 2px solid var(--border-color);
             font-size: 11px;
-            font-weight: 500;
             text-transform: uppercase;
         }
-
-        .status-active {
-            background: #d4edda;
-            color: #155724;
+        
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #F0F0F0;
         }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
+        
+        .data-table tr:hover {
+            background-color: #F8F9FA;
         }
-
-        .status-overdue {
-            background: #f8d7da;
-            color: #721c24;
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            font-size: 13px;
+            padding: 6px 12px;
         }
-
-        /* Metrics Cards */
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
         }
-
-        .metric-card {
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
+        
+        /* Search Box */
+        .search-container {
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             padding: 20px;
+            margin-bottom: 20px;
             text-align: center;
         }
-
-        .metric-value {
-            font-size: 32px;
-            font-weight: 600;
-            color: #0d6efd;
-            margin-bottom: 5px;
+        
+        .search-container p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 14px;
         }
-
-        .metric-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
+        
+        /* Status Badges */
+        .badge-current {
+            background-color: var(--success-green);
         }
-
-        .metric-change {
-            font-size: 12px;
-            margin-top: 5px;
+        
+        .badge-past {
+            background-color: var(--text-secondary);
         }
-
-        .metric-change.positive {
-            color: #28a745;
+        
+        .badge-new {
+            background-color: var(--danger-red);
         }
-
-        .metric-change.negative {
-            color: #dc3545;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary {
-            background: #0d6efd;
+        
+        /* Notification Count */
+        .notification-count {
+            background-color: var(--danger-red);
             color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            margin-left: 5px;
         }
-
-        .btn-primary:hover {
-            background: #0b5ed7;
-        }
-
-        .btn-success {
-            background: #28a745;
+        
+        /* What's New Badge */
+        .whats-new-badge {
+            background-color: var(--danger-red);
             color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-outline {
-            background: white;
-            border: 1px solid #dee2e6;
-            color: #333;
-        }
-
-        .btn-outline:hover {
-            background: #f8f9fa;
-        }
-
-        /* Filter Controls */
-        .filter-controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: flex-end;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .filter-label {
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .filter-input,
-        .filter-select {
-            padding: 6px 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 13px;
-            min-width: 150px;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            position: absolute;
+            right: 10px;
         }
     </style>
-    {% block styles %}{% endblock %}
 </head>
 <body>
-    <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <ul class="nav nav-tabs">
+            {% set current_section = request.endpoint.split('.')[0] if '.' in request.endpoint else request.endpoint %}
+            <li class="nav-item">
+                <a class="nav-link {% if current_section in ['dashboard', 'inbox', 'calendar', 'online_payments'] %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_section in ['tenants', 'owners', 'vendors'] %}active{% endif %}" href="{{ url_for('tenants') }}">People</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_section == 'properties' %}active{% endif %}" href="{{ url_for('properties') }}">Properties</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'leasing' in current_section %}active{% endif %}" href="{{ url_for('vacancies') }}">Leasing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'maintenance' in current_section or 'work' in current_section %}active{% endif %}" href="{{ url_for('work_orders') }}">Maintenance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'accounting' in current_section %}active{% endif %}" href="{{ url_for('receivables') }}">Accounting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'reporting' in current_section %}active{% endif %}" href="{{ url_for('reports') }}">Reporting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'communication' in current_section %}active{% endif %}" href="{{ url_for('letters') }}">Communication</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Main Container -->
+    <div class="main-container">
         <!-- Left Sidebar -->
-        <div class="sidebar-container">
-            <!-- Company Logo -->
-            <div class="company-logo">AIVIIZN</div>
-            
-            <!-- Search Bar -->
-            <div class="sidebar-search">
-                <input type="text" placeholder="Search AppFolio" id="global-search">
+        <aside class="left-sidebar">
+            <div class="sidebar-brand">
+                <h1>AVIIZN</h1>
             </div>
             
-            <!-- Sidebar Menu -->
-            <div class="sidebar-menu">
-                <a href="{{ url_for('dashboard') }}" class="menu-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
-                    <span class="menu-icon">📊</span>
-                    <span>Dashboard</span>
-                </a>
-                
-                <a href="{{ url_for('calendar') }}" class="menu-item {% if request.endpoint == 'calendar' %}active{% endif %}">
-                    <span class="menu-icon">📅</span>
-                    <span>Calendar</span>
-                </a>
-                
-                <div class="menu-item {% if 'leasing' in request.endpoint %}expanded{% endif %}" onclick="toggleSubmenu('leasing-menu', this)">
-                    <span class="menu-icon">🔑</span>
-                    <span>Leasing</span>
-                    <span class="menu-expand-icon">▶</span>
-                </div>
-                <div class="submenu" id="leasing-menu" style="{% if 'leasing' not in request.endpoint %}display: none;{% endif %}">
-                    <a href="{{ url_for('leasing_vacancies') }}" class="menu-item">Vacancies</a>
-                    <a href="{{ url_for('guest_cards') }}" class="menu-item">Guest Cards</a>
-                    <a href="{{ url_for('rental_applications') }}" class="menu-item">Rental Applications</a>
-                    <a href="{{ url_for('leases') }}" class="menu-item">Leases</a>
-                    <a href="{{ url_for('renewals') }}" class="menu-item">Renewals</a>
-                    <a href="{{ url_for('leasing_metrics') }}" class="menu-item">Metrics</a>
-                    <a href="{{ url_for('signals') }}" class="menu-item">Signals</a>
-                </div>
-                
-                <a href="{{ url_for('properties') }}" class="menu-item {% if request.endpoint == 'properties' %}active{% endif %}">
-                    <span class="menu-icon">🏠</span>
-                    <span>Properties</span>
-                </a>
-                
-                <div class="menu-item {% if 'people' in request.endpoint %}expanded{% endif %}" onclick="toggleSubmenu('people-menu', this)">
-                    <span class="menu-icon">👥</span>
-                    <span>People</span>
-                    <span class="menu-expand-icon">▶</span>
-                </div>
-                <div class="submenu" id="people-menu" style="{% if 'people' not in request.endpoint %}display: none;{% endif %}">
-                    <a href="{{ url_for('tenants') }}" class="menu-item">Tenants</a>
-                    <a href="{{ url_for('owners') }}" class="menu-item">Owners</a>
-                    <a href="{{ url_for('vendors') }}" class="menu-item">Vendors</a>
-                </div>
-                
-                <div class="menu-item {% if 'accounting' in request.endpoint %}expanded{% endif %}" onclick="toggleSubmenu('accounting-menu', this)">
-                    <span class="menu-icon">💰</span>
-                    <span>Accounting</span>
-                    <span class="menu-expand-icon">▶</span>
-                </div>
-                <div class="submenu" id="accounting-menu" style="{% if 'accounting' not in request.endpoint %}display: none;{% endif %}">
-                    <a href="{{ url_for('receivables') }}" class="menu-item">Receivables</a>
-                    <a href="{{ url_for('payables') }}" class="menu-item">Payables</a>
-                    <a href="{{ url_for('bank_accounts') }}" class="menu-item">Bank Accounts</a>
-                    <a href="{{ url_for('journal_entries') }}" class="menu-item">Journal Entries</a>
-                    <a href="{{ url_for('bank_transfers') }}" class="menu-item">Bank Transfers</a>
-                    <a href="{{ url_for('gl_accounts') }}" class="menu-item">GL Accounts</a>
-                    <a href="{{ url_for('diagnostics') }}" class="menu-item {% if request.endpoint == 'diagnostics' %}active{% endif %}">Diagnostics</a>
-                </div>
-                
-                <div class="menu-item {% if 'maintenance' in request.endpoint %}expanded{% endif %}" onclick="toggleSubmenu('maintenance-menu', this)">
-                    <span class="menu-icon">🔧</span>
-                    <span>Maintenance</span>
-                    <span class="menu-expand-icon">▶</span>
-                </div>
-                <div class="submenu" id="maintenance-menu" style="{% if 'maintenance' not in request.endpoint %}display: none;{% endif %}">
-                    <a href="{{ url_for('work_orders') }}" class="menu-item">Work Orders</a>
-                    <a href="{{ url_for('recurring_work_orders') }}" class="menu-item">Recurring Work Orders</a>
-                    <a href="{{ url_for('inspections') }}" class="menu-item">Inspections</a>
-                    <a href="{{ url_for('unit_turns') }}" class="menu-item">Unit Turns</a>
-                    <a href="{{ url_for('projects') }}" class="menu-item">Projects</a>
-                    <a href="{{ url_for('purchase_orders') }}" class="menu-item">Purchase Orders</a>
-                    <a href="{{ url_for('inventory') }}" class="menu-item">Inventory</a>
-                    <a href="{{ url_for('fixed_assets') }}" class="menu-item">Fixed Assets</a>
-                    <a href="{{ url_for('smart_maintenance') }}" class="menu-item">Smart Maintenance</a>
-                </div>
-                
-                <a href="{{ url_for('reporting') }}" class="menu-item {% if request.endpoint == 'reporting' %}active{% endif %}">
-                    <span class="menu-icon">📈</span>
-                    <span>Reporting</span>
-                </a>
-                
-                <div class="menu-item {% if 'communication' in request.endpoint %}expanded{% endif %}" onclick="toggleSubmenu('communication-menu', this)">
-                    <span class="menu-icon">✉️</span>
-                    <span>Communication</span>
-                    <span class="menu-expand-icon">▶</span>
-                </div>
-                <div class="submenu" id="communication-menu" style="{% if 'communication' not in request.endpoint %}display: none;{% endif %}">
-                    <a href="{{ url_for('letters') }}" class="menu-item">Letters</a>
-                    <a href="{{ url_for('forms') }}" class="menu-item">Forms</a>
-                    <a href="{{ url_for('inbox') }}" class="menu-item">Inbox</a>
-                </div>
-                
-                <a href="{{ url_for('whats_new') }}" class="menu-item {% if request.endpoint == 'whats_new' %}active{% endif %}">
-                    <span class="menu-icon">🆕</span>
-                    <span>What's New</span>
-                    <span class="menu-badge">4</span>
-                </a>
-            </div>
+            <button class="dashboard-btn" onclick="location.href='{{ url_for('dashboard') }}'">
+                <i class="fas fa-th-large"></i> Dashboard
+            </button>
             
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-                Celtic Property<br>Management<br>
-                <a href="#" style="color: #0d6efd; text-decoration: none;">⬇ Minimize</a>
+            <nav class="sidebar-menu">
+                {% block sidebar %}
+                <!-- Default sidebar items -->
+                <div class="sidebar-item">
+                    <a href="{{ url_for('calendar') }}" class="sidebar-link">
+                        <i class="far fa-calendar"></i> Calendar
+                    </a>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu')">
+                        <i class="fas fa-key"></i> Leasing
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="leasing-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('vacancies') }}" class="sidebar-link">Vacancies</a>
+                        <a href="{{ url_for('guest_cards') }}" class="sidebar-link">Guest Cards</a>
+                        <a href="{{ url_for('rental_applications') }}" class="sidebar-link">Rental Applications</a>
+                        <a href="{{ url_for('leases') }}" class="sidebar-link">Leases</a>
+                        <a href="{{ url_for('renewals') }}" class="sidebar-link">Renewals</a>
+                        <a href="{{ url_for('leasing_metrics') }}" class="sidebar-link">Metrics</a>
+                        <a href="{{ url_for('signals') }}" class="sidebar-link">Signals</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="{{ url_for('properties') }}" class="sidebar-link">
+                        <i class="fas fa-building"></i> Properties
+                    </a>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu')">
+                        <i class="fas fa-users"></i> People
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="people-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('tenants') }}" class="sidebar-link">Tenants</a>
+                        <a href="{{ url_for('owners') }}" class="sidebar-link">Owners</a>
+                        <a href="{{ url_for('vendors') }}" class="sidebar-link">Vendors</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu')">
+                        <i class="fas fa-calculator"></i> Accounting
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="accounting-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('receivables') }}" class="sidebar-link">Receivables</a>
+                        <a href="{{ url_for('payables') }}" class="sidebar-link">Payables</a>
+                        <a href="{{ url_for('bank_accounts') }}" class="sidebar-link">Bank Accounts</a>
+                        <a href="{{ url_for('journal_entries') }}" class="sidebar-link">Journal Entries</a>
+                        <a href="{{ url_for('bank_transfers') }}" class="sidebar-link">Bank Transfers</a>
+                        <a href="{{ url_for('gl_accounts') }}" class="sidebar-link">GL Accounts</a>
+                        <a href="{{ url_for('diagnostics') }}" class="sidebar-link">Diagnostics</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu')">
+                        <i class="fas fa-wrench"></i> Maintenance
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="maintenance-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('work_orders') }}" class="sidebar-link">Work Orders</a>
+                        <a href="{{ url_for('recurring_work_orders') }}" class="sidebar-link">Recurring Work Orders</a>
+                        <a href="{{ url_for('inspections') }}" class="sidebar-link">Inspections</a>
+                        <a href="{{ url_for('unit_turns') }}" class="sidebar-link">Unit Turns</a>
+                        <a href="{{ url_for('projects') }}" class="sidebar-link">Projects</a>
+                        <a href="{{ url_for('purchase_orders') }}" class="sidebar-link">Purchase Orders</a>
+                        <a href="{{ url_for('inventory') }}" class="sidebar-link">Inventory</a>
+                        <a href="{{ url_for('fixed_assets') }}" class="sidebar-link">Fixed Assets</a>
+                        <a href="{{ url_for('smart_maintenance') }}" class="sidebar-link">Smart Maintenance</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu')">
+                        <i class="fas fa-chart-bar"></i> Reporting
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="reporting-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('reports') }}" class="sidebar-link">Reports</a>
+                        <a href="{{ url_for('scheduled_reports') }}" class="sidebar-link">Scheduled Reports</a>
+                        <a href="{{ url_for('metrics') }}" class="sidebar-link">Metrics</a>
+                        <a href="{{ url_for('surveys') }}" class="sidebar-link">Surveys</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu')">
+                        <i class="fas fa-envelope"></i> Communication
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div id="communication-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('letters') }}" class="sidebar-link">Letters</a>
+                        <a href="{{ url_for('forms') }}" class="sidebar-link">Forms</a>
+                        <a href="{{ url_for('inbox') }}" class="sidebar-link">Inbox</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="{{ url_for('whats_new') }}" class="sidebar-link">
+                        <i class="fas fa-star"></i> What's New
+                        <span class="whats-new-badge">4</span>
+                    </a>
+                </div>
+                {% endblock %}
+            </nav>
+            
+            <div class="sidebar-minimize">
+                <button onclick="toggleSidebar()">
+                    <i class="fas fa-angle-double-left"></i> Minimize
+                </button>
             </div>
-        </div>
-
-        <!-- Main Container -->
-        <div class="main-container">
-            {% block navigation %}{% endblock %}
+        </aside>
+        
+        <!-- Content Wrapper -->
+        <main class="content-wrapper">
             {% block content %}{% endblock %}
-        </div>
-
-        <!-- Right Panel -->
-        {% block rightpanel %}{% endblock %}
-    </div>
-
-    <script>
-        // Toggle submenu
-        function toggleSubmenu(menuId, element) {
-            const submenu = document.getElementById(menuId);
-            const isVisible = submenu.style.display !== 'none';
+        </main>
+        
+        <!-- Right Sidebars Container -->
+        <div class="right-sidebars-container">
+            <!-- First Right Sidebar - Context Menu -->
+            <aside class="right-sidebar-context">
+                {% block contextsidebar %}
+                <!-- Context-specific menu items based on current page -->
+                {% if request.endpoint == 'tenants' %}
+                    <h5><i class="fas fa-user-friends"></i> Tenants</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Move In Tenant</div>
+                    <div class="menu-item">New Owner</div>
+                    <div class="menu-item">New Vendor</div>
+                    <div class="menu-item">Email All Tenants</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Rent Roll</div>
+                        <div class="menu-item">Tenant Ledger</div>
+                        <div class="menu-item">Tenant Insurance Coverage</div>
+                    </div>
+                {% elif request.endpoint == 'properties' %}
+                    <h5><i class="fas fa-building"></i> Properties</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">New Property</div>
+                    <div class="menu-item">New Property Group</div>
+                    <div class="menu-item">Manage Lockboxes</div>
+                    <div class="menu-item">New Association</div>
+                    <div class="menu-item">Bulk Update Vacancy Posting Contact Info</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Property Directory</div>
+                        <div class="menu-item">Unit Directory</div>
+                        <div class="menu-item">Rent Roll</div>
+                        <div class="menu-item">Unit Vacancy Detail</div>
+                        <div class="menu-item">General Ledger</div>
+                    </div>
+                {% elif 'leasing' in request.endpoint %}
+                    <h5><i class="fas fa-key"></i> Leasing</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Create Vacancies List</div>
+                    <div class="menu-item">New Rental Application</div>
+                    <div class="menu-item">New Guest Card</div>
+                    <div class="menu-item">Lease Templates</div>
+                    <div class="menu-item">Bulk Update Vacancy Posting Contact Info</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Unit Vacancy Detail</div>
+                        <div class="menu-item">Rental Applications</div>
+                        <div class="menu-item">Guest Card Interests</div>
+                        <div class="menu-item">Owner Leasing</div>
+                        <div class="menu-item">Premium Listing Billing Detail</div>
+                        <div class="menu-item">Leasing Agent Performance</div>
+                        <div class="menu-item">Leasing Funnel Performance</div>
+                    </div>
+                {% elif 'accounting' in request.endpoint %}
+                    <h5><i class="fas fa-calculator"></i> Accounting</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Tenant Receipt</div>
+                    <div class="menu-item">Owner Receipt</div>
+                    <div class="menu-item">Other Receipt</div>
+                    <div class="menu-item">Subsidy Receipts</div>
+                    <div class="menu-item">Application Fee</div>
+                    <div class="menu-item">Tenant Charge</div>
+                    <div class="menu-item">Tenant Credit</div>
+                    <div class="menu-item">Pay Bills</div>
+                    <div class="menu-item">Pay Management Fees</div>
+                    <div class="menu-item">Pay Owners</div>
+                    <div class="menu-item">Owner Draw</div>
+                    <div class="menu-item">Tenant Payable</div>
+                    <div class="menu-item">Transfer Owner Funds</div>
+                    <div class="menu-item">Transfer Funds Between Cash Accounts</div>
+                    <div class="menu-item">New Recurring Bill</div>
+                    <div class="menu-item">Manually Post Bills</div>
+                    <div class="menu-item">Sign Up for Online Payables</div>
+                    <div class="menu-item">Upload Bulk Bills</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Aged Payables Summary</div>
+                        <div class="menu-item">Check Register</div>
+                        <div class="menu-item">Bill Detail</div>
+                        <div class="menu-item">Vendor Ledger</div>
+                    </div>
+                {% else %}
+                    <!-- Default context menu -->
+                    <h5><i class="fas fa-th"></i> Quick Actions</h5>
+                    <div class="menu-item">New Property</div>
+                    <div class="menu-item">New Tenant</div>
+                    <div class="menu-item">New Work Order</div>
+                    <div class="menu-item">Enter Bill</div>
+                {% endif %}
+                
+                <div class="support-section">
+                    <h5><i class="fas fa-question-circle"></i> Help Topics</h5>
+                    <div class="menu-item">Getting Started</div>
+                    <div class="menu-item">Video Tutorials</div>
+                </div>
+                {% endblock %}
+            </aside>
             
-            if (isVisible) {
-                submenu.style.display = 'none';
-                element.classList.remove('expanded');
+            <!-- Second Right Sidebar - Tasks -->
+            <aside class="right-sidebar-tasks">
+                {% block taskssidebar %}
+                <h5><i class="fas fa-tasks"></i> Tasks</h5>
+                
+                <div class="task-item starred-item">Tasks</div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Calendar</div>
+                    <div class="task-item">View Calendar</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Property</div>
+                    <div class="task-item">New Property</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">People</div>
+                    <div class="task-item">Move In Tenant</div>
+                    <div class="task-item">Tenant Receipt</div>
+                    <div class="task-item">Homeowner Receipt</div>
+                    <div class="task-item">Enter Bill</div>
+                    <div class="task-item">New Owner</div>
+                    <div class="task-item">New Vendor</div>
+                    <div class="task-item">Rent Increase</div>
+                    <div class="task-item">Enter Utility Bill (RUBS)</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Reports</div>
+                    <div class="task-item">Delinquency</div>
+                    <div class="task-item">Tenant Ledger</div>
+                    <div class="task-item">Income Statement</div>
+                    <div class="task-item">Unit Vacancy Detail</div>
+                    <div class="task-item">Rent Roll</div>
+                    <div class="task-item">Cash Flow</div>
+                    <div class="task-item">Lease Expiration Detail By Month</div>
+                    <div class="task-item">Balance Sheet</div>
+                    <div class="task-item">Business Metrics</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Letters</div>
+                    <div class="task-item">3-Day Notices</div>
+                    <div class="task-item">Tenant Unpaid Charges</div>
+                    <div class="task-item">Owner Portal Activation</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Account</div>
+                    <div class="task-item">Property Groups</div>
+                    <div class="task-item">New User</div>
+                </div>
+                
+                <div class="support-section">
+                    <h5><i class="fas fa-life-ring"></i> Support</h5>
+                    <div class="task-item">Contact Support</div>
+                    <div class="task-item">Knowledge Base</div>
+                </div>
+                {% endblock %}
+            </aside>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        function toggleDropdown(menuId) {
+            const dropdown = document.getElementById(menuId);
+            dropdown.classList.toggle('show');
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.left-sidebar');
+            const content = document.querySelector('.content-wrapper');
+            
+            if (sidebar.style.width === '60px') {
+                sidebar.style.width = '180px';
+                content.style.marginLeft = '180px';
             } else {
-                submenu.style.display = 'block';
-                element.classList.add('expanded');
+                sidebar.style.width = '60px';
+                content.style.marginLeft = '60px';
             }
         }
-
-        // Global search functionality
-        document.getElementById('global-search').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchTerm = this.value;
-                // Implement search functionality
-                console.log('Searching for:', searchTerm);
-            }
-        });
     </script>
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>
