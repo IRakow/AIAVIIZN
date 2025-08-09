@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Chart of Accounts - Property Management{% endblock %}
+{% block page_title %}Chart of Accounts{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-section {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    .search-box {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #0d6efd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .search-hint {
+        color: #6c757d;
+        font-size: 12px;
+        margin-top: 10px;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    .btn-primary {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: space-between;
+    }
+    
+    .data-table {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .data-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .data-table th {
+        background-color: #f8f9fa;
+        padding: 10px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 12px;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .data-table td {
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 13px;
+    }
+    
+    .data-table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .account-code {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+    
+    .account-type {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .type-asset {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .type-liability {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .type-expense {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .type-cash {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .type-income {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .type-equity {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+    
+    .account-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 28px;
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .stat-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+    
+    .filter-pills {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-pill {
+        padding: 5px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    
+    .filter-pill:hover {
+        background: #f8f9fa;
+    }
+    
+    .filter-pill.active {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('receivables') }}" class="tab-nav-item">Receivables</a>
+<a href="{{ url_for('payables') }}" class="tab-nav-item">Payables</a>
+<a href="{{ url_for('bank_accounts') }}" class="tab-nav-item">Bank Accounts</a>
+<a href="{{ url_for('journal_entries') }}" class="tab-nav-item">Journal Entries</a>
+<a href="{{ url_for('bank_transfers') }}" class="tab-nav-item">Bank Transfers</a>
+<a href="{{ url_for('gl_accounts') }}" class="tab-nav-item active">GL Accounts</a>
+<a href="{{ url_for('diagnostics') }}" class="tab-nav-item">Diagnostics</a>
+{% endblock %}
+
+{% block content %}
+<div class="account-stats">
+    <div class="stat-card">
+        <div class="stat-number">127</div>
+        <div class="stat-label">Total Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">9</div>
+        <div class="stat-label">Cash Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">23</div>
+        <div class="stat-label">Asset Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">18</div>
+        <div class="stat-label">Liability Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">52</div>
+        <div class="stat-label">Expense Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">15</div>
+        <div class="stat-label">Income Accounts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Equity Accounts</div>
+    </div>
+</div>
+
+<div class="search-section">
+    <div class="search-box">
+        <input type="text" id="accountSearch" placeholder="Search accounts by name, code, or type..." />
+        <div class="search-hint">Click here to search</div>
+    </div>
+</div>
+
+<div class="action-buttons">
+    <div>
+        <button class="btn btn-success">
+            <i class="fas fa-plus"></i> New GL Account
+        </button>
+        <button class="btn">
+            <i class="fas fa-upload"></i> Import Chart
+        </button>
+        <button class="btn">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+    <div class="filter-pills">
+        <span class="filter-pill active" data-filter="all">All</span>
+        <span class="filter-pill" data-filter="cash">Cash</span>
+        <span class="filter-pill" data-filter="asset">Assets</span>
+        <span class="filter-pill" data-filter="liability">Liabilities</span>
+        <span class="filter-pill" data-filter="expense">Expenses</span>
+        <span class="filter-pill" data-filter="income">Income</span>
+        <span class="filter-pill" data-filter="equity">Equity</span>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>GL Account</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Parent Account</th>
+                <th style="text-align: right;">Current Balance</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in gl_accounts %}
+            <tr>
+                <td>
+                    {% if ':' in account.account %}
+                        <span class="account-code">{{ account.account.split(':')[0] }}:</span> {{ account.account.split(':')[1] if ':' in account.account else account.account }}
+                    {% else %}
+                        {{ account.account }}
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="account-type type-{{ account.type|lower }}">{{ account.type }}</span>
+                </td>
+                <td>{{ account.account.split(':')[1] if ':' in account.account else account.account }}</td>
+                <td>--</td>
+                <td style="text-align: right;">$0.00</td>
+                <td><span style="color: #28a745;">Active</span></td>
+                <td>
+                    <a href="#" style="color: #0d6efd; margin-right: 10px;"><i class="fas fa-edit"></i></a>
+                    <a href="#" style="color: #6c757d;"><i class="fas fa-history"></i></a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;">
+                    No GL accounts found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('accountSearch');
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+    
+    // Filter pills
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            tableRows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else {
+                    const typeCell = row.querySelector('.account-type');
+                    if (typeCell) {
+                        const type = typeCell.textContent.toLowerCase();
+                        row.style.display = type === filter ? '' : 'none';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

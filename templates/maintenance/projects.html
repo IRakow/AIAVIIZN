@@ -1,0 +1,579 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - Property Management{% endblock %}
+{% block page_title %}Projects{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .project-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    
+    .stat-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    
+    .stat-value {
+        font-size: 28px;
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .stat-change {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .filter-row input,
+    .filter-row select {
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    
+    .projects-grid {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .project-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .project-header-card {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .project-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .project-status {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-planning {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .status-in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-on-hold {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .project-body {
+        padding: 20px;
+    }
+    
+    .project-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detail-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+    }
+    
+    .detail-value {
+        font-size: 14px;
+        color: #212529;
+        font-weight: 500;
+    }
+    
+    .progress-section {
+        margin-bottom: 20px;
+    }
+    
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+    
+    .progress-bar-container {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: #0d6efd;
+        transition: width 0.3s ease;
+    }
+    
+    .project-tasks {
+        margin-bottom: 20px;
+    }
+    
+    .tasks-header {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+    
+    .task-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f3f4;
+        font-size: 13px;
+    }
+    
+    .task-checkbox {
+        margin-right: 10px;
+    }
+    
+    .task-name {
+        flex: 1;
+    }
+    
+    .task-assignee {
+        color: #6c757d;
+        font-size: 12px;
+    }
+    
+    .task-completed {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+    
+    .project-footer {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .project-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+    
+    .budget-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-left: 5px;
+    }
+    
+    .budget-ok {
+        background: #28a745;
+    }
+    
+    .budget-warning {
+        background: #ffc107;
+    }
+    
+    .budget-over {
+        background: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('work_orders') }}" class="tab-nav-item">Work Orders</a>
+<a href="{{ url_for('recurring_work_orders') }}" class="tab-nav-item">Recurring Work Orders</a>
+<a href="{{ url_for('inspections') }}" class="tab-nav-item">Inspections</a>
+<a href="{{ url_for('unit_turns') }}" class="tab-nav-item">Unit Turns</a>
+<a href="{{ url_for('projects') }}" class="tab-nav-item active">Projects</a>
+<a href="{{ url_for('purchase_orders') }}" class="tab-nav-item">Purchase Orders</a>
+<a href="{{ url_for('inventory') }}" class="tab-nav-item">Inventory</a>
+<a href="{{ url_for('fixed_assets') }}" class="tab-nav-item">Fixed Assets</a>
+<a href="{{ url_for('smart_maintenance') }}" class="tab-nav-item">Smart Maintenance</a>
+{% endblock %}
+
+{% block content %}
+<div class="project-header">
+    <h3 style="margin: 0;">Active Projects</h3>
+    <button class="btn btn-success">
+        <i class="fas fa-plus"></i> Add Project
+    </button>
+</div>
+
+<div class="project-stats">
+    <div class="stat-card">
+        <div class="stat-label">Active Projects</div>
+        <div class="stat-value">8</div>
+        <div class="stat-change">3 starting this month</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Budget</div>
+        <div class="stat-value">$284,500</div>
+        <div class="stat-change">$42,350 spent</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">On Schedule</div>
+        <div class="stat-value">6</div>
+        <div class="stat-change">75% on track</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Completed This Year</div>
+        <div class="stat-value">12</div>
+        <div class="stat-change">+4 from last year</div>
+    </div>
+</div>
+
+<div class="filter-section">
+    <div class="filter-row">
+        <input type="text" placeholder="Search projects..." style="flex: 1; max-width: 300px;">
+        <select>
+            <option>All Properties</option>
+            <option>Rock Ridge Ranch</option>
+            <option>Brentwood Park</option>
+            <option>Lodge Apartments</option>
+        </select>
+        <select>
+            <option>All Statuses</option>
+            <option>Planning</option>
+            <option>In Progress</option>
+            <option>On Hold</option>
+            <option>Completed</option>
+        </select>
+        <select>
+            <option>All Types</option>
+            <option>Renovation</option>
+            <option>Repair</option>
+            <option>Upgrade</option>
+            <option>Landscaping</option>
+        </select>
+        <button class="btn">Clear Filters</button>
+    </div>
+</div>
+
+<div class="projects-grid">
+    <div class="project-card">
+        <div class="project-header-card">
+            <div class="project-name">Parking Lot Resurfacing</div>
+            <span class="project-status status-in-progress">In Progress</span>
+        </div>
+        <div class="project-body">
+            <div class="project-details">
+                <div class="detail-item">
+                    <span class="detail-label">Property</span>
+                    <span class="detail-value">Rock Ridge Ranch</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Start Date</span>
+                    <span class="detail-value">July 15, 2025</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Budget</span>
+                    <span class="detail-value">$45,000 <span class="budget-indicator budget-ok"></span></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">End Date</span>
+                    <span class="detail-value">August 30, 2025</span>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Progress</span>
+                    <span>65%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 65%;"></div>
+                </div>
+            </div>
+            
+            <div class="project-tasks">
+                <div class="tasks-header">Recent Tasks</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-name task-completed">Remove old asphalt</span>
+                    <span class="task-assignee">ABC Paving</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-name task-completed">Grade and prepare surface</span>
+                    <span class="task-assignee">ABC Paving</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Apply new asphalt</span>
+                    <span class="task-assignee">ABC Paving</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Paint parking lines</span>
+                    <span class="task-assignee">Pro Striping</span>
+                </div>
+            </div>
+        </div>
+        <div class="project-footer">
+            <div>Managed by: John Smith</div>
+            <div class="project-actions">
+                <button class="btn btn-sm">View Details</button>
+                <button class="btn btn-sm">Update</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="project-card">
+        <div class="project-header-card">
+            <div class="project-name">HVAC System Upgrade</div>
+            <span class="project-status status-planning">Planning</span>
+        </div>
+        <div class="project-body">
+            <div class="project-details">
+                <div class="detail-item">
+                    <span class="detail-label">Property</span>
+                    <span class="detail-value">Brentwood Park</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Start Date</span>
+                    <span class="detail-value">September 1, 2025</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Budget</span>
+                    <span class="detail-value">$120,000 <span class="budget-indicator budget-ok"></span></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">End Date</span>
+                    <span class="detail-value">November 15, 2025</span>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Progress</span>
+                    <span>10%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 10%;"></div>
+                </div>
+            </div>
+            
+            <div class="project-tasks">
+                <div class="tasks-header">Recent Tasks</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-name task-completed">Get vendor quotes</span>
+                    <span class="task-assignee">Mike Johnson</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Review specifications</span>
+                    <span class="task-assignee">Engineering Team</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Select contractor</span>
+                    <span class="task-assignee">Management</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Schedule installation</span>
+                    <span class="task-assignee">Mike Johnson</span>
+                </div>
+            </div>
+        </div>
+        <div class="project-footer">
+            <div>Managed by: Mike Johnson</div>
+            <div class="project-actions">
+                <button class="btn btn-sm">View Details</button>
+                <button class="btn btn-sm">Update</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="project-card">
+        <div class="project-header-card">
+            <div class="project-name">Roof Replacement - Building C</div>
+            <span class="project-status status-on-hold">On Hold</span>
+        </div>
+        <div class="project-body">
+            <div class="project-details">
+                <div class="detail-item">
+                    <span class="detail-label">Property</span>
+                    <span class="detail-value">Lodge Apartments</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Start Date</span>
+                    <span class="detail-value">TBD</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Budget</span>
+                    <span class="detail-value">$85,000 <span class="budget-indicator budget-warning"></span></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">End Date</span>
+                    <span class="detail-value">TBD</span>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Progress</span>
+                    <span>25%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 25%;"></div>
+                </div>
+            </div>
+            
+            <div class="project-tasks">
+                <div class="tasks-header">Recent Tasks</div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-name task-completed">Initial inspection</span>
+                    <span class="task-assignee">Roofing Experts</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-name task-completed">Prepare estimate</span>
+                    <span class="task-assignee">Roofing Experts</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Await budget approval</span>
+                    <span class="task-assignee">Management</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-name">Schedule work</span>
+                    <span class="task-assignee">Pending</span>
+                </div>
+            </div>
+        </div>
+        <div class="project-footer">
+            <div>Managed by: Sarah Wilson</div>
+            <div class="project-actions">
+                <button class="btn btn-sm">View Details</button>
+                <button class="btn btn-sm">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle task checkboxes
+    document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const taskName = this.parentElement.querySelector('.task-name');
+            if (this.checked) {
+                taskName.classList.add('task-completed');
+            } else {
+                taskName.classList.remove('task-completed');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
