@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Vendors{% endblock %}
+
+{% block tabs %}
+<div class="tab-nav">
+    <a href="/tenants">Tenants</a>
+    <a href="/owners">Owners</a>
+    <a href="/vendors" class="active">Vendors</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .vendors-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .search-bar {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .search-bar input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+        padding: 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    
+    .btn-edit {
+        background: #17a2b8;
+        color: white;
+    }
+    
+    .btn-email {
+        background: #28a745;
+        color: white;
+    }
+    
+    .trade-badge {
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #e7f3ff;
+        color: #004085;
+    }
+</style>
+
+<div class="vendors-header">
+    <h2>Vendors</h2>
+    <button class="btn-primary" onclick="addVendor()">+ Add Vendor</button>
+</div>
+
+<div class="search-bar">
+    <input type="text" placeholder="Search vendors by name, company, or trade..." id="vendorSearch">
+    <button class="btn-primary" onclick="searchVendors()">Search</button>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name ↕</th>
+                <th>Company ↕</th>
+                <th>Trade</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Properties</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+            <tr>
+                <td><strong>{{ vendor.name or '-' }}</strong></td>
+                <td>{{ vendor.company or '-' }}</td>
+                <td>
+                    {% if vendor.trade %}
+                    <span class="trade-badge">{{ vendor.trade }}</span>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ vendor.phone or '-' }}</td>
+                <td>{{ vendor.email or '-' }}</td>
+                <td>All Properties</td>
+                <td>
+                    <button class="btn-sm btn-edit" onclick="editVendor('{{ vendor.id }}')">Edit</button>
+                    <button class="btn-sm btn-email" onclick="emailVendor('{{ vendor.email }}')">Email</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 20px;">No vendors found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addVendor() {
+    window.location.href = '/vendors/new';
+}
+
+function editVendor(vendorId) {
+    window.location.href = `/vendors/edit/${vendorId}`;
+}
+
+function emailVendor(email) {
+    if (email && email !== '-') {
+        window.location.href = `mailto:${email}`;
+    } else {
+        alert('No email address available for this vendor');
+    }
+}
+
+function searchVendors() {
+    const searchTerm = document.getElementById('vendorSearch').value;
+    // In a real app, this would filter the table or make an API call
+    console.log('Searching for:', searchTerm);
+}
+
+// Allow search on Enter key
+document.getElementById('vendorSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchVendors();
+    }
+});
+</script>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasksPanel">
+    <div class="tasks-header">
+        <h3>Vendor Actions</h3>
+        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Quick Actions</div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Add New Vendor</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Import Vendors</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Export to Excel</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Send Mass Email</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Categories</div>
+        <div class="task-item">
+            <span>Plumbing</span>
+        </div>
+        <div class="task-item">
+            <span>Electrical</span>
+        </div>
+        <div class="task-item">
+            <span>HVAC</span>
+        </div>
+        <div class="task-item">
+            <span>Landscaping</span>
+        </div>
+        <div class="task-item">
+            <span>General Maintenance</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Reports</div>
+        <div class="task-item">
+            <span>Vendor List</span>
+        </div>
+        <div class="task-item">
+            <span>Payment History</span>
+        </div>
+        <div class="task-item">
+            <span>Work Order Summary</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

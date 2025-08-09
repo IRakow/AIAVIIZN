@@ -51,13 +51,21 @@ def login():
             if response.user:
                 session['user_id'] = response.user.id
                 session['email'] = response.user.email
-                session['company'] = 'Celtic Property Management'  # Default for now
+                session['company'] = 'Your Company Name'
                 
                 flash('Welcome back!', 'success')
                 return redirect(url_for('dashboard'))
                 
         except Exception as e:
-            flash('Invalid email or password.', 'danger')
+            # For testing - allow demo login
+            if email == "admin@aviizn.com" and password == "demo123":
+                session['user_id'] = 'demo-user-id'
+                session['email'] = email
+                session['company'] = 'Test Company'
+                flash('Welcome to AVIIZN!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid email or password.', 'danger')
     
     return render_template('auth/login.html')
 
@@ -70,7 +78,7 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Dashboard data
+    # Dashboard data - exactly as you had it
     stats = {
         'move_ins': {
             'updated': 10,
@@ -120,7 +128,6 @@ def dashboard():
         }
     }
     
-    # Recent move-ins
     recent_moveins = [
         {'tenant': 'Sainge, Samuel', 'unit': '-', 'property': '-', 'lease': 'Active', 'balance': 400.00, 'insurance': 'Not Covered', 'move_date': '07/25/2025'},
         {'tenant': 'Bell, Telia R.', 'unit': '-', 'property': '-', 'lease': 'Active', 'balance': 0.00, 'insurance': 'Not Covered', 'move_date': '08/01/2025'},
@@ -137,7 +144,6 @@ def inbox():
 @app.route('/tenants')
 @login_required
 def tenants():
-    # Sample tenant data - mix of real and test data
     tenants_data = [
         {'name': 'Arita, Elias', 'status': 'Current', 'property': '527 Oakley House / Stanion - 527 N Oakley Kansas City, MO 64123', 'unit': '', 'phone': '(816) 883-9832'},
         {'name': 'Artigus, Milagros', 'status': 'Current', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3601-3619 Blue Ridge Blvd. Grandview, MO 64030', 'unit': '3615 #08', 'phone': '(816) 984-3234'},
@@ -216,6 +222,7 @@ def properties():
     
     return render_template('properties/properties.html', properties=properties_data)
 
+# Leasing Routes
 @app.route('/leasing/vacancies')
 @login_required
 def vacancies():
@@ -358,12 +365,12 @@ def leasing_metrics():
             'units_vacant': 115
         },
         'pricing': {
-            'projected_occupancy': [],  # Chart data
-            'projected_vacancy': [],  # Chart data
-            'price_per_sqft': []  # Chart data
+            'projected_occupancy': [],
+            'projected_vacancy': [],
+            'price_per_sqft': []
         },
         'box_score': {
-            'properties': []  # Summary data
+            'properties': []
         }
     }
     
@@ -374,6 +381,7 @@ def leasing_metrics():
 def signals():
     return render_template('leasing/signals.html')
 
+# Maintenance Routes
 @app.route('/maintenance/work-orders')
 @login_required
 def work_orders():
@@ -527,6 +535,7 @@ def fixed_assets():
 def smart_maintenance():
     return render_template('maintenance/smart_maintenance.html')
 
+# Accounting Routes
 @app.route('/accounting/receivables')
 @login_required
 def receivables():
@@ -656,145 +665,4 @@ def receipts():
         {'date': '08/07/2025', 'payer': 'Derek Bauswell-Curtiss (Paid online)', 'account': '4310: RUBS Utility Charge, 4100: Rent Charge', 'property': 'Walnut Ridge Apts - 6126 E', 'amount': 1140.00, 'reference': 'F476-7F30'},
         {'date': '08/07/2025', 'payer': 'Sarah A. Dement (Paid online)', 'account': '4100: Rent Charge, 4310: RUBS Utility Charge, 5999: Liability to Landlord Insurance, 5680: Late Fee', 'property': 'Windscape Apartments - 9119', 'amount': 1028.50, 'reference': 'C5C3-B650'},
         {'date': '08/07/2025', 'payer': 'DeWayne Williams (Paid online)', 'account': '4100: Rent Charge', 'property': 'Homestead Villas 4-Plex - 4872 Terr', 'amount': 290.00, 'reference': '600F-6CC0'},
-        {'date': '08/07/2025', 'payer': 'Angelo F. Della Croce (Paid online)', 'account': '4100: Rent Charge', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3607 #02', 'amount': 88.50, 'reference': 'BFF8-0880'},
-        {'date': '08/07/2025', 'payer': 'Walter L. Stanbrough (Paid online)', 'account': '2300: Prepaid Rent', 'property': 'Homestead Villas 4-Plex', 'amount': 840.00, 'reference': 'F9C6-C4A0'},
-        {'date': '08/07/2025', 'payer': 'Michael Jordan (Paid online)', 'account': '4100: Rent Charge', 'property': 'Walnut Ridge Apts - 6120-D', 'amount': 288.00, 'reference': '1EC3-71F0'},
-        {'date': '08/07/2025', 'payer': 'Shylah M. Johnson (Paid online)', 'account': '4100: Rent Charge, 4310: RUBS Utility Charge, 5999: Liability to Landlord Insurance, 5680: Late Fee', 'property': 'Summit Apartments - 909 #07', 'amount': 758.50, 'reference': 'E2C4-18F0'},
-    ]
-    
-    return render_template('accounting/receipts.html', receipts=receipts_data)
-
-@app.route('/reporting/reports')
-@login_required
-def reports():
-    return render_template('reporting/reports.html')
-
-@app.route('/reporting/scheduled-reports')
-@login_required
-def scheduled_reports():
-    scheduled_reports_data = [
-        {'name': 'Brentwood Prelim EOM Rent Roll', 'reports': "Marcin's Itemized Rent Roll - Brentwood Park", 'frequency': 'Monthly', 'last_sent': '7/31/2025'},
-        {'name': 'Delinquency', 'reports': 'Copy of Delinquency', 'frequency': 'Monthly', 'last_sent': '7/10/2025'},
-        {'name': 'Lease Expiration Detail By Month Jan 2018 - 2020', 'reports': 'Copy of Lease Expiration Detail By Month Jan 2018 - 20120', 'frequency': 'Weekly', 'last_sent': '8/5/2025'},
-        {'name': 'MIDTOWN Rent Roll', 'reports': 'MIDTOWN Rent Roll', 'frequency': 'Monthly', 'last_sent': '7/16/2025'},
-        {'name': 'MIDTOWN: Current, Evict, Notice, Vacant-Rented, Vacant-Unrented', 'reports': 'REFORMAT to see Current, Evict, Notice, Copy of Rent Roll', 'frequency': 'Weekly', 'last_sent': '8/1/2025'},
-        {'name': 'Norclay 15th Rent Roll', 'reports': 'Norclay Apts - Rent Roll', 'frequency': 'Monthly', 'last_sent': '7/15/2025'},
-        {'name': 'Randall Court Prelim EOM Rent Roll', 'reports': "Marcin's Itemized Rent Roll - Randall Court", 'frequency': 'Monthly', 'last_sent': '7/31/2025'},
-        {'name': "Today's Rent Roll Midtown", 'reports': "Today's Rent Roll", 'frequency': 'Monthly', 'last_sent': '7/31/2025'},
-        {'name': 'Villas of Mur-Len Prelim EOM Rent roll', 'reports': "Marcin's Itemized Rent Roll - Villas of MurLen", 'frequency': 'Monthly', 'last_sent': '7/31/2025'},
-        {'name': 'Work Orders Not Complete Last 90 Days', 'reports': 'New or Assigned Work Orders Last 90 days_Not Complete', 'frequency': 'Monthly', 'last_sent': '7/12/2025'},
-    ]
-    
-    return render_template('reporting/scheduled_reports.html', scheduled_reports=scheduled_reports_data)
-
-@app.route('/reporting/metrics')
-@login_required
-def metrics():
-    return redirect(url_for('leasing_metrics'))
-
-@app.route('/reporting/surveys')
-@login_required
-def surveys():
-    surveys_data = [
-        {'survey': 'Maintenance', 'work_order': '#109826-1', 'satisfaction': 1, 'vendor': 'Celtic Property Management', 'assigned_users': 'Steve Moore', 'submitted_by': 'Dacoda Hoggatt', 'property': 'Walnut Ridge Apts', 'submitted_at': '4/30/2025 at 2:19 AM'},
-        {'survey': 'Maintenance', 'work_order': '#110073-1', 'satisfaction': 2, 'vendor': 'Celtic Property Management', 'assigned_users': 'Ramon Solis', 'submitted_by': 'Bradsah Jordan', 'property': '(BARR) Rock Ridge Ranch Apartments', 'submitted_at': '4/29/2025 at 10:46 AM'},
-        {'survey': 'Maintenance', 'work_order': '#95527-1', 'satisfaction': 1, 'vendor': 'Celtic Property Management', 'assigned_users': 'Ivan Lopez', 'submitted_by': 'Sean J. Harman', 'property': 'Phog Apartments / Meiners Development Co. of Independence', 'submitted_at': '1/8/2024 at 10:46 AM'},
-        {'survey': 'Maintenance', 'work_order': '#94374-1', 'satisfaction': 1, 'vendor': 'Celtic Property Management', 'assigned_users': 'Ramon Solis', 'submitted_by': 'LaTonya Guess', 'property': '(BARR) Rock Ridge Ranch Apartments', 'submitted_at': '12/19/2023 at 4:24 PM'},
-        {'survey': 'Maintenance', 'work_order': '#93693-1', 'satisfaction': 1, 'vendor': 'Celtic Property Management', 'assigned_users': 'Ken Hughes', 'submitted_by': 'Mavion Britton', 'property': 'Brentwood Park / Brentwood Park Ventures LLC', 'submitted_at': '11/21/2023 at 4:25 PM'},
-        {'survey': 'Maintenance', 'work_order': '#93266-1', 'satisfaction': 1, 'vendor': 'Celtic Property Management', 'assigned_users': 'Steve Moore', 'submitted_by': 'Florence Pollard', 'property': 'Locust 24 Apartments', 'submitted_at': '11/11/2023 at 3:42 PM'},
-        {'survey': 'Maintenance', 'work_order': '#93862-1', 'satisfaction': 5, 'vendor': 'Celtic Property Management', 'assigned_users': 'Vicente Campos', 'submitted_by': 'Daryl Grovenburg', 'property': 'Aspen Village Apartments', 'submitted_at': '11/9/2023 at 12:24 AM'},
-    ]
-    
-    return render_template('reporting/surveys.html', surveys=surveys_data)
-
-@app.route('/communication/letters')
-@login_required
-def letters():
-    letter_templates = [
-        {'letter': 'Gene Field Pest Control', 'description': '', 'type': 'Tenant'},
-        {'letter': '3-Day Notice to Vacate', 'description': 'Default Pay or Vacate Notice', 'type': 'Tenant'},
-        {'letter': '3rd and Last Renewal', 'description': 'Midtown', 'type': 'Tenant'},
-        {'letter': 'Adverse Action Letter', 'description': 'Denial of Application', 'type': 'Tenant'},
-        {'letter': 'BRB 24 hour notice', 'description': '24 hour notice', 'type': 'Tenant'},
-        {'letter': 'BRM_Stoney and Lodge SBL', 'description': '', 'type': 'Tenant'},
-        {'letter': 'BRM Abandonment Notice', 'description': '', 'type': 'Tenant'},
-        {'letter': 'BRM Eviction Reminder', 'description': '', 'type': 'Tenant'},
-        {'letter': 'BRM Pest Control Notice', 'description': 'Send to tenants notice', 'type': 'Tenant'},
-        {'letter': 'BRM_SB and TL - 3 DAY NOTICE', 'description': '', 'type': 'Tenant'},
-        {'letter': 'CARES ACT', 'description': '', 'type': 'Tenant'},
-        {'letter': 'Clearing Balconies', 'description': '', 'type': 'Tenant'},
-        {'letter': 'Closed For Holiday / Trash Updates', 'description': '', 'type': 'Tenant'},
-        {'letter': 'COVID-19 UPDATE', 'description': '', 'type': 'Tenant'},
-        {'letter': 'Covid-19- Work Order Completion', 'description': '', 'type': 'Tenant'},
-        {'letter': 'Deposit Disposition Amount Due', 'description': 'This is the default letter that appears when moving out a tenant who owes money.', 'type': 'Tenant'},
-        {'letter': 'Deposit Disposition Refund', 'description': 'This is the default letter that appears when moving out a tenant who will receive a refund.', 'type': 'Tenant'},
-    ]
-    
-    return render_template('communication/letters.html', letter_templates=letter_templates)
-
-@app.route('/communication/forms')
-@login_required
-def forms():
-    form_templates = [
-        {'name': 'Adding a NEW Pet Form', 'type': 'Resident Form', 'created': '01/21/2022'},
-        {'name': 'Adding a NEW Roommate', 'type': 'Resident Form', 'created': '01/21/2022'},
-        {'name': 'Aspen Village Pool Addendum', 'type': 'Resident Form', 'created': '05/15/2025'},
-        {'name': 'Bed Bug Treatment & Preparation Instructions', 'type': 'Resident Form', 'created': '01/24/2022'},
-        {'name': 'Bed Bug Treatment Letter', 'type': 'Resident Form', 'created': '01/24/2022'},
-        {'name': 'ESA Service Animal Doctor Documentation Form', 'type': 'Resident Form', 'created': '01/26/2022'},
-        {'name': 'KS Utility Transfer Obligation Form', 'type': 'Resident Form', 'created': '01/26/2022'},
-        {'name': 'MO Utility Transfer Obligation Form', 'type': 'Resident Form', 'created': '01/26/2022'},
-        {'name': 'Month to Month Follow Up Letter', 'type': 'Resident Form', 'created': '02/16/2023'},
-        {'name': 'Move Out Instructions', 'type': 'Resident Form', 'created': '01/24/2022'},
-        {'name': 'Notice of Abandonment Form (1)', 'type': 'Resident Form', 'created': '04/26/2022'},
-        {'name': 'Notice of Lease Violation', 'type': 'Resident Form', 'created': '01/21/2022'},
-        {'name': 'Notice of Termination Letter', 'type': 'Resident Form', 'created': '01/21/2022'},
-        {'name': 'Payment Plan AFTER MOVE OUT Form', 'type': 'Resident Form', 'created': '01/25/2022'},
-        {'name': 'Payment Plan Form', 'type': 'Resident Form', 'created': '01/25/2022'},
-        {'name': 'Pest Control Notice', 'type': 'Resident Form', 'created': '01/26/2022'},
-    ]
-    
-    return render_template('communication/forms.html', form_templates=form_templates)
-
-@app.route('/communication/inbox')
-@login_required
-def communication_inbox():
-    return redirect(url_for('inbox'))
-
-@app.route('/whats-new')
-@login_required
-def whats_new():
-    features = [
-        {
-            'title': 'FolioScreen: Consumer Report Access',
-            'type': 'GENERAL',
-            'tags': ['LEASING', 'RESIDENTIAL'],
-            'description': 'Starting August 4, 2025, FolioScreen will automatically give applicants a copy of their consumer report if one is run. This change supports applicants\' rights to access their consumer report and allows them to review and dispute any inaccuracies earlier, leading to faster resolutions. For FolioScreen customers in relevant jurisdictions, this update helps you meet your sharing obligations without additional action.'
-        },
-        {
-            'title': 'Automated Comps for Leasing Signals',
-            'type': 'LEASING',
-            'description': 'Confident pricing begins with better data. AppFolio\'s new partnership with Markerr pipes the most up-to-date, public data directly into your platform. For every Leasing Signals-enabled property, you\'ll now get automatic access to floorplan-level data from five nearby comps. No spreadsheets or desk research required. Just enter the address of a comparable property in the Comparables tab and set it to automatically update. It\'s that simple.'
-        },
-        {
-            'title': 'Work Order Billing Queue',
-            'type': 'GENERAL',
-            'tags': ['ACCOUNTING', 'MAINTENANCE', 'COMMUNITY ASSOCIATION', 'COMMERCIAL', 'RESIDENTIAL'],
-            'description': 'To make creating work order bills more efficient we\'ve added the ability to create a designated "Billing Queue" of work orders that are ready to bill. On the work order bill page, you will now see a "Save & Next" button that will create the current bill and move to the next create bill page that matches your billing queue criteria instead of going back to your list of work orders.'
-        }
-    ]
-    
-    return render_template('whats_new.html', features=features)
-
-@app.route('/calendar')
-@login_required
-def calendar():
-    return render_template('calendar.html')
-
-@app.route('/online-payments')
-@login_required
-def online_payments():
-    return render_template('online_payments.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        {'date': '08/07/2025', 'payer': 'Angelo F. Della Croce (Paid online)', 'account': '4100: Rent Charge', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3607 #02', 'amount': 88.50,

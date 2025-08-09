@@ -1,0 +1,685 @@
+<!-- templates/maintenance/unit_turns.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Turns - AVIIZN</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0B5394;
+            --dark-blue: #073763;
+            --light-blue: #4A90E2;
+            --sidebar-width: 250px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles - Same as your other pages */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+        }
+        
+        .sidebar-header h3 {
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        .sidebar-header small {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .sidebar-menu-item:hover {
+            background: #f0f7ff;
+            color: var(--primary-blue);
+        }
+        
+        .sidebar-menu-item.active {
+            background: #e8f0fe;
+            color: var(--primary-blue);
+            border-left: 3px solid var(--primary-blue);
+        }
+        
+        .sidebar-menu-item i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .sidebar-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #f8f9fa;
+        }
+        
+        .sidebar-dropdown.show {
+            max-height: 500px;
+        }
+        
+        .sidebar-dropdown-item {
+            padding: 10px 20px 10px 50px;
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-dropdown-item:hover {
+            color: var(--primary-blue);
+            background: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: -20px -20px 20px -20px;
+        }
+        
+        .breadcrumb {
+            margin: 0;
+            padding: 0;
+            background: none;
+        }
+        
+        .breadcrumb-item {
+            font-size: 14px;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Key Metrics */
+        .metrics-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-group {
+            flex: 1;
+        }
+        
+        .filter-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Unit Turn Board */
+        .turn-board {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .turn-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-blue);
+            transition: all 0.3s;
+        }
+        
+        .turn-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .turn-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .property-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .turn-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-delayed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .turn-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .progress-section {
+            margin-top: 20px;
+        }
+        
+        .progress-header {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .task-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        
+        .task-item.completed {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .task-item.in-progress {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        .task-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .task-name {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .overdue-badge {
+            background: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>AVIIZN</h3>
+            <small>Property Management System</small>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-menu-item">
+                <i class="fas fa-dashboard"></i> Dashboard
+            </a>
+            <a href="{{ url_for('calendar') }}" class="sidebar-menu-item">
+                <i class="fas fa-calendar"></i> Calendar
+            </a>
+            
+            <!-- Leasing Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('leasingDropdown')">
+                <i class="fas fa-key"></i> Leasing
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="leasingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('vacancies') }}" class="sidebar-dropdown-item">Vacancies</a>
+                <a href="{{ url_for('guest_cards') }}" class="sidebar-dropdown-item">Guest Cards</a>
+                <a href="{{ url_for('rental_applications') }}" class="sidebar-dropdown-item">Rental Applications</a>
+                <a href="{{ url_for('leases') }}" class="sidebar-dropdown-item">Leases</a>
+                <a href="{{ url_for('renewals') }}" class="sidebar-dropdown-item">Renewals</a>
+                <a href="{{ url_for('leasing_metrics') }}" class="sidebar-dropdown-item">Metrics</a>
+                <a href="{{ url_for('signals') }}" class="sidebar-dropdown-item">Signals</a>
+            </div>
+            
+            <a href="{{ url_for('properties') }}" class="sidebar-menu-item">
+                <i class="fas fa-building"></i> Properties
+            </a>
+            
+            <!-- People Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('peopleDropdown')">
+                <i class="fas fa-users"></i> People
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="peopleDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('tenants') }}" class="sidebar-dropdown-item">Tenants</a>
+                <a href="{{ url_for('owners') }}" class="sidebar-dropdown-item">Owners</a>
+                <a href="{{ url_for('vendors') }}" class="sidebar-dropdown-item">Vendors</a>
+            </div>
+            
+            <!-- Accounting Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('accountingDropdown')">
+                <i class="fas fa-calculator"></i> Accounting
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="accountingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('receivables') }}" class="sidebar-dropdown-item">Receivables</a>
+                <a href="{{ url_for('payables') }}" class="sidebar-dropdown-item">Payables</a>
+                <a href="{{ url_for('bank_accounts') }}" class="sidebar-dropdown-item">Bank Accounts</a>
+                <a href="{{ url_for('journal_entries') }}" class="sidebar-dropdown-item">Journal Entries</a>
+                <a href="{{ url_for('bank_transfers') }}" class="sidebar-dropdown-item">Bank Transfers</a>
+                <a href="{{ url_for('gl_accounts') }}" class="sidebar-dropdown-item">GL Accounts</a>
+                <a href="{{ url_for('diagnostics') }}" class="sidebar-dropdown-item">Diagnostics</a>
+                <a href="{{ url_for('receipts') }}" class="sidebar-dropdown-item">Receipts</a>
+            </div>
+            
+            <!-- Maintenance Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('maintenanceDropdown')">
+                <i class="fas fa-wrench"></i> Maintenance
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="maintenanceDropdown" class="sidebar-dropdown show">
+                <a href="{{ url_for('work_orders') }}" class="sidebar-dropdown-item">Work Orders</a>
+                <a href="{{ url_for('recurring_work_orders') }}" class="sidebar-dropdown-item">Recurring Work Orders</a>
+                <a href="{{ url_for('inspections') }}" class="sidebar-dropdown-item">Inspections</a>
+                <a href="{{ url_for('unit_turns') }}" class="sidebar-dropdown-item" style="background: white; color: var(--primary-blue);">Unit Turns</a>
+                <a href="{{ url_for('projects') }}" class="sidebar-dropdown-item">Projects</a>
+                <a href="{{ url_for('purchase_orders') }}" class="sidebar-dropdown-item">Purchase Orders</a>
+                <a href="{{ url_for('inventory') }}" class="sidebar-dropdown-item">Inventory</a>
+                <a href="{{ url_for('fixed_assets') }}" class="sidebar-dropdown-item">Fixed Assets</a>
+                <a href="{{ url_for('smart_maintenance') }}" class="sidebar-dropdown-item">Smart Maintenance</a>
+            </div>
+            
+            <!-- Reporting Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('reportingDropdown')">
+                <i class="fas fa-chart-bar"></i> Reporting
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="reportingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('reports') }}" class="sidebar-dropdown-item">Reports</a>
+                <a href="{{ url_for('scheduled_reports') }}" class="sidebar-dropdown-item">Scheduled Reports</a>
+                <a href="{{ url_for('metrics') }}" class="sidebar-dropdown-item">Metrics</a>
+                <a href="{{ url_for('surveys') }}" class="sidebar-dropdown-item">Surveys</a>
+            </div>
+            
+            <!-- Communication Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('communicationDropdown')">
+                <i class="fas fa-envelope"></i> Communication
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="communicationDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('letters') }}" class="sidebar-dropdown-item">Letters</a>
+                <a href="{{ url_for('forms') }}" class="sidebar-dropdown-item">Forms</a>
+                <a href="{{ url_for('inbox') }}" class="sidebar-dropdown-item">Inbox</a>
+            </div>
+            
+            <a href="{{ url_for('whats_new') }}" class="sidebar-menu-item">
+                <i class="fas fa-sparkles"></i> What's New
+                <span class="badge bg-danger ms-auto">4</span>
+            </a>
+            
+            <hr class="my-3">
+            
+            <a href="{{ url_for('logout') }}" class="sidebar-menu-item text-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item">Maintenance</li>
+                    <li class="breadcrumb-item active">Unit Turns</li>
+                </ol>
+            </nav>
+            <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add Unit Turn
+            </button>
+        </div>
+        
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Unit Turns</h1>
+            <p class="page-subtitle">Manage and track unit turnover progress</p>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-value">65.58</div>
+                <div class="metric-label">Average days on a turn</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4</div>
+                <div class="metric-label">Units In Progress</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">0</div>
+                <div class="metric-label">Ready Units</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4</div>
+                <div class="metric-label">Overdue Turns</div>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <div class="filter-label">Status</div>
+                    <select class="form-select">
+                        <option>In Progress</option>
+                        <option>Ready</option>
+                        <option>All Status</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Property</div>
+                    <select class="form-select">
+                        <option>All Properties</option>
+                        <option>Flats at Walnut</option>
+                        <option>Rock Ridge Ranch</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Move-out Date Range</div>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">&nbsp;</div>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">&nbsp;</div>
+                    <button class="btn btn-outline-primary w-100">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Unit Turn Board -->
+        <div class="turn-board">
+            {% for turn in unit_turns %}
+            <div class="turn-card">
+                <div class="turn-card-header">
+                    <div>
+                        <div class="property-name">{{ turn.property }}</div>
+                        <div class="text-muted" style="font-size: 13px; margin-top: 5px;">
+                            <i class="fas fa-calendar-alt me-1"></i> Target: {{ turn.target_date }}
+                            <span class="overdue-badge">4 years overdue</span>
+                        </div>
+                    </div>
+                    <span class="turn-status status-{{ turn.status.lower().replace(' ', '-') }}">
+                        {{ turn.status }}
+                    </span>
+                </div>
+                
+                <div class="turn-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Move Out</span>
+                        <span class="detail-value">{{ turn.move_out }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Move In</span>
+                        <span class="detail-value">{{ turn.move_in }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Days Vacant</span>
+                        <span class="detail-value">1,588</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Est. Cost</span>
+                        <span class="detail-value">$2,450</span>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">Task Progress</div>
+                    <div class="task-grid">
+                        <div class="task-item {{ 'completed' if turn.maintenance != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-wrench"></i>
+                            </div>
+                            <div class="task-name">Maintenance</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.paint != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-paint-roller"></i>
+                            </div>
+                            <div class="task-name">Paint</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.appliances != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-blender"></i>
+                            </div>
+                            <div class="task-name">Appliances</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.floors != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-th"></i>
+                            </div>
+                            <div class="task-name">Floors</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.other != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                            <div class="task-name">Other</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.housekeeping != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-broom"></i>
+                            </div>
+                            <div class="task-name">Housekeeping</div>
+                        </div>
+                        <div class="task-item {{ 'completed' if turn.keys != '--' else '' }}">
+                            <div class="task-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="task-name">Keys</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-tasks me-1"></i> View Tasks
+                    </button>
+                    <button class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-file-alt me-1"></i> Inspection
+                    </button>
+                    <button class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-check me-1"></i> Mark Ready
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle Dropdown
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            dropdown.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
