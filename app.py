@@ -666,11 +666,10 @@ def receipts():
         {'date': '08/07/2025', 'payer': 'Derek Bauswell-Curtiss (Paid online)', 'account': '4310: RUBS Utility Charge, 4100: Rent Charge', 'property': 'Walnut Ridge Apts - 6126 E', 'amount': 1140.00, 'reference': 'F476-7F30'},
         {'date': '08/07/2025', 'payer': 'Sarah A. Dement (Paid online)', 'account': '4100: Rent Charge, 4310: RUBS Utility Charge, 5999: Liability to Landlord Insurance, 5680: Late Fee', 'property': 'Windscape Apartments - 9119', 'amount': 1028.50, 'reference': 'C5C3-B650'},
         {'date': '08/07/2025', 'payer': 'DeWayne Williams (Paid online)', 'account': '4100: Rent Charge', 'property': 'Homestead Villas 4-Plex - 4872 Terr', 'amount': 290.00, 'reference': '600F-6CC0'},
-        {'date': '08/07/2025', 'payer': 'Angelo F. Della Croce (Paid online)', 'account': '4100: Rent Charge', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3607 #02', 'amount': 88.50,
+        {'date': '08/07/2025', 'payer': 'Angelo F. Della Croce (Paid online)', 'account': '4100: Rent Charge', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3607 #02', 'amount': 88.50, 'reference': 'ABCD-1234'}
+    ]
 
-        # ADD THESE ROUTE ALIASES TO YOUR EXISTING app.py
-# These create additional URL patterns that match what your templates expect
-# Don't remove your existing routes, just add these after them
+    return render_template('accounting/receipts.html', receipts=receipts_data)
 
 # Calendar route
 @app.route('/calendar')
@@ -778,3 +777,6 @@ def emails():
 @login_required
 def company_settings():
     return render_template('admin/company_settings.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8080)
