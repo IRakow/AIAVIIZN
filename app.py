@@ -219,16 +219,26 @@ def vendors():
 @login_required
 def properties():
     properties_data = [
-        {'name': '(BARR) Rock Ridge Ranch Apartments', 'address': '10561 Cypress Ave Kansas City, MO 64137', 'type': 'Multi-Family', 'units': 75, 'vacant': True, 'owners': 'Rock Ridge Ranch / Rock Ridge Ranch'},
-        {'name': '12520 Grandview Rd. House', 'address': '12520 Grandview Rd Grandview, MO 64030', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'HLF Investments MO LLC / Keith S...'},
-        {'name': '340 Belmont House / Stanion', 'address': '340 N Belmont Blvd Kansas City, MO 34123', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'Judson Stanion'},
-        {'name': '3815 Shawnee House / Stanion', 'address': '3815 Shawnee Dr. Kansas City, KS 66106', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'Judson Stanion'},
-        {'name': '3825 Baltimore', 'address': '3825 Baltimore Kansas City, MO 64111', 'type': 'Multi-Family', 'units': 7, 'vacant': True, 'owners': '3825 Baltimore / Finkelstein'},
-        {'name': '4012 W. 75th Street / TLAR LLC', 'address': '4012 W. 75th Street Prairie Village, KS 66208', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'Greg Sweat'},
-        {'name': '40th Street Apartments', 'address': '1109-1111 W. 40th St. Kansas City, MO 64111', 'type': 'Multi-Family', 'units': 6, 'vacant': True, 'owners': 'David Montgomery / 40th st property'},
-        {'name': '4111 Booth House', 'address': '4111 Booth Kansas City, KS 66103', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'KC KINGS LLC'},
-        {'name': '4451 Francis / Francis House', 'address': '4451 Francis St. Kansas City, KS 66103', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'Gregg Sullivan / 4451 Francis House'},
-        {'name': '527 Oakley House / Stanion', 'address': '527 N Oakley Kansas City, MO 64123', 'type': 'Single-Family', 'units': 1, 'vacant': False, 'owners': 'Judson Stanion'},
+        {'name': '(BARR) Rock Ridge Ranch Apartments', 'address': '10561 Cypress Ave Kansas City, MO 64137', 'type': 'Multi-Family', 
+         'units_count': 75, 'units': [{'status': 'vacant'} for _ in range(5)] + [{'status': 'occupied'} for _ in range(70)], 'owners': 'Rock Ridge Ranch / Rock Ridge Ranch'},
+        {'name': '12520 Grandview Rd. House', 'address': '12520 Grandview Rd Grandview, MO 64030', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'HLF Investments MO LLC / Keith S...'},
+        {'name': '340 Belmont House / Stanion', 'address': '340 N Belmont Blvd Kansas City, MO 34123', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'Judson Stanion'},
+        {'name': '3815 Shawnee House / Stanion', 'address': '3815 Shawnee Dr. Kansas City, KS 66106', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'Judson Stanion'},
+        {'name': '3825 Baltimore', 'address': '3825 Baltimore Kansas City, MO 64111', 'type': 'Multi-Family', 
+         'units_count': 7, 'units': [{'status': 'vacant'} for _ in range(2)] + [{'status': 'occupied'} for _ in range(5)], 'owners': '3825 Baltimore / Finkelstein'},
+        {'name': '4012 W. 75th Street / TLAR LLC', 'address': '4012 W. 75th Street Prairie Village, KS 66208', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'Greg Sweat'},
+        {'name': '40th Street Apartments', 'address': '1109-1111 W. 40th St. Kansas City, MO 64111', 'type': 'Multi-Family', 
+         'units_count': 6, 'units': [{'status': 'vacant'} for _ in range(1)] + [{'status': 'occupied'} for _ in range(5)], 'owners': 'David Montgomery / 40th st property'},
+        {'name': '4111 Booth House', 'address': '4111 Booth Kansas City, KS 66103', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'KC KINGS LLC'},
+        {'name': '4451 Francis / Francis House', 'address': '4451 Francis St. Kansas City, KS 66103', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'Gregg Sullivan / 4451 Francis House'},
+        {'name': '527 Oakley House / Stanion', 'address': '527 N Oakley Kansas City, MO 64123', 'type': 'Single-Family', 
+         'units_count': 1, 'units': [{'status': 'occupied'}], 'owners': 'Judson Stanion'},
     ]
     
     return render_template('properties/properties.html', properties=properties_data)
@@ -239,10 +249,16 @@ def properties():
 def vacancies():
     vacancies_data = [
         {
-            'property': 'Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 10-02',
-            'address': '3515 Gene Field Rd. - 10-02, St. Joseph, MO 64506',
-            'beds': 1,
-            'baths': 1,
+            'properties': {
+                'name': 'Gene Field Apts',
+                'address': '3515 Gene Field Rd',
+                'city': 'St. Joseph',
+                'state': 'MO',
+                'zip': '64506'
+            },
+            'unit_number': '10-02',
+            'bedrooms': 1,
+            'bathrooms': 1,
             'sqft': 731,
             'rent': 546,
             'available': 'Now',
@@ -252,10 +268,16 @@ def vacancies():
             'premium': False
         },
         {
-            'property': 'Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 10-04',
-            'address': '3515 Gene Field Rd. - 10-04, St. Joseph, MO 64506',
-            'beds': 1,
-            'baths': 1,
+            'properties': {
+                'name': 'Gene Field Apts',
+                'address': '3515 Gene Field Rd',
+                'city': 'St. Joseph',
+                'state': 'MO',
+                'zip': '64506'
+            },
+            'unit_number': '10-04',
+            'bedrooms': 1,
+            'bathrooms': 1,
             'sqft': 731,
             'rent': 546,
             'available': 'Now',
@@ -265,10 +287,16 @@ def vacancies():
             'premium': False
         },
         {
-            'property': 'Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 10-05',
-            'address': '3515 Gene Field Rd. - 10-05, St. Joseph, MO 64506',
-            'beds': 1,
-            'baths': 1,
+            'properties': {
+                'name': 'Gene Field Apts',
+                'address': '3515 Gene Field Rd',
+                'city': 'St. Joseph',
+                'state': 'MO',
+                'zip': '64506'
+            },
+            'unit_number': '10-05',
+            'bedrooms': 1,
+            'bathrooms': 1,
             'sqft': 731,
             'rent': 546,
             'available': 'Now',
@@ -278,10 +306,16 @@ def vacancies():
             'premium': False
         },
         {
-            'property': 'Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 10-01',
-            'address': '3515 Gene Field Rd. - 10-01, St. Joseph, MO 64506',
-            'beds': 1,
-            'baths': 1,
+            'properties': {
+                'name': 'Gene Field Apts',
+                'address': '3515 Gene Field Rd',
+                'city': 'St. Joseph',
+                'state': 'MO',
+                'zip': '64506'
+            },
+            'unit_number': '10-01',
+            'bedrooms': 1,
+            'bathrooms': 1,
             'sqft': 731,
             'rent': 573,
             'available': 'Now',
@@ -352,12 +386,12 @@ def leases():
 @login_required
 def renewals():
     renewals_data = [
-        {'property': '(BARR) Rock Ridge Ranch Apartments - ...', 'tenants': 'Eugene Boyd\nAngela Byers-Boyd', 'expiration': '--', 'rent': 695.00, 'new_rent': '--', 'status': 'Out For Signing'},
-        {'property': '3825 Baltimore - 3825 #03', 'tenants': 'Sarita M. Vangundy', 'expiration': '--', 'rent': 900.00, 'new_rent': '--', 'status': 'Out For Signing'},
-        {'property': 'Blue Ridge Manor - 3809.5', 'tenants': 'Yoilbeth Z. Madrid\nBenito V. Ronquillo', 'expiration': '--', 'rent': 950.00, 'new_rent': '--', 'status': 'Eligible'},
-        {'property': 'Lodge Apartments - 102', 'tenants': 'Joe Edwards', 'expiration': '--', 'rent': 950.00, 'new_rent': 950.00, 'status': 'Eligible'},
-        {'property': 'Longmeadow Apartments - #21C', 'tenants': 'Tara L. Boenig', 'expiration': '--', 'rent': 785.00, 'new_rent': 785.00, 'status': 'MTM 07/16/2025'},
-        {'property': 'West Plaza - 1709', 'tenants': 'CPM 1709 Property Management', 'expiration': '--', 'rent': 800.00, 'new_rent': '--', 'status': 'Eligible'},
+        {'units': {'properties': {'name': '(BARR) Rock Ridge Ranch Apartments'}, 'unit_number': '...', 'rent': 695.00}, 'tenants': 'Eugene Boyd\nAngela Byers-Boyd', 'expiration': '--', 'proposed_rent': None, 'status': 'Out For Signing'},
+        {'units': {'properties': {'name': '3825 Baltimore'}, 'unit_number': '3825 #03', 'rent': 900.00}, 'tenants': 'Sarita M. Vangundy', 'expiration': '--', 'proposed_rent': None, 'status': 'Out For Signing'},
+        {'units': {'properties': {'name': 'Blue Ridge Manor'}, 'unit_number': '3809.5', 'rent': 950.00}, 'tenants': 'Yoilbeth Z. Madrid\nBenito V. Ronquillo', 'expiration': '--', 'proposed_rent': None, 'status': 'Eligible'},
+        {'units': {'properties': {'name': 'Lodge Apartments'}, 'unit_number': '102', 'rent': 950.00}, 'tenants': 'Joe Edwards', 'expiration': '--', 'proposed_rent': 950.00, 'status': 'Eligible'},
+        {'units': {'properties': {'name': 'Longmeadow Apartments'}, 'unit_number': '#21C', 'rent': 785.00}, 'tenants': 'Tara L. Boenig', 'expiration': '--', 'proposed_rent': 785.00, 'status': 'MTM 07/16/2025'},
+        {'units': {'properties': {'name': 'West Plaza'}, 'unit_number': '1709', 'rent': 800.00}, 'tenants': 'CPM 1709 Property Management', 'expiration': '--', 'proposed_rent': None, 'status': 'Eligible'},
     ]
     
     return render_template('leasing/renewals.html', renewals=renewals_data)
@@ -366,6 +400,8 @@ def renewals():
 @login_required
 def leasing_metrics():
     metrics_data = {
+        'occupancy_rate': 90.53,
+        'units_vacant': 115,
         'demand': {
             'guest_cards': 93,
             'applications': 11,
