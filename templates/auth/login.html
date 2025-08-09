@@ -225,7 +225,9 @@
             <span>OR</span>
         </div>
 
-        <form method="POST" action="{{ url_for('quick_login') }}">
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="email" value="admin@aviizn.com">
+            <input type="hidden" name="password" value="admin123">
             <button type="submit" class="btn btn-secondary">Quick Login (Demo)</button>
         </form>
 
@@ -233,10 +235,6 @@
             <a href="#">Forgot your password?</a>
         </div>
 
-        <div class="test-links">
-            <a href="{{ url_for('test_supabase') }}">Test Supabase</a>
-            <a href="{{ url_for('login_direct') }}">Direct Login</a>
-        </div>
     </div>
 </body>
 </html>
