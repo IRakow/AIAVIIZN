@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AVIIZN Property Management{% endblock %}</title>
+    <title>Register - AVIIZN Property Management</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,7 +34,6 @@
             min-height: 100vh;
         }
 
-        /* Login Page Styles */
         .auth-container {
             min-height: 100vh;
             display: flex;
@@ -43,6 +42,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             overflow: hidden;
+            padding: 2rem;
         }
 
         .auth-container::before {
@@ -67,7 +67,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             padding: 3rem;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             position: relative;
             z-index: 1;
             animation: slideUp 0.6s ease-out;
@@ -104,7 +104,7 @@
         }
 
         .form-floating {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-floating input {
@@ -137,21 +137,12 @@
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .btn-auth:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .form-check {
-            margin: 1.5rem 0;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
         }
 
         .auth-links {
@@ -201,12 +192,43 @@
             color: #065f46;
         }
 
-        .alert-info {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            color: #1e40af;
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+            background: var(--border-color);
         }
 
-        /* Loading Spinner */
+        .strength-weak { background: var(--danger-color); width: 33%; }
+        .strength-medium { background: #f59e0b; width: 66%; }
+        .strength-strong { background: var(--success-color); width: 100%; }
+
+        .password-requirements {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            margin-top: 0.5rem;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin: 0.25rem 0;
+        }
+
+        .requirement i {
+            margin-right: 0.5rem;
+            width: 16px;
+        }
+
+        .requirement.met {
+            color: var(--success-color);
+        }
+
+        .requirement.met i::before {
+            content: "\f00c";
+        }
+
         .spinner-container {
             display: none;
             position: fixed;
@@ -233,34 +255,33 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Password strength indicator */
-        .password-strength {
-            height: 4px;
-            border-radius: 2px;
-            margin-top: 0.5rem;
-            transition: all 0.3s ease;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
-        .strength-weak { background: var(--danger-color); width: 33%; }
-        .strength-medium { background: #f59e0b; width: 66%; }
-        .strength-strong { background: var(--success-color); width: 100%; }
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
 
-        /* Remember me styling */
-        .remember-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .terms-checkbox {
             margin: 1.5rem 0;
         }
 
-        .forgot-link {
-            color: var(--primary-color);
-            text-decoration: none;
+        .terms-checkbox .form-check-label {
             font-size: 0.9rem;
-            font-weight: 500;
+            color: var(--secondary-color);
         }
 
-        .forgot-link:hover {
+        .terms-checkbox a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
             text-decoration: underline;
         }
     </style>
@@ -274,7 +295,7 @@
         <div class="auth-card">
             <div class="auth-logo">
                 <h1>AVIIZN</h1>
-                <p>Property Management System</p>
+                <p>Create Your Account</p>
             </div>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -288,36 +309,75 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+            <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                <div class="form-row">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               placeholder="Full Name" required>
+                        <label for="full_name">Full Name</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="company_name" name="company_name" 
+                               placeholder="Company Name" required>
+                        <label for="company_name">Company Name</label>
+                    </div>
+                </div>
+
                 <div class="form-floating">
                     <input type="email" class="form-control" id="email" name="email" 
-                           placeholder="name@example.com" required autofocus>
+                           placeholder="name@example.com" required>
                     <label for="email">Email address</label>
                 </div>
 
                 <div class="form-floating">
                     <input type="password" class="form-control" id="password" name="password" 
-                           placeholder="Password" required>
+                           placeholder="Password" required minlength="8">
                     <label for="password">Password</label>
+                    <div class="password-strength" id="passwordStrength"></div>
+                    <div class="password-requirements">
+                        <div class="requirement" id="length">
+                            <i class="far fa-circle"></i>
+                            <span>At least 8 characters</span>
+                        </div>
+                        <div class="requirement" id="uppercase">
+                            <i class="far fa-circle"></i>
+                            <span>One uppercase letter</span>
+                        </div>
+                        <div class="requirement" id="number">
+                            <i class="far fa-circle"></i>
+                            <span>One number</span>
+                        </div>
+                        <div class="requirement" id="special">
+                            <i class="far fa-circle"></i>
+                            <span>One special character</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="remember-section">
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                           placeholder="Confirm Password" required minlength="8">
+                    <label for="confirm_password">Confirm Password</label>
+                </div>
+
+                <div class="terms-checkbox">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                        <label class="form-check-label" for="remember">
-                            Remember me
+                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                            I agree to the <a href="#" target="_blank">Terms of Service</a> and 
+                            <a href="#" target="_blank">Privacy Policy</a>
                         </label>
                     </div>
-                    <a href="#" class="forgot-link">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-auth">
-                    Sign In to AVIIZN
+                <button type="submit" class="btn btn-auth" id="submitBtn">
+                    Create Account
                 </button>
             </form>
 
             <div class="auth-links">
-                <p class="mb-0">New to AVIIZN? <a href="{{ url_for('register') }}">Create an account</a></p>
+                <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
             </div>
         </div>
     </div>
@@ -326,24 +386,86 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Initialize Supabase client
-        const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const requirements = {
+            length: document.getElementById('length'),
+            uppercase: document.getElementById('uppercase'),
+            number: document.getElementById('number'),
+            special: document.getElementById('special')
+        };
 
-        // Form submission with loading state
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const spinner = document.getElementById('loadingSpinner');
-            const submitBtn = this.querySelector('button[type="submit"]');
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const checks = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            // Update requirements display
+            Object.keys(checks).forEach(key => {
+                if (checks[key]) {
+                    requirements[key].classList.add('met');
+                    requirements[key].querySelector('i').className = 'fas fa-check-circle';
+                    strength++;
+                } else {
+                    requirements[key].classList.remove('met');
+                    requirements[key].querySelector('i').className = 'far fa-circle';
+                }
+            });
+
+            // Update strength bar
+            if (strength <= 1) {
+                passwordStrength.className = 'password-strength strength-weak';
+            } else if (strength <= 3) {
+                passwordStrength.className = 'password-strength strength-medium';
+            } else {
+                passwordStrength.className = 'password-strength strength-strong';
+            }
+
+            return strength === 4;
+        }
+
+        passwordInput.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        // Form validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (!checkPasswordStrength(password)) {
+                alert('Please ensure your password meets all requirements.');
+                return;
+            }
             
             // Show loading state
+            const spinner = document.getElementById('loadingSpinner');
+            const submitBtn = document.getElementById('submitBtn');
+            
             spinner.style.display = 'flex';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing in...';
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating account...';
+            
+            // Submit the form
+            this.submit();
         });
 
         // Password visibility toggle
-        function addPasswordToggle() {
-            const passwordInput = document.getElementById('password');
+        function addPasswordToggle(inputId) {
+            const passwordInput = document.getElementById(inputId);
             const container = passwordInput.parentElement;
             
             const toggleBtn = document.createElement('button');
@@ -368,9 +490,10 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            addPasswordToggle();
+            addPasswordToggle('password');
+            addPasswordToggle('confirm_password');
             
-            // Auto-dismiss alerts after 5 seconds
+            // Auto-dismiss alerts
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 setTimeout(() => {
@@ -379,11 +502,6 @@
                 }, 5000);
             });
         });
-
-        // Prevent form resubmission on page refresh
-        if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
-        }
     </script>
 </body>
 </html>
