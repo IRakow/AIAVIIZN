@@ -24,6 +24,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
+
             flash('Please log in to access this page.', 'warning')
             return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
@@ -666,3 +667,114 @@ def receipts():
         {'date': '08/07/2025', 'payer': 'Sarah A. Dement (Paid online)', 'account': '4100: Rent Charge, 4310: RUBS Utility Charge, 5999: Liability to Landlord Insurance, 5680: Late Fee', 'property': 'Windscape Apartments - 9119', 'amount': 1028.50, 'reference': 'C5C3-B650'},
         {'date': '08/07/2025', 'payer': 'DeWayne Williams (Paid online)', 'account': '4100: Rent Charge', 'property': 'Homestead Villas 4-Plex - 4872 Terr', 'amount': 290.00, 'reference': '600F-6CC0'},
         {'date': '08/07/2025', 'payer': 'Angelo F. Della Croce (Paid online)', 'account': '4100: Rent Charge', 'property': 'Brentwood Park / Brentwood Park Ventures LLC - 3607 #02', 'amount': 88.50,
+
+        # ADD THESE ROUTE ALIASES TO YOUR EXISTING app.py
+# These create additional URL patterns that match what your templates expect
+# Don't remove your existing routes, just add these after them
+
+# Calendar route
+@app.route('/calendar')
+@login_required
+def calendar():
+    return render_template('calendar.html')
+
+# People routes with URL patterns your templates expect
+@app.route('/people/tenants')
+@login_required
+def people_tenants():
+    return tenants()  # Calls your existing tenants function
+
+@app.route('/people/owners')
+@login_required
+def people_owners():
+    return owners()  # Calls your existing owners function
+
+@app.route('/people/vendors')
+@login_required
+def people_vendors():
+    return vendors()  # Calls your existing vendors function
+
+# What's New route
+@app.route('/whats-new')
+@login_required
+def whats_new():
+    return render_template('whats_new.html')
+
+# Online Payments route
+@app.route('/online-payments')
+@login_required
+def online_payments():
+    return render_template('online_payments.html')
+
+# Reporting routes
+@app.route('/reporting/reports')
+@login_required
+def reports():
+    return render_template('reporting/reports.html')
+
+@app.route('/reporting/scheduled-reports')
+@login_required
+def scheduled_reports():
+    return render_template('reporting/scheduled_reports.html')
+
+@app.route('/reporting/metrics')
+@login_required
+def reporting_metrics():
+    return render_template('reporting/metrics.html')
+
+@app.route('/reporting/surveys')
+@login_required
+def surveys():
+    return render_template('reporting/surveys.html')
+
+@app.route('/reporting/financial-reports')
+@login_required
+def financial_reports():
+    return render_template('reporting/financial_reports.html')
+
+@app.route('/reporting/rent-roll')
+@login_required
+def rent_roll():
+    return render_template('reporting/rent_roll.html')
+
+@app.route('/reporting/vacancy-reports')
+@login_required
+def vacancy_reports():
+    return render_template('reporting/vacancy_reports.html')
+
+# Communication routes
+@app.route('/communication/letters')
+@login_required
+def letters():
+    return render_template('communication/letters.html')
+
+@app.route('/communication/forms')
+@login_required
+def forms():
+    return render_template('communication/forms.html')
+
+@app.route('/communication/phone-logs')
+@login_required
+def phone_logs():
+    return render_template('communication/phone_logs.html')
+
+# Admin routes for your additional files
+@app.route('/admin/users')
+@login_required
+def users():
+    return render_template('admin/users.html')
+
+@app.route('/admin/showings')
+@login_required
+def showings():
+    return render_template('admin/showings.html')
+
+@app.route('/admin/emails')
+@login_required
+def emails():
+    return render_template('admin/emails.html')
+
+@app.route('/admin/company-settings')
+@login_required
+def company_settings():
+    return render_template('admin/company_settings.html')
