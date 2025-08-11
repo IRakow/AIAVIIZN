@@ -1,36 +1,94 @@
 {% extends "base.html" %}
 
 {% block title %}Vacancies - Property Management{% endblock %}
-{% block page_title %}Vacancies{% endblock %}
 
-{% block extra_css %}
+{% block content %}
+<div class="content-header">
+    <h2>Vacancies</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="vacancies-container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <input type="text" class="search-bar" placeholder="Click here to search" id="searchInput">
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <span class="sort-label">Sort By:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="days_vacant">Days Vacant</option>
+                <option value="rent_low">Rent: Low to High</option>
+                <option value="rent_high">Rent: High to Low</option>
+                <option value="unit">Unit Number</option>
+                <option value="sqft">Square Footage</option>
+            </select>
+        </div>
+
+        <!-- Vacancy Grid -->
+        <div class="vacancy-grid" id="vacancyGrid">
+            <!-- Vacancy Cards will be dynamically generated here -->
+        </div>
+    </div>
+</div>
+
 <style>
     .vacancies-container {
+        background-color: white;
+        border-radius: 4px;
         padding: 20px;
-        background-color: #f8f9fa;
-        min-height: calc(100vh - 200px);
     }
 
     .search-section {
         background: white;
         padding: 20px;
         margin-bottom: 20px;
+        border: 1px solid #dee2e6;
         border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .search-bar {
         width: 100%;
         padding: 12px 20px;
-        border: 2px solid #007bff;
+        border: 2px solid #0B5394;
         border-radius: 8px;
         font-size: 14px;
         outline: none;
         transition: all 0.3s;
+        text-align: center;
+        color: #6c757d;
     }
 
     .search-bar:focus {
-        box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+        text-align: left;
+        color: #212529;
     }
 
     .filter-controls {
@@ -64,14 +122,14 @@
 
     .vacancy-card {
         background: white;
+        border: 1px solid #dee2e6;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         transition: box-shadow 0.3s;
     }
 
     .vacancy-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .vacancy-header {
@@ -97,12 +155,12 @@
     .property-image {
         width: 200px;
         height: 140px;
-        background-color: #e9ecef;
+        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 4px;
-        position: relative;
+        border: 1px solid #dee2e6;
     }
 
     .property-icon {
@@ -125,7 +183,7 @@
     .property-title {
         font-size: 14px;
         font-weight: 600;
-        color: #007bff;
+        color: #0B5394;
         margin-bottom: 5px;
         text-decoration: none;
     }
@@ -174,7 +232,7 @@
         padding: 15px;
         background: #f8f9fa;
         border-radius: 4px;
-        min-width: 200px;
+        min-width: 180px;
     }
 
     .status-row {
@@ -195,6 +253,7 @@
 
     .status-value.posted {
         color: #28a745;
+        font-weight: 500;
     }
 
     .property-actions {
@@ -202,7 +261,7 @@
         flex-direction: column;
         gap: 8px;
         padding: 15px;
-        min-width: 180px;
+        min-width: 150px;
     }
 
     .action-row {
@@ -228,21 +287,21 @@
     }
 
     .btn-post {
-        background: #007bff;
+        background: #0B5394;
         color: white;
     }
 
     .btn-post:hover {
-        background: #0056b3;
+        background: #073763;
     }
 
     .btn-activate {
-        background: #007bff;
+        background: #0B5394;
         color: white;
     }
 
     .btn-activate:hover {
-        background: #0056b3;
+        background: #073763;
     }
 
     .btn-posted {
@@ -327,44 +386,33 @@
     .no-vacancies-subtext {
         font-size: 14px;
     }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
 </style>
-{% endblock %}
-
-{% block tabs %}
-<a href="{{ url_for('dashboard') }}" class="tab-nav-item">Dashboard</a>
-<a href="{{ url_for('vacancies') }}" class="tab-nav-item active">Vacancies</a>
-<a href="{{ url_for('guest_cards') }}" class="tab-nav-item">Guest Cards</a>
-<a href="{{ url_for('rental_applications') }}" class="tab-nav-item">Rental Applications</a>
-<a href="{{ url_for('leases') }}" class="tab-nav-item">Leases</a>
-<a href="{{ url_for('renewals') }}" class="tab-nav-item">Renewals</a>
-<a href="{{ url_for('leasing_metrics') }}" class="tab-nav-item">Metrics</a>
-<a href="{{ url_for('signals') }}" class="tab-nav-item">Signals</a>
-{% endblock %}
-
-{% block content %}
-<div class="vacancies-container">
-    <!-- Search Section -->
-    <div class="search-section">
-        <input type="text" class="search-bar" placeholder="Click here to search" id="searchInput">
-    </div>
-
-    <!-- Filter Controls -->
-    <div class="filter-controls">
-        <span class="sort-label">Sort By:</span>
-        <select class="sort-select" id="sortSelect">
-            <option value="days_vacant">Days Vacant</option>
-            <option value="rent_low">Rent: Low to High</option>
-            <option value="rent_high">Rent: High to Low</option>
-            <option value="unit">Unit Number</option>
-            <option value="sqft">Square Footage</option>
-        </select>
-    </div>
-
-    <!-- Vacancy Grid -->
-    <div class="vacancy-grid" id="vacancyGrid">
-        <!-- Vacancy Cards will be dynamically generated here -->
-    </div>
-</div>
 
 <script>
 // Sample vacancy data - in production this would come from the backend
@@ -432,38 +480,6 @@ const vacancies = [
         internet: false,
         premium: false,
         photos: 0
-    },
-    {
-        id: 5,
-        property: "Walnut Ridge Apts",
-        unit: "6110-C",
-        address: "Walnut Ridge Apts - 6110 1/2 A NW Bell Rd.",
-        bedrooms: 2,
-        bathrooms: 1,
-        sqft: 850,
-        rent: 625,
-        available: "Now",
-        vacantDays: 545,
-        website: true,
-        internet: true,
-        premium: false,
-        photos: 3
-    },
-    {
-        id: 6,
-        property: "Longmeadow Apartments",
-        unit: "15C",
-        address: "Longmeadow Apartments - #15C",
-        bedrooms: 2,
-        bathrooms: 2,
-        sqft: 950,
-        rent: 785,
-        available: "Now",
-        vacantDays: 421,
-        website: true,
-        internet: false,
-        premium: true,
-        photos: 5
     }
 ];
 
@@ -641,31 +657,25 @@ document.addEventListener('click', function(e) {
 // Action menu functions
 function editVacancy(id) {
     console.log('Edit vacancy:', id);
-    // Implement edit functionality
 }
 
 function viewDetails(id) {
     console.log('View details:', id);
-    // Implement view details functionality
 }
 
 function uploadPhotos(id) {
     console.log('Upload photos:', id);
-    // Implement photo upload functionality
 }
 
 function printFlyer(id) {
     console.log('Print flyer:', id);
-    // Implement print flyer functionality
 }
 
 function scheduleShowing(id) {
     console.log('Schedule showing:', id);
-    // Implement schedule showing functionality
 }
 
 function markAsRented(id) {
-    console.log('Mark as rented:', id);
     const index = vacancies.findIndex(v => v.id === id);
     if (index > -1) {
         vacancies.splice(index, 1);
@@ -676,12 +686,11 @@ function markAsRented(id) {
 
 // Show notification
 function showNotification(message) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: 60px;
+        right: 400px;
         background: #28a745;
         color: white;
         padding: 12px 20px;
@@ -693,7 +702,6 @@ function showNotification(message) {
     notification.textContent = message;
     document.body.appendChild(notification);
     
-    // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notification.remove(), 300);

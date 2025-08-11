@@ -2,18 +2,211 @@
 
 {% block title %}Guest Cards - Property Management{% endblock %}
 
-{% block extra_css %}
+{% block content %}
+<div class="content-header">
+    <h2>Guest Cards</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="guest-cards-container">
+        <!-- Search Box -->
+        <div class="search-box" onclick="openSearch()">
+            Click here to search
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <span class="action-label">Bulk Actions</span>
+            <button class="action-btn" onclick="bulkAction('active')">Mark Active</button>
+            <button class="action-btn" onclick="bulkAction('inactive')">Mark Inactive</button>
+            <button class="action-btn" onclick="bulkAction('waitlisted')">Mark Waitlisted</button>
+            <button class="action-btn" onclick="sendBulkEmail()">Send Email</button>
+            <button class="action-btn" onclick="assignUser()">Assign User</button>
+            <button class="action-btn" onclick="sendApplicationLink()">Send Application Link</button>
+            <button class="action-btn" onclick="sendShowingLink()">Send Showing Link</button>
+            <button class="action-btn" onclick="sendText()">Send Text</button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30px;"><input type="checkbox" id="select-all"></th>
+                        <th>Name <span class="sort-icon">⇅</span></th>
+                        <th>Interested In <span class="sort-icon">⇅</span></th>
+                        <th>Latest Interest <span class="sort-icon">⇅</span></th>
+                        <th>Most Recent Activity <span class="sort-icon">⇅</span></th>
+                        <th>Source <span class="sort-icon">⇅</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if guests %}
+                        {% for guest in guests %}
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox" value="{{ guest.id }}"></td>
+                            <td class="guest-name">{{ guest.name }}</td>
+                            <td>
+                                {% if guest.properties %}
+                                    {{ guest.properties.name }}
+                                    {% if guest.units %} - {{ guest.units.unit_number }}{% endif %}
+                                {% else %}
+                                    {{ guest.interested_in or '-' }}
+                                {% endif %}
+                            </td>
+                            <td>{{ guest.latest_interest_date or '-' }}</td>
+                            <td>
+                                {% if guest.last_activity %}
+                                    <span class="activity-type">{{ guest.last_activity }}</span><br>
+                                    {{ guest.last_activity_date or '-' }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ guest.source or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Sample data for demonstration -->
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Phillips, Stevie</td>
+                            <td>(BARR) Rock Ridge Ranch Apartments<br>Walnut Ridge Apts</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
+                            <td>EveryApartment</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Cutroni, Doreen</td>
+                            <td>Indian Creek Townhomes - 11622 Bluejacket St.</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
+                            <td>Rent.</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Pool, Josephine</td>
+                            <td>Summit Apartments</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Pre-qualification Form Submitted</span><br>08/07/2025</td>
+                            <td>Zillow Rental Network</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Raja, Rajput</td>
+                            <td>Lodge Apartments</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
+                            <td>Apartments.com</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Hall, Isaiah</td>
+                            <td>Barton Crossing / W&W Properties LLC - 6117 #1B</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Showing</span><br>08/11/2025</td>
+                            <td>Facebook Marketplace</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Thomas, Mary</td>
+                            <td>Longmeadow Apartments - #15C</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Showing</span><br>08/11/2025</td>
+                            <td>call</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Washington, Felecia</td>
+                            <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Pearl St. Apts / GBA1947 LLC</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Showing</span><br>08/11/2025</td>
+                            <td>call</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Lopez, Gabriel</td>
+                            <td>Longmeadow Apartments - #15C</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Showing</span><br>08/14/2025</td>
+                            <td>call</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Munoz, Jazheel</td>
+                            <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Phog Apartments / Meiners Development Co. of Independence - 3900 #09<br>Phog Apartments / Meiners Development Co. of Independence - 3900 #04</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Showing</span><br>08/08/2025</td>
+                            <td>call</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Burt, Makila</td>
+                            <td>Lodge Apartments</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
+                            <td>Apartments.com</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="guest-name">Cudney, Arieann</td>
+                            <td>Indian Creek Townhomes - 11622 Bluejacket St.<br>Goodman Townhomes</td>
+                            <td>08/07/2025</td>
+                            <td><span class="activity-type">Email Sent</span><br>08/07/2025</td>
+                            <td>Zillow Rental Network</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <style>
+    .guest-cards-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
     /* Search Box */
     .search-box {
         background-color: white;
-        border: 1px solid #007bff;
-        border-radius: 4px;
+        border: 2px solid #0B5394;
+        border-radius: 8px;
         padding: 12px;
         margin-bottom: 20px;
         text-align: center;
         cursor: pointer;
         position: relative;
+        color: #6c757d;
+        transition: all 0.3s;
     }
 
     .search-box:hover {
@@ -46,13 +239,14 @@
         margin-right: 10px;
         color: #666;
         font-size: 12px;
+        font-weight: 600;
     }
 
     .action-btn {
         padding: 6px 12px;
-        border: 1px solid #007bff;
+        border: 1px solid #0B5394;
         background-color: white;
-        color: #007bff;
+        color: #0B5394;
         border-radius: 3px;
         cursor: pointer;
         font-size: 12px;
@@ -60,18 +254,20 @@
     }
 
     .action-btn:hover {
-        background-color: #007bff;
+        background-color: #0B5394;
         color: white;
     }
 
     .sort-icon {
         margin-left: 5px;
         color: #6c757d;
+        font-size: 10px;
     }
 
     .guest-name {
-        color: #0056b3;
+        color: #0B5394;
         cursor: pointer;
+        font-weight: 500;
     }
 
     .guest-name:hover {
@@ -80,200 +276,50 @@
 
     .activity-type {
         font-weight: 600;
+        color: #495057;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+
+    /* Data table override specific styles */
+    .data-table {
+        margin-top: 0;
+    }
+
+    .data-table th {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .data-table th:hover {
+        background-color: #e9ecef;
     }
 </style>
-{% endblock %}
 
-{% block tasks_panel %}
-<div class="tasks-panel" id="tasks-panel">
-    <div class="tasks-header">
-        <h3>Tasks</h3>
-        <button class="close-btn" onclick="toggleTasks()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #6c757d;">×</button>
-    </div>
-    <div class="tasks-content">
-        <div class="task-section-title">⭐ Tasks</div>
-        <div class="task-item">New Guest Card</div>
-        <div class="task-item">Bulk Guest Cards</div>
-        <div class="task-item">Set Showing Availability</div>
-        <div class="task-item">Manage Lockboxes</div>
-        <div class="task-item">Showings With CodeBox</div>
-        
-        <div class="task-section-title">📅 Calendar</div>
-        <div class="task-item">View Calendar</div>
-        
-        <div class="task-section-title">📊 Reports</div>
-        <div class="task-item">Guest Card Interests</div>
-        <div class="task-item">Guest Card Inquiries</div>
-        <div class="task-item">Prospect Source Tracking</div>
-        <div class="task-item">Owner Leasing</div>
-        <div class="task-item">Premium Listing Billing Detail</div>
-        <div class="task-item">Leasing Agent Performance</div>
-        <div class="task-item">Leasing Funnel Performance</div>
-        
-        <div class="task-section-title">❓ Help Topics</div>
-        <div class="task-item">Using Guest Cards</div>
-        <div class="task-item">Premium Listing</div>
-    </div>
-</div>
-{% endblock %}
-
-{% block content %}
-<h1 class="page-title">Guest Cards</h1>
-
-<!-- Search Box -->
-<div class="search-box" onclick="openSearch()">
-    Click here to search
-</div>
-
-<!-- Action Buttons -->
-<div class="action-buttons">
-    <span class="action-label">Bulk Actions</span>
-    <button class="action-btn" onclick="bulkAction('active')">Mark Active</button>
-    <button class="action-btn" onclick="bulkAction('inactive')">Mark Inactive</button>
-    <button class="action-btn" onclick="bulkAction('waitlisted')">Mark Waitlisted</button>
-    <button class="action-btn" onclick="sendBulkEmail()">Send Email</button>
-    <button class="action-btn" onclick="assignUser()">Assign User</button>
-    <button class="action-btn" onclick="sendApplicationLink()">Send Application Link</button>
-    <button class="action-btn" onclick="sendShowingLink()">Send Showing Link</button>
-    <button class="action-btn" onclick="sendText()">Send Text</button>
-</div>
-
-<!-- Data Table -->
-<div class="data-table">
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 30px;"><input type="checkbox" id="select-all"></th>
-                <th>Name <span class="sort-icon">⇅</span></th>
-                <th>Interested In <span class="sort-icon">⇅</span></th>
-                <th>Latest Interest <span class="sort-icon">⇅</span></th>
-                <th>Most Recent Activity <span class="sort-icon">⇅</span></th>
-                <th>Source <span class="sort-icon">⇅</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if guests %}
-                {% for guest in guests %}
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox" value="{{ guest.id }}"></td>
-                    <td class="guest-name">{{ guest.name }}</td>
-                    <td>
-                        {% if guest.properties %}
-                            {{ guest.properties.name }}
-                            {% if guest.units %} - {{ guest.units.unit_number }}{% endif %}
-                        {% else %}
-                            {{ guest.interested_in or '-' }}
-                        {% endif %}
-                    </td>
-                    <td>{{ guest.latest_interest_date or '-' }}</td>
-                    <td>
-                        {% if guest.last_activity %}
-                            <span class="activity-type">{{ guest.last_activity }}</span><br>
-                            {{ guest.last_activity_date or '-' }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{ guest.source or '-' }}</td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <!-- Sample data for demonstration -->
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Thomas, Mary</td>
-                    <td>Longmeadow Apartments - #15C</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Showing</span><br>08/11/2025</td>
-                    <td>call</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Washington, Felecia</td>
-                    <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Pearl St. Apts / GBA1947 LLC</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Showing</span><br>08/11/2025</td>
-                    <td>call</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Lopez, Gabriel</td>
-                    <td>Longmeadow Apartments - #15C</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Showing</span><br>08/14/2025</td>
-                    <td>call</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Munoz, Jazheel</td>
-                    <td>Pearl St. Apts / GBA1947 LLC - 2807-3<br>Phog Apartments / Meiners Development Co. - 3900 #09<br>Phog Apartments / Meiners Development Co. - 3900 #04</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Showing</span><br>08/08/2025</td>
-                    <td>call</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Burt, Makila</td>
-                    <td>Lodge Apartments</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Auto-Response Email Sent</span><br>08/07/2025</td>
-                    <td>Apartments.com</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Cudney, Arieann</td>
-                    <td>Indian Creek Townhomes - 11622 Bluejacket St.<br>Goodman Townhomes</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Email Sent</span><br>08/07/2025</td>
-                    <td>Zillow Rental Network</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Strickland, Tori</td>
-                    <td>Blue Ridge Manor</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Pre-qualification Form Submitted</span><br>08/07/2025</td>
-                    <td>Apartments.com</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Simpson, Tamara</td>
-                    <td>Pleasant Valley Apts / Best Beach - 6504 #9</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
-                    <td>add a roommate</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Davidson, Jake</td>
-                    <td>Charlotte Park Apartments - 807 #2E</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
-                    <td>Zillow Rental Network</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Bittaye, Baboucar</td>
-                    <td>Villas of Mur-Len / TSI Villas of Mur-Len - 303 P</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Text Sent</span><br>08/07/2025</td>
-                    <td>drive by</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td class="guest-name">Boose, Dasean</td>
-                    <td>(BARR) Rock Ridge Ranch Apartments - 49A</td>
-                    <td>08/07/2025</td>
-                    <td><span class="activity-type">Showing</span><br>08/08/2025</td>
-                    <td>call</td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
-
-{% block scripts %}
 <script>
     // Select all checkbox functionality
     document.getElementById('select-all').addEventListener('change', function() {
@@ -313,21 +359,9 @@
             return;
         }
         
-        fetch('/api/guest-cards/bulk-update', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ids: selected, status: status})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(`Updated ${selected.length} guest card(s) to ${status}`);
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        console.log(`Updating ${selected.length} guest card(s) to ${status}`);
+        // In production, make API call here
+        alert(`Updated ${selected.length} guest card(s) to ${status}`);
     }
 
     // Other actions
@@ -391,7 +425,7 @@
         if (header.querySelector('.sort-icon')) {
             header.addEventListener('click', function() {
                 console.log('Sorting by:', this.textContent);
-                // Implement sorting logic
+                // Implement sorting logic here
             });
         }
     });

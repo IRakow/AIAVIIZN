@@ -138,6 +138,17 @@
             font-size: 13px;
             transition: all 0.2s;
             cursor: pointer;
+            position: relative;
+        }
+        
+        .sidebar-link .chevron-icon {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+            font-size: 10px;
+        }
+        
+        .sidebar-link.expanded .chevron-icon {
+            transform: rotate(180deg);
         }
         
         .sidebar-link:hover {
@@ -158,12 +169,14 @@
         }
         
         .sidebar-dropdown {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
             background-color: #FFFFFF;
+            transition: max-height 0.3s ease;
         }
         
         .sidebar-dropdown.show {
-            display: block;
+            max-height: 500px;
         }
         
         .sidebar-dropdown .sidebar-link {
@@ -485,9 +498,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu', this)">
                         <i class="fas fa-key"></i> Leasing
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="leasing-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('vacancies') }}" class="sidebar-link">Vacancies</a>
@@ -507,9 +520,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu', this)">
                         <i class="fas fa-users"></i> People
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="people-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('tenants') }}" class="sidebar-link">Tenants</a>
@@ -519,9 +532,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu', this)">
                         <i class="fas fa-calculator"></i> Accounting
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="accounting-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('receivables') }}" class="sidebar-link">Receivables</a>
@@ -535,9 +548,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu', this)">
                         <i class="fas fa-wrench"></i> Maintenance
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="maintenance-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('work_orders') }}" class="sidebar-link">Work Orders</a>
@@ -553,9 +566,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu', this)">
                         <i class="fas fa-chart-bar"></i> Reporting
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="reporting-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('reports') }}" class="sidebar-link">Reports</a>
@@ -566,9 +579,9 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu')">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu', this)">
                         <i class="fas fa-envelope"></i> Communication
-                        <i class="fas fa-chevron-down ms-auto"></i>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
                     <div id="communication-menu" class="sidebar-dropdown">
                         <a href="{{ url_for('letters') }}" class="sidebar-link">Letters</a>
@@ -770,23 +783,151 @@
     
     <!-- Custom JS -->
     <script>
-        function toggleDropdown(menuId) {
+        // Toggle dropdown menu with arrow rotation
+        function toggleDropdown(menuId, linkElement) {
             const dropdown = document.getElementById(menuId);
+            const isOpen = dropdown.classList.contains('show');
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.sidebar-dropdown').forEach(function(el) {
+                if (el.id !== menuId) {
+                    el.classList.remove('show');
+                }
+            });
+            
+            // Remove expanded class from all sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                if (link !== linkElement) {
+                    link.classList.remove('expanded');
+                }
+            });
+            
+            // Toggle current dropdown
             dropdown.classList.toggle('show');
+            linkElement.classList.toggle('expanded');
+            
+            // Prevent default link behavior
+            event.preventDefault();
+            return false;
         }
         
+        // Minimize/Expand sidebar
         function toggleSidebar() {
             const sidebar = document.querySelector('.left-sidebar');
             const content = document.querySelector('.content-wrapper');
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            const sidebarBrand = document.querySelector('.sidebar-brand h1');
+            const dashboardBtn = document.querySelector('.dashboard-btn');
+            const minimizeBtn = document.querySelector('.sidebar-minimize button');
             
-            if (sidebar.style.width === '60px') {
+            if (sidebar.classList.contains('minimized')) {
+                // Expand sidebar
+                sidebar.classList.remove('minimized');
                 sidebar.style.width = '180px';
                 content.style.marginLeft = '180px';
+                sidebarBrand.style.display = 'block';
+                dashboardBtn.innerHTML = '<i class="fas fa-th-large"></i> Dashboard';
+                minimizeBtn.innerHTML = '<i class="fas fa-angle-double-left"></i> Minimize';
+                
+                // Show text in sidebar links
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.querySelectorAll('span').forEach(function(span) {
+                        span.style.display = 'inline';
+                    });
+                });
             } else {
+                // Minimize sidebar
+                sidebar.classList.add('minimized');
                 sidebar.style.width = '60px';
                 content.style.marginLeft = '60px';
+                sidebarBrand.style.display = 'none';
+                dashboardBtn.innerHTML = '<i class="fas fa-th-large"></i>';
+                minimizeBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+                
+                // Hide text in sidebar links, keep only icons
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.querySelectorAll('span').forEach(function(span) {
+                        span.style.display = 'none';
+                    });
+                });
+                
+                // Close all dropdowns when minimizing
+                document.querySelectorAll('.sidebar-dropdown').forEach(function(dropdown) {
+                    dropdown.classList.remove('show');
+                });
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.classList.remove('expanded');
+                });
             }
         }
+        
+        // Initialize on page load - check current page and expand appropriate menu
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            
+            // Auto-expand the relevant menu based on current page
+            if (currentPath.includes('/vacancies') || currentPath.includes('/guest_cards') || 
+                currentPath.includes('/rental_applications') || currentPath.includes('/leases') ||
+                currentPath.includes('/renewals') || currentPath.includes('/metrics') || 
+                currentPath.includes('/signals')) {
+                const leasingMenu = document.getElementById('leasing-menu');
+                const leasingLink = leasingMenu.previousElementSibling;
+                leasingMenu.classList.add('show');
+                leasingLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/tenants') || currentPath.includes('/owners') || 
+                currentPath.includes('/vendors')) {
+                const peopleMenu = document.getElementById('people-menu');
+                const peopleLink = peopleMenu.previousElementSibling;
+                peopleMenu.classList.add('show');
+                peopleLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/receivables') || currentPath.includes('/payables') || 
+                currentPath.includes('/bank_accounts') || currentPath.includes('/journal_entries') ||
+                currentPath.includes('/bank_transfers') || currentPath.includes('/gl_accounts') ||
+                currentPath.includes('/diagnostics')) {
+                const accountingMenu = document.getElementById('accounting-menu');
+                const accountingLink = accountingMenu.previousElementSibling;
+                accountingMenu.classList.add('show');
+                accountingLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/work_orders') || currentPath.includes('/recurring_work_orders') ||
+                currentPath.includes('/inspections') || currentPath.includes('/unit_turns') ||
+                currentPath.includes('/projects') || currentPath.includes('/purchase_orders') ||
+                currentPath.includes('/inventory') || currentPath.includes('/fixed_assets') ||
+                currentPath.includes('/smart_maintenance')) {
+                const maintenanceMenu = document.getElementById('maintenance-menu');
+                const maintenanceLink = maintenanceMenu.previousElementSibling;
+                maintenanceMenu.classList.add('show');
+                maintenanceLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/reports') || currentPath.includes('/scheduled_reports') ||
+                currentPath.includes('/metrics') || currentPath.includes('/surveys')) {
+                const reportingMenu = document.getElementById('reporting-menu');
+                const reportingLink = reportingMenu.previousElementSibling;
+                reportingMenu.classList.add('show');
+                reportingLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/letters') || currentPath.includes('/forms') || 
+                currentPath.includes('/inbox')) {
+                const communicationMenu = document.getElementById('communication-menu');
+                const communicationLink = communicationMenu.previousElementSibling;
+                communicationMenu.classList.add('show');
+                communicationLink.classList.add('expanded');
+            }
+            
+            // Highlight active menu item
+            document.querySelectorAll('.sidebar-dropdown .sidebar-link').forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
     
     {% block scripts %}{% endblock %}
