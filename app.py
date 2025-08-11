@@ -7,10 +7,14 @@ import secrets
 from supabase import create_client, Client
 import random
 from decimal import Decimal
+from calendar_api import calendar_api
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
+# Register the calendar API blueprint
+app.register_blueprint(calendar_api)
 
 # Supabase Configuration
 SUPABASE_URL = "https://sejebqdhcilwcpjpznep.supabase.co"

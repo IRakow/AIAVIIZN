@@ -1,28 +1,1392 @@
-{% extends "base.html" %}
-
-{% block title %}Calendar - Property Management{% endblock %}
-
-{% block content %}
-<div class="content-wrapper">
-    <div class="page-header">
-        <h1>Calendar</h1>
-        <div class="header-actions">
-            <button class="btn btn-primary" onclick="location.href='#'">
-                <i class="fas fa-plus"></i> Add Event
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - AIVIIZN</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css' rel='stylesheet' />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0B5394;
+            --dark-blue: #073763;
+            --light-blue: #4A90E2;
+            --sidebar-width: 250px;
+            --move-in-color: #667eea;
+            --move-out-color: #f093fb;
+            --showing-color: #4facfe;
+            --maintenance-color: #43e97b;
+            --inspection-color: #ffa726;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar Styles - Same as dashboard */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+        }
+        
+        .sidebar-header h3 {
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        .sidebar-header small {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .sidebar-menu-item:hover {
+            background: #f0f7ff;
+            color: var(--primary-blue);
+        }
+        
+        .sidebar-menu-item.active {
+            background: #e8f0fe;
+            color: var(--primary-blue);
+            border-left: 3px solid var(--primary-blue);
+        }
+        
+        .sidebar-menu-item i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .sidebar-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #f8f9fa;
+        }
+        
+        .sidebar-dropdown.show {
+            max-height: 500px;
+        }
+        
+        .sidebar-dropdown-item {
+            padding: 10px 20px 10px 50px;
+            display: block;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-dropdown-item:hover {
+            color: var(--primary-blue);
+            background: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Calendar Header */
+        .calendar-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .calendar-nav button {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .calendar-nav button:hover {
+            background: #f8f9fa;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .calendar-nav .today-btn {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .calendar-nav .today-btn:hover {
+            background: var(--dark-blue);
+            border-color: var(--dark-blue);
+        }
+        
+        .calendar-date-range {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .calendar-view-buttons {
+            display: flex;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        
+        .calendar-view-buttons button {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .calendar-view-buttons button.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-view-buttons button:hover {
+            background: white;
+        }
+        
+        /* Event Type Tabs */
+        .event-type-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        
+        .event-type-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .event-type-tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .event-type-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Calendar Container */
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        /* FullCalendar Customization */
+        #calendar {
+            height: calc(100vh - 320px);
+        }
+        
+        .fc-theme-standard .fc-scrollgrid {
+            border: none;
+        }
+        
+        .fc-theme-standard td, .fc-theme-standard th {
+            border-color: #e0e0e0;
+        }
+        
+        .fc-col-header-cell-cushion {
+            padding: 10px 4px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .fc-timegrid-slot-label-cushion {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* Custom Event Styles */
+        .fc-event {
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        
+        .fc-event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .fc-event-time {
+            font-weight: 600;
+        }
+        
+        .fc-event-title {
+            font-weight: 500;
+        }
+        
+        /* Event Type Colors */
+        .event-move-in {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+        }
+        
+        .event-move-out {
+            background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+            color: white !important;
+        }
+        
+        .event-showing {
+            background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+            color: white !important;
+        }
+        
+        .event-maintenance {
+            background: linear-gradient(135deg, #43e97b, #38f9d7) !important;
+            color: white !important;
+        }
+        
+        .event-inspection {
+            background: linear-gradient(135deg, #ffa726, #fb8c00) !important;
+            color: white !important;
+        }
+        
+        .event-appointment {
+            background: linear-gradient(135deg, #ec407a, #ab47bc) !important;
+            color: white !important;
+        }
+        
+        /* Event Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            border-radius: 12px 12px 0 0;
+            border: none;
+        }
+        
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+        }
+        
+        /* Quick Add Button */
+        .quick-add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        .quick-add-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* Legend */
+        .calendar-legend {
+            display: flex;
+            gap: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        /* Loading Overlay */
+        .calendar-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border-radius: 12px;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+        
+        /* Drag and Drop Styles */
+        .fc-event.fc-event-dragging {
+            opacity: 0.75;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .fc-event.fc-event-resizing {
+            opacity: 0.75;
+        }
+        
+        /* Conflict Indicator */
+        .event-conflict {
+            border: 2px solid #dc3545 !important;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+        
+        /* Recurring Event Indicator */
+        .event-recurring::after {
+            content: '🔄';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+        }
+        
+        /* Today Highlight */
+        .fc-day-today {
+            background: rgba(11, 83, 148, 0.05) !important;
+        }
+        
+        /* Custom Scrollbar */
+        .fc-scroller::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>AIVIIZN</h3>
+            <small>Property Management System</small>
+        </div>
+        <div class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-menu-item">
+                <i class="fas fa-dashboard"></i> Dashboard
+            </a>
+            <a href="{{ url_for('calendar') }}" class="sidebar-menu-item active">
+                <i class="fas fa-calendar"></i> Calendar
+            </a>
+            
+            <!-- Leasing Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('leasingDropdown')">
+                <i class="fas fa-key"></i> Leasing
+                <i class="fas fa-chevron-down ms-auto"></i>
             </button>
+            <div id="leasingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('vacancies') }}" class="sidebar-dropdown-item">Vacancies</a>
+                <a href="{{ url_for('guest_cards') }}" class="sidebar-dropdown-item">Guest Cards</a>
+                <a href="{{ url_for('rental_applications') }}" class="sidebar-dropdown-item">Rental Applications</a>
+                <a href="{{ url_for('leases') }}" class="sidebar-dropdown-item">Leases</a>
+                <a href="{{ url_for('renewals') }}" class="sidebar-dropdown-item">Renewals</a>
+                <a href="{{ url_for('leasing_metrics') }}" class="sidebar-dropdown-item">Metrics</a>
+                <a href="{{ url_for('signals') }}" class="sidebar-dropdown-item">Signals</a>
+            </div>
+            
+            <a href="{{ url_for('properties') }}" class="sidebar-menu-item">
+                <i class="fas fa-building"></i> Properties
+            </a>
+            
+            <!-- People Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('peopleDropdown')">
+                <i class="fas fa-users"></i> People
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="peopleDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('tenants') }}" class="sidebar-dropdown-item">Tenants</a>
+                <a href="{{ url_for('owners') }}" class="sidebar-dropdown-item">Owners</a>
+                <a href="{{ url_for('vendors') }}" class="sidebar-dropdown-item">Vendors</a>
+            </div>
+            
+            <!-- Accounting Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('accountingDropdown')">
+                <i class="fas fa-calculator"></i> Accounting
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="accountingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('receivables') }}" class="sidebar-dropdown-item">Receivables</a>
+                <a href="{{ url_for('payables') }}" class="sidebar-dropdown-item">Payables</a>
+                <a href="{{ url_for('bank_accounts') }}" class="sidebar-dropdown-item">Bank Accounts</a>
+                <a href="{{ url_for('journal_entries') }}" class="sidebar-dropdown-item">Journal Entries</a>
+                <a href="{{ url_for('bank_transfers') }}" class="sidebar-dropdown-item">Bank Transfers</a>
+                <a href="{{ url_for('gl_accounts') }}" class="sidebar-dropdown-item">GL Accounts</a>
+                <a href="{{ url_for('diagnostics') }}" class="sidebar-dropdown-item">Diagnostics</a>
+                <a href="{{ url_for('receipts') }}" class="sidebar-dropdown-item">Receipts</a>
+            </div>
+            
+            <!-- Maintenance Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('maintenanceDropdown')">
+                <i class="fas fa-wrench"></i> Maintenance
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="maintenanceDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('work_orders') }}" class="sidebar-dropdown-item">Work Orders</a>
+                <a href="{{ url_for('recurring_work_orders') }}" class="sidebar-dropdown-item">Recurring Work Orders</a>
+                <a href="{{ url_for('inspections') }}" class="sidebar-dropdown-item">Inspections</a>
+                <a href="{{ url_for('unit_turns') }}" class="sidebar-dropdown-item">Unit Turns</a>
+                <a href="{{ url_for('projects') }}" class="sidebar-dropdown-item">Projects</a>
+                <a href="{{ url_for('purchase_orders') }}" class="sidebar-dropdown-item">Purchase Orders</a>
+                <a href="{{ url_for('inventory') }}" class="sidebar-dropdown-item">Inventory</a>
+                <a href="{{ url_for('fixed_assets') }}" class="sidebar-dropdown-item">Fixed Assets</a>
+                <a href="{{ url_for('smart_maintenance') }}" class="sidebar-dropdown-item">Smart Maintenance</a>
+            </div>
+            
+            <!-- Reporting Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('reportingDropdown')">
+                <i class="fas fa-chart-bar"></i> Reporting
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="reportingDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('reports') }}" class="sidebar-dropdown-item">Reports</a>
+                <a href="{{ url_for('scheduled_reports') }}" class="sidebar-dropdown-item">Scheduled Reports</a>
+                <a href="{{ url_for('reporting_metrics') }}" class="sidebar-dropdown-item">Metrics</a>
+                <a href="{{ url_for('surveys') }}" class="sidebar-dropdown-item">Surveys</a>
+            </div>
+            
+            <!-- Communication Dropdown -->
+            <button class="sidebar-menu-item" onclick="toggleDropdown('communicationDropdown')">
+                <i class="fas fa-envelope"></i> Communication
+                <i class="fas fa-chevron-down ms-auto"></i>
+            </button>
+            <div id="communicationDropdown" class="sidebar-dropdown">
+                <a href="{{ url_for('letters') }}" class="sidebar-dropdown-item">Letters</a>
+                <a href="{{ url_for('forms') }}" class="sidebar-dropdown-item">Forms</a>
+                <a href="{{ url_for('inbox') }}" class="sidebar-dropdown-item">Inbox</a>
+            </div>
+            
+            <a href="{{ url_for('whats_new') }}" class="sidebar-menu-item">
+                <i class="fas fa-sparkles"></i> What's New
+                <span class="badge bg-danger ms-auto">4</span>
+            </a>
+            
+            <hr class="my-3">
+            
+            <a href="{{ url_for('logout') }}" class="sidebar-menu-item text-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </div>
-
-    <div class="card">
-        <div class="card-body">
-            <div class="calendar-container">
-                <!-- Calendar will be displayed here -->
-                <div class="text-center p-5">
-                    <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">Calendar view coming soon</p>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+            <div class="calendar-controls">
+                <div class="calendar-nav">
+                    <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                    <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                    <button class="today-btn" id="todayBtn">Today</button>
+                    <span class="calendar-date-range" id="dateRange">Loading...</span>
+                </div>
+                
+                <div class="calendar-view-buttons">
+                    <button data-view="dayGridMonth">Month</button>
+                    <button data-view="timeGridWeek" class="active">Week</button>
+                    <button data-view="timeGridDay">Day</button>
+                    <button data-view="listWeek">Agenda</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Event Type Tabs -->
+        <div class="event-type-tabs">
+            <button class="event-type-tab active" data-filter="all">All Events</button>
+            <button class="event-type-tab" data-filter="move_in">Move Ins</button>
+            <button class="event-type-tab" data-filter="move_out">Move Outs</button>
+            <button class="event-type-tab" data-filter="showing">Showings</button>
+            <button class="event-type-tab" data-filter="maintenance">Maintenance</button>
+            <button class="event-type-tab" data-filter="inspection">Inspections</button>
+            <button class="event-type-tab" data-filter="appointment">Appointments</button>
+        </div>
+        
+        <!-- Legend -->
+        <div class="calendar-legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                <span>Move In</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                <span>Move Out</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                <span>Showing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></div>
+                <span>Maintenance</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffa726, #fb8c00);"></div>
+                <span>Inspection</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ec407a, #ab47bc);"></div>
+                <span>Appointment</span>
+            </div>
+        </div>
+        
+        <!-- Calendar Container -->
+        <div class="calendar-container position-relative">
+            <div id="calendar"></div>
+            <div class="calendar-loading" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Add Button -->
+        <button class="quick-add-btn" data-bs-toggle="modal" data-bs-target="#eventModal">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+    
+    <!-- Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">Add New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Event Type</label>
+                                <select class="form-select" id="eventType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="move_in">Move In</option>
+                                    <option value="move_out">Move Out</option>
+                                    <option value="showing">Showing</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="inspection">Inspection</option>
+                                    <option value="appointment">Appointment</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" id="eventTitle" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Property</label>
+                                <select class="form-select" id="eventProperty">
+                                    <option value="">Select Property</option>
+                                    <option value="1">Rock Ridge Ranch Apartments</option>
+                                    <option value="2">Sunset Apartments</option>
+                                    <option value="3">Riverside Complex</option>
+                                    <option value="4">Downtown Properties</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Unit</label>
+                                <input type="text" class="form-control" id="eventUnit" placeholder="e.g., 101">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="eventStart" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="eventEnd" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tenant/Contact</label>
+                                <input type="text" class="form-control" id="eventTenant" placeholder="Name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vendor (if applicable)</label>
+                                <select class="form-select" id="eventVendor">
+                                    <option value="">Select Vendor</option>
+                                    <option value="1">ABC Maintenance Co.</option>
+                                    <option value="2">XYZ Cleaning Services</option>
+                                    <option value="3">Quick Fix Plumbing</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="eventAllDay">
+                                    <label class="form-check-label" for="eventAllDay">
+                                        All Day Event
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="eventRecurring">
+                                    <label class="form-check-label" for="eventRecurring">
+                                        Recurring Event
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="eventReminder">
+                                    <label class="form-check-label" for="eventReminder">
+                                        Send Reminder
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recurring Options (hidden by default) -->
+                        <div id="recurringOptions" style="display: none;">
+                            <hr>
+                            <h6 class="mb-3">Recurrence Pattern</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Repeat</label>
+                                    <select class="form-select" id="recurrencePattern">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="recurrenceEnd">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn" style="display: none;">Delete Event</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn">Save Event</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Calendar instance
+        let calendar;
+        let currentEvent = null;
+        let currentFilter = 'all';
+        
+        // Toggle Dropdown
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            dropdown.classList.toggle('show');
+        }
+        
+        // Initialize Calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: false, // We're using custom controls
+                height: 'auto',
+                slotMinTime: '06:00:00',
+                slotMaxTime: '23:00:00',
+                slotDuration: '01:00:00',
+                slotLabelInterval: '01:00:00',
+                expandRows: true,
+                editable: true,
+                droppable: true,
+                selectable: true,
+                selectMirror: true,
+                eventResizableFromStart: true,
+                dayMaxEvents: true,
+                weekends: true,
+                nowIndicator: true,
+                businessHours: {
+                    daysOfWeek: [1, 2, 3, 4, 5],
+                    startTime: '09:00',
+                    endTime: '18:00'
+                },
+                
+                // Event sources
+                events: fetchEvents,
+                
+                // Event handlers
+                select: handleDateSelect,
+                eventClick: handleEventClick,
+                eventDrop: handleEventDrop,
+                eventResize: handleEventResize,
+                
+                // Custom event rendering
+                eventDidMount: function(info) {
+                    // Add custom classes based on event type
+                    const eventType = info.event.extendedProps.event_type || 'appointment';
+                    info.el.classList.add(`event-${eventType.replace('_', '-')}`);
+                    
+                    // Add recurring indicator
+                    if (info.event.extendedProps.is_recurring) {
+                        info.el.classList.add('event-recurring');
+                    }
+                    
+                    // Add conflict indicator
+                    if (info.event.extendedProps.has_conflict) {
+                        info.el.classList.add('event-conflict');
+                    }
+                    
+                    // Add tooltip
+                    info.el.setAttribute('title', 
+                        `${info.event.title}\n` +
+                        `${info.event.extendedProps.property_name || ''} - ${info.event.extendedProps.unit_number || ''}\n` +
+                        `${info.event.extendedProps.tenant_name || ''}`
+                    );
+                },
+                
+                datesSet: function(info) {
+                    updateDateRange(info.view);
+                }
+            });
+            
+            calendar.render();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load initial events
+            loadEvents();
+        });
+        
+        // Fetch events from Supabase
+        async function fetchEvents(fetchInfo, successCallback, failureCallback) {
+            try {
+                showLoading();
+                
+                const { data, error } = await supabase
+                    .from('calendar_events')
+                    .select('*')
+                    .gte('start_datetime', fetchInfo.start.toISOString())
+                    .lte('end_datetime', fetchInfo.end.toISOString())
+                    .order('start_datetime');
+                
+                if (error) throw error;
+                
+                // Transform data for FullCalendar
+                const events = data.map(event => ({
+                    id: event.id,
+                    title: event.title,
+                    start: event.start_datetime,
+                    end: event.end_datetime,
+                    allDay: event.all_day,
+                    extendedProps: {
+                        event_type: event.event_type,
+                        property_name: event.property_name,
+                        unit_number: event.unit_number,
+                        tenant_name: event.tenant_name,
+                        vendor_name: event.vendor_name,
+                        description: event.description,
+                        status: event.status,
+                        is_recurring: event.is_recurring,
+                        has_conflict: false // Will be determined by conflict check
+                    }
+                }));
+                
+                // Apply filter if needed
+                const filteredEvents = currentFilter === 'all' 
+                    ? events 
+                    : events.filter(e => e.extendedProps.event_type === currentFilter);
+                
+                successCallback(filteredEvents);
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                failureCallback(error);
+                hideLoading();
+                
+                // Use mock data as fallback
+                const mockEvents = getMockEvents();
+                successCallback(mockEvents);
+            }
+        }
+        
+        // Get mock events for testing
+        function getMockEvents() {
+            const today = new Date();
+            const events = [];
+            
+            // Sample events based on your screenshots
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + i);
+                
+                // Move-ins
+                if (i % 3 === 0) {
+                    events.push({
+                        id: `move-in-${i}`,
+                        title: `Move In: Unit ${100 + i}`,
+                        start: new Date(date.setHours(10, 0)),
+                        end: new Date(date.setHours(12, 0)),
+                        extendedProps: {
+                            event_type: 'move_in',
+                            property_name: 'Rock Ridge Ranch',
+                            unit_number: `${100 + i}`,
+                            tenant_name: 'John Doe'
+                        }
+                    });
+                }
+                
+                // Showings
+                if (i % 2 === 0) {
+                    events.push({
+                        id: `showing-${i}`,
+                        title: `Showing: Unit ${200 + i}`,
+                        start: new Date(date.setHours(14, 0)),
+                        end: new Date(date.setHours(15, 0)),
+                        extendedProps: {
+                            event_type: 'showing',
+                            property_name: 'Sunset Apartments',
+                            unit_number: `${200 + i}`,
+                            tenant_name: 'Jane Smith'
+                        }
+                    });
+                }
+                
+                // Maintenance
+                if (i % 4 === 0) {
+                    events.push({
+                        id: `maintenance-${i}`,
+                        title: 'HVAC Maintenance',
+                        start: new Date(date.setHours(9, 0)),
+                        end: new Date(date.setHours(11, 0)),
+                        extendedProps: {
+                            event_type: 'maintenance',
+                            property_name: 'Building A',
+                            vendor_name: 'ABC Maintenance'
+                        }
+                    });
+                }
+            }
+            
+            return events;
+        }
+        
+        // Handle date select (create new event)
+        function handleDateSelect(selectInfo) {
+            currentEvent = null;
+            
+            // Reset form
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventModalTitle').textContent = 'Add New Event';
+            document.getElementById('deleteEventBtn').style.display = 'none';
+            
+            // Set default times
+            document.getElementById('eventStart').value = formatDateTimeLocal(selectInfo.start);
+            document.getElementById('eventEnd').value = formatDateTimeLocal(selectInfo.end);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+            
+            calendar.unselect();
+        }
+        
+        // Handle event click (edit event)
+        function handleEventClick(clickInfo) {
+            currentEvent = clickInfo.event;
+            
+            // Populate form with event data
+            document.getElementById('eventModalTitle').textContent = 'Edit Event';
+            document.getElementById('eventTitle').value = currentEvent.title;
+            document.getElementById('eventType').value = currentEvent.extendedProps.event_type || '';
+            document.getElementById('eventProperty').value = currentEvent.extendedProps.property_id || '';
+            document.getElementById('eventUnit').value = currentEvent.extendedProps.unit_number || '';
+            document.getElementById('eventTenant').value = currentEvent.extendedProps.tenant_name || '';
+            document.getElementById('eventVendor').value = currentEvent.extendedProps.vendor_id || '';
+            document.getElementById('eventDescription').value = currentEvent.extendedProps.description || '';
+            document.getElementById('eventStart').value = formatDateTimeLocal(currentEvent.start);
+            document.getElementById('eventEnd').value = formatDateTimeLocal(currentEvent.end);
+            document.getElementById('eventAllDay').checked = currentEvent.allDay;
+            document.getElementById('deleteEventBtn').style.display = 'inline-block';
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+        }
+        
+        // Handle event drop (drag and drop)
+        async function handleEventDrop(dropInfo) {
+            try {
+                // Check for conflicts
+                const hasConflict = await checkForConflicts(
+                    dropInfo.event.id,
+                    dropInfo.event.start,
+                    dropInfo.event.end,
+                    dropInfo.event.extendedProps.unit_id
+                );
+                
+                if (hasConflict) {
+                    if (!confirm('This time slot has a conflict. Do you want to continue?')) {
+                        dropInfo.revert();
+                        return;
+                    }
+                }
+                
+                // Update event in database
+                const { error } = await supabase
+                    .from('calendar_events')
+                    .update({
+                        start_datetime: dropInfo.event.start.toISOString(),
+                        end_datetime: dropInfo.event.end.toISOString()
+                    })
+                    .eq('id', dropInfo.event.id);
+                
+                if (error) throw error;
+                
+                showToast('Event updated successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error updating event:', error);
+                dropInfo.revert();
+                showToast('Failed to update event', 'error');
+            }
+        }
+        
+        // Handle event resize
+        async function handleEventResize(resizeInfo) {
+            try {
+                // Update event in database
+                const { error } = await supabase
+                    .from('calendar_events')
+                    .update({
+                        start_datetime: resizeInfo.event.start.toISOString(),
+                        end_datetime: resizeInfo.event.end.toISOString()
+                    })
+                    .eq('id', resizeInfo.event.id);
+                
+                if (error) throw error;
+                
+                showToast('Event duration updated', 'success');
+                
+            } catch (error) {
+                console.error('Error resizing event:', error);
+                resizeInfo.revert();
+                showToast('Failed to update event duration', 'error');
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                calendar.prev();
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                calendar.next();
+            });
+            
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                calendar.today();
+            });
+            
+            // View buttons
+            document.querySelectorAll('.calendar-view-buttons button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelector('.calendar-view-buttons button.active').classList.remove('active');
+                    this.classList.add('active');
+                    calendar.changeView(this.dataset.view);
+                });
+            });
+            
+            // Event type filters
+            document.querySelectorAll('.event-type-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelector('.event-type-tab.active').classList.remove('active');
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    calendar.refetchEvents();
+                });
+            });
+            
+            // Recurring event checkbox
+            document.getElementById('eventRecurring').addEventListener('change', function() {
+                document.getElementById('recurringOptions').style.display = 
+                    this.checked ? 'block' : 'none';
+            });
+            
+            // Save event button
+            document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+            
+            // Delete event button
+            document.getElementById('deleteEventBtn').addEventListener('click', deleteEvent);
+        }
+        
+        // Save event
+        async function saveEvent() {
+            try {
+                const formData = {
+                    title: document.getElementById('eventTitle').value,
+                    event_type: document.getElementById('eventType').value,
+                    property_name: document.getElementById('eventProperty').options[document.getElementById('eventProperty').selectedIndex].text,
+                    unit_number: document.getElementById('eventUnit').value,
+                    tenant_name: document.getElementById('eventTenant').value,
+                    vendor_name: document.getElementById('eventVendor').options[document.getElementById('eventVendor').selectedIndex].text,
+                    description: document.getElementById('eventDescription').value,
+                    start_datetime: new Date(document.getElementById('eventStart').value).toISOString(),
+                    end_datetime: new Date(document.getElementById('eventEnd').value).toISOString(),
+                    all_day: document.getElementById('eventAllDay').checked,
+                    is_recurring: document.getElementById('eventRecurring').checked,
+                    company_id: 'demo-company-id' // Replace with actual company ID
+                };
+                
+                if (currentEvent) {
+                    // Update existing event
+                    const { error } = await supabase
+                        .from('calendar_events')
+                        .update(formData)
+                        .eq('id', currentEvent.id);
+                    
+                    if (error) throw error;
+                    
+                    showToast('Event updated successfully', 'success');
+                } else {
+                    // Create new event
+                    const { error } = await supabase
+                        .from('calendar_events')
+                        .insert([formData]);
+                    
+                    if (error) throw error;
+                    
+                    showToast('Event created successfully', 'success');
+                }
+                
+                // Close modal and refresh calendar
+                bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                calendar.refetchEvents();
+                
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showToast('Failed to save event', 'error');
+            }
+        }
+        
+        // Delete event
+        async function deleteEvent() {
+            if (!currentEvent) return;
+            
+            if (!confirm('Are you sure you want to delete this event?')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('calendar_events')
+                    .delete()
+                    .eq('id', currentEvent.id);
+                
+                if (error) throw error;
+                
+                currentEvent.remove();
+                bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                showToast('Event deleted successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                showToast('Failed to delete event', 'error');
+            }
+        }
+        
+        // Check for conflicts
+        async function checkForConflicts(eventId, start, end, unitId) {
+            if (!unitId) return false;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('calendar_events')
+                    .select('*')
+                    .eq('unit_id', unitId)
+                    .neq('id', eventId)
+                    .gte('start_datetime', start.toISOString())
+                    .lte('start_datetime', end.toISOString());
+                
+                if (error) throw error;
+                
+                return data && data.length > 0;
+                
+            } catch (error) {
+                console.error('Error checking conflicts:', error);
+                return false;
+            }
+        }
+        
+        // Load events
+        function loadEvents() {
+            calendar.refetchEvents();
+        }
+        
+        // Update date range display
+        function updateDateRange(view) {
+            const start = view.currentStart;
+            const end = new Date(view.currentEnd);
+            end.setDate(end.getDate() - 1); // Adjust end date
+            
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = start.toLocaleDateString('en-US', options);
+            const endStr = end.toLocaleDateString('en-US', options);
+            
+            if (view.type === 'dayGridMonth') {
+                document.getElementById('dateRange').textContent = 
+                    start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            } else if (view.type === 'timeGridDay') {
+                document.getElementById('dateRange').textContent = startStr;
+            } else {
+                document.getElementById('dateRange').textContent = `${startStr} - ${endStr}`;
+            }
+        }
+        
+        // Format date for datetime-local input
+        function formatDateTimeLocal(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+        
+        // Show loading overlay
+        function showLoading() {
+            document.querySelector('.calendar-loading').style.display = 'flex';
+        }
+        
+        // Hide loading overlay
+        function hideLoading() {
+            document.querySelector('.calendar-loading').style.display = 'none';
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            // Add to page
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+            
+            toastContainer.appendChild(toast);
+            
+            // Show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            
+            // Remove after hidden
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    </script>
+</body>
+</html>
