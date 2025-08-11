@@ -10,7 +10,9 @@ from decimal import Decimal
 from calendar_api import calendar_api
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)
+# Use a fixed secret key so sessions persist across deployments
+# In production, this should be an environment variable
+app.secret_key = 'aiviizn-secret-key-2025-keep-this-private-and-change-in-production'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Register the calendar API blueprint
@@ -54,6 +56,7 @@ def login():
             })
             
             if response.user:
+                session.permanent = True  # Make session last for PERMANENT_SESSION_LIFETIME
                 session['user_id'] = response.user.id
                 session['email'] = response.user.email
                 session['company'] = 'Your Company Name'
@@ -64,6 +67,7 @@ def login():
         except Exception as e:
             # For testing - allow demo login
             if email == "admin@aiviizn.com" and password == "demo123":
+                session.permanent = True  # Make session last for PERMANENT_SESSION_LIFETIME
                 session['user_id'] = 'demo-user-id'
                 session['email'] = email
                 session['company'] = 'Test Company'
