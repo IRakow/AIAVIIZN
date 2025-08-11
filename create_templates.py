@@ -1,6 +1,6 @@
 # create_templates.py
 """
-This script creates all the necessary template files for AVIIZN
+This script creates all the necessary template files for AIVIIZN
 Run this to generate all template files in the correct structure
 """
 
@@ -9,7 +9,7 @@ import os
 # Define the base template content (simplified for all pages to extend)
 BASE_TEMPLATE = """{% extends "base.html" %}
 
-{% block title %}{{ title }} - AVIIZN{% endblock %}
+{% block title %}{{ title }} - AIVIIZN{% endblock %}
 
 {% block content %}
 <div class="content-header">

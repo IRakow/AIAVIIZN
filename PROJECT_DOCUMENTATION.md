@@ -18,7 +18,7 @@ Anon Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 1. **Login System:** Server-side authentication using Flask sessions
 2. **Session Management:** 24-hour session lifetime with secure cookies
 3. **Protected Routes:** All routes use `@login_required` decorator
-4. **Demo Login:** admin@aviizn.com / demo123 (for testing)
+4. **Demo Login:** admin@aiviizn.com / demo123 (for testing)
 
 ## 📁 Project Structure
 
@@ -250,7 +250,7 @@ pip install -r requirements.txt
 ```
 
 ### Testing Credentials
-- **Demo Admin:** admin@aviizn.com / demo123
+- **Demo Admin:** admin@aiviizn.com / demo123
 - **Test Company:** Test Company
 
 ## 🎯 Next Steps for Full Implementation

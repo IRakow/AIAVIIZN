@@ -63,11 +63,11 @@ def login():
                 
         except Exception as e:
             # For testing - allow demo login
-            if email == "admin@aviizn.com" and password == "demo123":
+            if email == "admin@aiviizn.com" and password == "demo123":
                 session['user_id'] = 'demo-user-id'
                 session['email'] = email
                 session['company'] = 'Test Company'
-                flash('Welcome to AVIIZN!', 'success')
+                flash('Welcome to AIVIIZN!', 'success')
                 return redirect(url_for('dashboard'))
             else:
                 flash('Invalid email or password.', 'danger')
