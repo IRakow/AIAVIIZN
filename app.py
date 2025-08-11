@@ -807,6 +807,119 @@ def forms():
 def phone_logs():
     return render_template('communication/phone_logs.html')
 
+# API endpoint for lazy loading dashboard sections
+@app.route('/api/dashboard/sections', methods=['POST'])
+@login_required
+def get_dashboard_sections():
+    """Return dashboard sections for lazy loading"""
+    requested_sections = request.json.get('sections', [])
+    sections_data = []
+    
+    # Generate HTML for each section (simplified version)
+    # In production, this would fetch real data from database
+    section_templates = {
+        'moveOuts': generate_move_outs_section(),
+        'onlinePayments': generate_online_payments_section(),
+        'notifications': generate_notifications_section(),
+        'leasingActivity': generate_leasing_activity_section(),
+        'keyMetrics': generate_key_metrics_section(),
+        'portfolio': generate_portfolio_section(),
+        'delinquencies': generate_delinquencies_section(),
+        'maintenance': generate_maintenance_section(),
+        'insurance': generate_insurance_section()
+    }
+    
+    for section in requested_sections:
+        if section in section_templates:
+            sections_data.append({
+                'id': section,
+                'html': section_templates[section]
+            })
+    
+    return jsonify({'sections': sections_data})
+
+# Helper functions for generating section HTML
+def generate_move_outs_section():
+    return '''<div class="section-header" onclick="toggleSection('moveOutsContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Move Outs</h6>
+    </div>
+    <div id="moveOutsContent" class="section-content collapsed">
+        <div class="text-muted">Loading move outs data...</div>
+    </div>'''
+
+def generate_online_payments_section():
+    return '''<div class="section-header" onclick="toggleSection('onlinePaymentsContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Online Payments</h6>
+    </div>
+    <div id="onlinePaymentsContent" class="section-content collapsed">
+        <div class="text-muted">Loading payments data...</div>
+    </div>'''
+
+def generate_notifications_section():
+    return '''<div class="section-header" onclick="toggleSection('notificationsContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Notifications</h6>
+    </div>
+    <div id="notificationsContent" class="section-content collapsed">
+        <div class="text-muted">Loading notifications...</div>
+    </div>'''
+
+def generate_leasing_activity_section():
+    return '''<div class="section-header" onclick="toggleSection('leasingActivityContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Leasing Activity (Last 30 Days)</h6>
+    </div>
+    <div id="leasingActivityContent" class="section-content collapsed">
+        <div class="text-muted">Loading leasing data...</div>
+    </div>'''
+
+def generate_key_metrics_section():
+    return '''<div class="section-header" onclick="toggleSection('keyMetricsContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Key Performance Metrics</h6>
+    </div>
+    <div id="keyMetricsContent" class="section-content collapsed">
+        <canvas data-chart-type="line" data-chart-data='{}' width="400" height="100"></canvas>
+    </div>'''
+
+def generate_portfolio_section():
+    return '''<div class="section-header" onclick="toggleSection('portfolioContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Portfolio Summary</h6>
+    </div>
+    <div id="portfolioContent" class="section-content collapsed">
+        <div class="text-muted">Loading portfolio data...</div>
+    </div>'''
+
+def generate_delinquencies_section():
+    return '''<div class="section-header" onclick="toggleSection('delinquenciesContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Delinquencies</h6>
+    </div>
+    <div id="delinquenciesContent" class="section-content collapsed">
+        <div class="text-muted">Loading delinquencies data...</div>
+    </div>'''
+
+def generate_maintenance_section():
+    return '''<div class="section-header" onclick="toggleSection('maintenanceContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Maintenance</h6>
+    </div>
+    <div id="maintenanceContent" class="section-content collapsed">
+        <div class="text-muted">Loading maintenance data...</div>
+    </div>'''
+
+def generate_insurance_section():
+    return '''<div class="section-header" onclick="toggleSection('insuranceContent')">
+        <span class="section-arrow collapsed">▼</span>
+        <h6 class="section-title">Insurance Coverage</h6>
+    </div>
+    <div id="insuranceContent" class="section-content collapsed">
+        <div class="text-muted">Loading insurance data...</div>
+    </div>'''
+
 # Admin routes for your additional files
 @app.route('/admin/users')
 @login_required

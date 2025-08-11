@@ -1,823 +1,584 @@
-<!-- templates/dashboard.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - AIVIIZN</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-blue: #0B5394;
-            --dark-blue: #073763;
-            --light-blue: #4A90E2;
-            --sidebar-width: 250px;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f8f9fa;
-            overflow-x: hidden;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: white;
-            border-right: 1px solid #e0e0e0;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        
-        .sidebar-header {
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-            color: white;
-        }
-        
-        .sidebar-header h3 {
-            font-weight: 700;
-            font-size: 24px;
-            margin: 0;
-        }
-        
-        .sidebar-header small {
-            opacity: 0.9;
-            font-size: 12px;
-        }
-        
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-        
-        .sidebar-menu-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            color: #333;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-        }
-        
-        .sidebar-menu-item:hover {
-            background: #f0f7ff;
-            color: var(--primary-blue);
-        }
-        
-        .sidebar-menu-item.active {
-            background: #e8f0fe;
-            color: var(--primary-blue);
-            border-left: 3px solid var(--primary-blue);
-        }
-        
-        .sidebar-menu-item i {
-            width: 20px;
-            margin-right: 10px;
-        }
-        
-        .sidebar-dropdown {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background: #f8f9fa;
-        }
-        
-        .sidebar-dropdown.show {
-            max-height: 500px;
-        }
-        
-        .sidebar-dropdown-item {
-            padding: 10px 20px 10px 50px;
-            display: block;
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        
-        .sidebar-dropdown-item:hover {
-            color: var(--primary-blue);
-            background: white;
-        }
-        
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        /* Dashboard Cards */
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .stat-card-title {
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        
-        .stat-card-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .stat-card-subtitle {
-            font-size: 13px;
-            color: #999;
-        }
-        
-        .stat-card-progress {
-            margin-top: 15px;
-        }
-        
-        .progress {
-            height: 6px;
-            border-radius: 3px;
-            background: #f0f0f0;
-        }
-        
-        .progress-bar {
-            border-radius: 3px;
-        }
-        
-        /* Status badges */
-        .badge-success {
-            background: #28a745;
-        }
-        
-        .badge-warning {
-            background: #ffc107;
-        }
-        
-        .badge-danger {
-            background: #dc3545;
-        }
-        
-        /* Charts Container */
-        .chart-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        
-        /* Quick Actions */
-        .quick-action-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            color: #333;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
-        
-        .quick-action-btn:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .quick-action-btn i {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        /* Table Styles */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .table-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .table-action {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .custom-table {
-            width: 100%;
-        }
-        
-        .custom-table th {
-            font-size: 12px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 12px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .custom-table td {
-            padding: 12px;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #f8f9fa;
-        }
-        
-        .custom-table tbody tr:hover {
-            background: #f8f9fa;
-        }
-        
-        /* Top Navigation */
-        .top-nav {
-            background: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: -20px -20px 20px -20px;
-        }
-        
-        .breadcrumb {
-            margin: 0;
-            padding: 0;
-            background: none;
-        }
-        
-        .breadcrumb-item {
-            font-size: 14px;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .notification-icon {
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #dc3545;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>AIVIIZN</h3>
-            <small>Property Management System</small>
-        </div>
-        <div class="sidebar-menu">
-            <a href="{{ url_for('dashboard') }}" class="sidebar-menu-item active">
-                <i class="fas fa-dashboard"></i> Dashboard
-            </a>
-            <a href="{{ url_for('calendar') }}" class="sidebar-menu-item">
-                <i class="fas fa-calendar"></i> Calendar
-            </a>
-            
-            <!-- Leasing Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('leasingDropdown')">
-                <i class="fas fa-key"></i> Leasing
-                <i class="fas fa-chevron-down ms-auto"></i>
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Dashboard</h2>
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>View By: All</option>
+                <option>View By: Property</option>
+                <option>View By: Portfolio</option>
+            </select>
+            <button class="btn btn-sm btn-primary">
+                <i class="fas fa-cog"></i> Customize
             </button>
-            <div id="leasingDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('vacancies') }}" class="sidebar-dropdown-item">Vacancies</a>
-                <a href="{{ url_for('guest_cards') }}" class="sidebar-dropdown-item">Guest Cards</a>
-                <a href="{{ url_for('rental_applications') }}" class="sidebar-dropdown-item">Rental Applications</a>
-                <a href="{{ url_for('leases') }}" class="sidebar-dropdown-item">Leases</a>
-                <a href="{{ url_for('renewals') }}" class="sidebar-dropdown-item">Renewals</a>
-                <a href="{{ url_for('leasing_metrics') }}" class="sidebar-dropdown-item">Metrics</a>
-                <a href="{{ url_for('signals') }}" class="sidebar-dropdown-item">Signals</a>
-            </div>
-            
-            <a href="{{ url_for('properties') }}" class="sidebar-menu-item">
-                <i class="fas fa-building"></i> Properties
-            </a>
-            
-            <!-- People Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('peopleDropdown')">
-                <i class="fas fa-users"></i> People
-                <i class="fas fa-chevron-down ms-auto"></i>
-            </button>
-            <div id="peopleDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('tenants') }}" class="sidebar-dropdown-item">Tenants</a>
-                <a href="{{ url_for('owners') }}" class="sidebar-dropdown-item">Owners</a>
-                <a href="{{ url_for('vendors') }}" class="sidebar-dropdown-item">Vendors</a>
-            </div>
-            
-            <!-- Accounting Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('accountingDropdown')">
-                <i class="fas fa-calculator"></i> Accounting
-                <i class="fas fa-chevron-down ms-auto"></i>
-            </button>
-            <div id="accountingDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('receivables') }}" class="sidebar-dropdown-item">Receivables</a>
-                <a href="{{ url_for('payables') }}" class="sidebar-dropdown-item">Payables</a>
-                <a href="{{ url_for('bank_accounts') }}" class="sidebar-dropdown-item">Bank Accounts</a>
-                <a href="{{ url_for('journal_entries') }}" class="sidebar-dropdown-item">Journal Entries</a>
-                <a href="{{ url_for('bank_transfers') }}" class="sidebar-dropdown-item">Bank Transfers</a>
-                <a href="{{ url_for('gl_accounts') }}" class="sidebar-dropdown-item">GL Accounts</a>
-                <a href="{{ url_for('diagnostics') }}" class="sidebar-dropdown-item">Diagnostics</a>
-                <a href="{{ url_for('receipts') }}" class="sidebar-dropdown-item">Receipts</a>
-            </div>
-            
-            <!-- Maintenance Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('maintenanceDropdown')">
-                <i class="fas fa-wrench"></i> Maintenance
-                <i class="fas fa-chevron-down ms-auto"></i>
-            </button>
-            <div id="maintenanceDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('work_orders') }}" class="sidebar-dropdown-item">Work Orders</a>
-                <a href="{{ url_for('recurring_work_orders') }}" class="sidebar-dropdown-item">Recurring Work Orders</a>
-                <a href="{{ url_for('inspections') }}" class="sidebar-dropdown-item">Inspections</a>
-                <a href="{{ url_for('unit_turns') }}" class="sidebar-dropdown-item">Unit Turns</a>
-                <a href="{{ url_for('projects') }}" class="sidebar-dropdown-item">Projects</a>
-                <a href="{{ url_for('purchase_orders') }}" class="sidebar-dropdown-item">Purchase Orders</a>
-                <a href="{{ url_for('inventory') }}" class="sidebar-dropdown-item">Inventory</a>
-                <a href="{{ url_for('fixed_assets') }}" class="sidebar-dropdown-item">Fixed Assets</a>
-                <a href="{{ url_for('smart_maintenance') }}" class="sidebar-dropdown-item">Smart Maintenance</a>
-            </div>
-            
-            <!-- Reporting Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('reportingDropdown')">
-                <i class="fas fa-chart-bar"></i> Reporting
-                <i class="fas fa-chevron-down ms-auto"></i>
-            </button>
-            <div id="reportingDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('reports') }}" class="sidebar-dropdown-item">Reports</a>
-                <a href="{{ url_for('scheduled_reports') }}" class="sidebar-dropdown-item">Scheduled Reports</a>
-                <a href="{{ url_for('reporting_metrics') }}" class="sidebar-dropdown-item">Metrics</a>
-                <a href="{{ url_for('surveys') }}" class="sidebar-dropdown-item">Surveys</a>
-            </div>
-            
-            <!-- Communication Dropdown -->
-            <button class="sidebar-menu-item" onclick="toggleDropdown('communicationDropdown')">
-                <i class="fas fa-envelope"></i> Communication
-                <i class="fas fa-chevron-down ms-auto"></i>
-            </button>
-            <div id="communicationDropdown" class="sidebar-dropdown">
-                <a href="{{ url_for('letters') }}" class="sidebar-dropdown-item">Letters</a>
-                <a href="{{ url_for('forms') }}" class="sidebar-dropdown-item">Forms</a>
-                <a href="{{ url_for('inbox') }}" class="sidebar-dropdown-item">Inbox</a>
-            </div>
-            
-            <a href="{{ url_for('whats_new') }}" class="sidebar-menu-item">
-                <i class="fas fa-sparkles"></i> What's New
-                <span class="badge bg-danger ms-auto">4</span>
-            </a>
-            
-            <hr class="my-3">
-            
-            <a href="{{ url_for('logout') }}" class="sidebar-menu-item text-danger">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
         </div>
     </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item active">Dashboard</li>
-                </ol>
-            </nav>
-            <div class="user-menu">
-                <div class="notification-icon">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
-                <div class="user-info">
-                    <span>{{ session.get('email', 'User') }}</span>
-                    <i class="fas fa-chevron-down ms-2"></i>
-                </div>
+</div>
+
+<div class="content-body" style="padding: 15px;">
+    <!-- Financial Diagnostics Alert -->
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="background: #d1ecf1; border: 1px solid #bee5eb;">
+        <i class="fas fa-info-circle"></i>
+        Have you checked your Financial Diagnostics Page recently? 
+        <a href="{{ url_for('diagnostics') }}" class="alert-link">Click here</a> to check up on your Financial Health. 
+        <a href="#" class="alert-link">Remind me in 7 days</a> | 
+        <a href="#" class="alert-link">I'm fine... don't show this message again</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div id="loadingSkeleton">
+        <div class="skeleton-section">
+            <div class="skeleton-header"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line short"></div>
             </div>
         </div>
-        
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'danger' else category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <!-- Dashboard Stats -->
-        <div class="row">
-            <!-- Move Ins Card -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Move Ins</span>
-                        <div class="stat-card-icon" style="background: #e8f5e9; color: #4caf50;">
-                            <i class="fas fa-truck"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value">{{ stats.move_ins.finished }}</div>
-                    <div class="stat-card-subtitle">{{ stats.move_ins.updated }} updated this month</div>
-                    <div class="stat-card-progress">
-                        <div class="progress">
-                            <div class="progress-bar bg-success" style="width: 70%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Delinquencies Card -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Delinquencies</span>
-                        <div class="stat-card-icon" style="background: #fff3e0; color: #ff9800;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value">{{ stats.delinquencies['0_30'] }}</div>
-                    <div class="stat-card-subtitle">0-30 days</div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <small>31-60: {{ stats.delinquencies['31_60'] }}</small>
-                        <small>61+: {{ stats.delinquencies['61_plus'] }}</small>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Work Orders Card -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Work Orders</span>
-                        <div class="stat-card-icon" style="background: #e3f2fd; color: #2196f3;">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value">{{ stats.maintenance.work_orders.new }}</div>
-                    <div class="stat-card-subtitle">New work orders</div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <small>Assigned: {{ stats.maintenance.work_orders.assigned }}</small>
-                        <small>Completed: {{ stats.maintenance.work_orders.completed }}</small>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Insurance Coverage Card -->
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Insurance Coverage</span>
-                        <div class="stat-card-icon" style="background: #f3e5f5; color: #9c27b0;">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value">{{ stats.insurance.total_coverage }}</div>
-                    <div class="stat-card-subtitle">Total coverage</div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <small>Renters: {{ stats.insurance.renters }}</small>
-                        <small>Liability: {{ stats.insurance.liability }}</small>
-                    </div>
-                </div>
+        <div class="skeleton-section">
+            <div class="skeleton-header"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line short"></div>
             </div>
         </div>
-        
-        <!-- Second Row Stats -->
-        <div class="row mt-4">
-            <!-- Online Payments -->
-            <div class="col-lg-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Online Payments</span>
-                        <div class="stat-card-icon" style="background: #e8f5e9; color: #4caf50;">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-baseline">
-                        <div class="stat-card-value">{{ stats.online_payments.percentage }}%</div>
-                        <span class="ms-3 text-muted">{{ stats.online_payments.units_paid }} units paid online</span>
-                    </div>
-                    <a href="{{ url_for('online_payments') }}" class="text-primary mt-2 d-inline-block">View history →</a>
-                </div>
+    </div>
+
+    <!-- Main Dashboard Container (Hidden initially) -->
+    <div id="dashboardContent" style="display: none;">
+        <!-- Critical: Move Ins Section (Above the fold) -->
+        <div class="dashboard-section">
+            <div class="section-header" onclick="toggleSection('moveInsContent')">
+                <span class="section-arrow">▼</span>
+                <h6 class="section-title">Move Ins</h6>
             </div>
-            
-            <!-- Notifications -->
-            <div class="col-lg-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Notifications</span>
-                        <div class="stat-card-icon" style="background: #fff3e0; color: #ff9800;">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-4">
-                        <div>
-                            <div class="stat-card-value">{{ stats.notifications.activities }}</div>
-                            <div class="stat-card-subtitle">Activities</div>
-                        </div>
-                        <div>
-                            <div class="stat-card-value">{{ stats.notifications.bills }}</div>
-                            <div class="stat-card-subtitle">Bills</div>
-                        </div>
-                        <div>
-                            <div class="stat-card-value">{{ stats.notifications.purchase_orders }}</div>
-                            <div class="stat-card-subtitle">Purchase Orders</div>
-                        </div>
-                    </div>
+            <div id="moveInsContent" class="section-content">
+                <div class="update-notice">
+                    <span class="badge bg-info">NEW</span>
+                    <span>Move Ins Updated</span>
+                    <p class="mb-2 mt-2">We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+                    <button class="btn btn-sm btn-primary">
+                        <i class="fas fa-comment"></i> FEEDBACK
+                    </button>
                 </div>
-            </div>
-            
-            <!-- Leasing Activity -->
-            <div class="col-lg-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Leasing Activity</span>
-                        <div class="stat-card-icon" style="background: #e3f2fd; color: #2196f3;">
-                            <i class="fas fa-file-contract"></i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <small class="text-muted">Guest Cards</small>
-                            <div class="fw-bold">{{ stats.leasing.guest_cards }}</div>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted">Applications</small>
-                            <div class="fw-bold">{{ stats.leasing.applications }}</div>
-                        </div>
-                        <div class="col-6 mt-2">
-                            <small class="text-muted">Out for Signing</small>
-                            <div class="fw-bold">{{ stats.leasing.out_for_signing }}</div>
-                        </div>
-                        <div class="col-6 mt-2">
-                            <small class="text-muted">Executed</small>
-                            <div class="fw-bold">{{ stats.leasing.executed }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Charts and Tables Row -->
-        <div class="row mt-4">
-            <!-- Financial Summary -->
-            <div class="col-lg-8">
-                <div class="chart-container">
-                    <h5 class="mb-4">Financial Performance</h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="text-center">
-                                <h6 class="text-muted">Total Income</h6>
-                                <h3 class="text-success">${{ "{:,.2f}".format(stats.financials.total_income) }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="text-center">
-                                <h6 class="text-muted">Total Expense</h6>
-                                <h3 class="text-danger">${{ "{:,.2f}".format(stats.financials.total_expense) }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="text-center">
-                                <h6 class="text-muted">Market Rent</h6>
-                                <h3 class="text-primary">${{ "{:,.2f}".format(stats.financials.market_rent) }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <canvas id="financialChart" class="mt-4" height="100"></canvas>
-                </div>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="col-lg-4">
-                <div class="chart-container">
-                    <h5 class="mb-4">Quick Actions</h5>
-                    <div class="row">
-                        <div class="col-6">
-                            <a href="{{ url_for('tenants') }}" class="quick-action-btn">
-                                <div class="text-center">
-                                    <i class="fas fa-user-plus"></i>
-                                    <div>New Tenant</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('work_orders') }}" class="quick-action-btn">
-                                <div class="text-center">
-                                    <i class="fas fa-wrench"></i>
-                                    <div>Work Order</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('leases') }}" class="quick-action-btn">
-                                <div class="text-center">
-                                    <i class="fas fa-file-signature"></i>
-                                    <div>New Lease</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('receipts') }}" class="quick-action-btn">
-                                <div class="text-center">
-                                    <i class="fas fa-receipt"></i>
-                                    <div>Receipt</div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Move-ins Table -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="table-container">
-                    <div class="table-header">
-                        <h5 class="table-title">Recent Move-ins</h5>
-                        <a href="{{ url_for('tenants') }}" class="table-action">View All →</a>
-                    </div>
-                    <table class="custom-table">
+                
+                <div class="table-responsive mt-3">
+                    <table class="table table-sm table-hover">
                         <thead>
                             <tr>
-                                <th>Tenant</th>
-                                <th>Unit</th>
-                                <th>Property</th>
-                                <th>Lease Status</th>
+                                <th>Future Tenant</th>
+                                <th>Property - Unit</th>
+                                <th>Lease</th>
+                                <th>Portal</th>
                                 <th>Balance</th>
                                 <th>Insurance</th>
-                                <th>Move Date</th>
+                                <th>Move In Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for movein in recent_moveins %}
-                            <tr>
-                                <td>{{ movein.tenant }}</td>
-                                <td>{{ movein.unit }}</td>
-                                <td>{{ movein.property }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ movein.lease }}</span>
-                                </td>
-                                <td class="{{ 'text-danger' if movein.balance < 0 else 'text-success' }}">
-                                    ${{ "{:,.2f}".format(movein.balance) }}
-                                </td>
-                                <td>
-                                    <span class="badge {{ 'bg-success' if movein.insurance == 'Covered' else 'bg-warning' }}">
-                                        {{ movein.insurance }}
-                                    </span>
-                                </td>
-                                <td>{{ movein.move_date }}</td>
-                            </tr>
-                            {% endfor %}
+                        <tbody id="moveInsTableBody">
+                            <!-- Will be populated by JavaScript -->
                         </tbody>
                     </table>
+                    <div class="pagination-info">
+                        <span>Displaying: 1-10 of 25</span>
+                        <div class="pagination-controls">
+                            <button class="btn btn-sm btn-outline-secondary"><<</button>
+                            <button class="btn btn-sm btn-outline-secondary"><</button>
+                            <span class="mx-2">1 2 3</span>
+                            <button class="btn btn-sm btn-outline-secondary">></button>
+                            <button class="btn btn-sm btn-outline-secondary">>></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Other sections will be lazy loaded -->
+        <div id="lazyLoadContainer"></div>
     </div>
+</div>
+
+<style>
+    /* Critical CSS - Inline for faster initial render */
+    .dashboard-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
     
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    .section-header {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+    }
     
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    .section-header:hover {
+        background: #e9ecef;
+    }
     
-    <script>
-        // Toggle Dropdown
-        function toggleDropdown(id) {
-            const dropdown = document.getElementById(id);
-            dropdown.classList.toggle('show');
+    .section-arrow {
+        margin-right: 10px;
+        transition: transform 0.3s;
+    }
+    
+    .section-arrow.collapsed {
+        transform: rotate(-90deg);
+    }
+    
+    .section-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        flex: 1;
+    }
+    
+    .section-content {
+        padding: 15px;
+    }
+    
+    .section-content.collapsed {
+        display: none;
+    }
+    
+    .update-notice {
+        background: #e8f4fd;
+        padding: 10px;
+        border-left: 3px solid #0B5394;
+        margin-bottom: 15px;
+    }
+    
+    .status-badge {
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    
+    .status-badge.active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.fully-executed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .status-badge.covered {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.not-covered {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-badge.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    /* Loading Skeleton */
+    .skeleton-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .skeleton-header {
+        height: 40px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+    
+    .skeleton-content {
+        padding: 15px;
+    }
+    
+    .skeleton-line {
+        height: 20px;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+    
+    .skeleton-line.short {
+        width: 60%;
+    }
+    
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
         }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+    
+    /* Defer non-critical styles */
+    .pagination-info {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+    }
+</style>
+
+<!-- Defer non-critical CSS -->
+<link rel="preload" href="{{ url_for('static', filename='css/dashboard-extended.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-extended.css') }}"></noscript>
+
+<script>
+    // Performance monitoring
+    const perfData = {
+        start: performance.now(),
+        firstPaint: 0,
+        domLoaded: 0,
+        fullyLoaded: 0
+    };
+
+    // Critical data for initial render
+    const criticalData = {
+        moveIns: [
+            { tenant: 'Sainge, Samuel', unit: '-', lease: '-', portal: 'Active', balance: 400.00, insurance: 'Not Covered', date: '07/25/2025' },
+            { tenant: 'Bell, Telia R.', unit: '-', lease: '-', portal: 'Active', balance: 0.00, insurance: 'Not Covered', date: '08/01/2025' },
+            { tenant: 'Carlson, Eric A.', unit: 'Campbell Apartments - 3403 #4', lease: 'Fully Executed', portal: 'Active', balance: -727.74, insurance: 'Covered', date: '08/08/2025' },
+            { tenant: 'Stivers, Rachel A.', unit: 'Grandview 17 Townhomes / Grandview 17 KC LLC - 13825 A', lease: 'Fully Executed', portal: 'Active', balance: -930.92, insurance: 'Pending', date: '08/08/2025' },
+            { tenant: 'Yoder, Julianna R.', unit: 'Villas of Mur-Len / TSI Villas of Mur-Len - 205 U', lease: 'Fully Executed', portal: 'Active', balance: 807.04, insurance: 'Covered', date: '08/08/2025' }
+        ]
+    };
+
+    // Render critical content immediately
+    function renderCriticalContent() {
+        const tbody = document.getElementById('moveInsTableBody');
+        if (!tbody) return;
         
-        // Financial Chart
-        const ctx = document.getElementById('financialChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Income',
-                    data: [120000, 135000, 128000, 142000, 138000, 150000],
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                    tension: 0.4
-                }, {
-                    label: 'Expenses',
-                    data: [45000, 48000, 46000, 52000, 49000, 51000],
-                    borderColor: '#dc3545',
-                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                    tension: 0.4
-                }]
-            },
+        const fragment = document.createDocumentFragment();
+        
+        criticalData.moveIns.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.tenant}</td>
+                <td>${item.unit}</td>
+                <td>${item.lease !== '-' ? `<span class="status-badge fully-executed">${item.lease}</span>` : '-'}</td>
+                <td><span class="status-badge active">${item.portal}</span></td>
+                <td class="${item.balance < 0 ? 'text-danger' : ''}">$${item.balance.toFixed(2)}</td>
+                <td><span class="status-badge ${item.insurance === 'Covered' ? 'covered' : item.insurance === 'Pending' ? 'pending' : 'not-covered'}">${item.insurance}</span></td>
+                <td>${item.date}</td>
+            `;
+            fragment.appendChild(tr);
+        });
+        
+        tbody.appendChild(fragment);
+        
+        // Show content and hide skeleton
+        document.getElementById('loadingSkeleton').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+        
+        perfData.firstPaint = performance.now();
+        console.log('First paint:', perfData.firstPaint - perfData.start, 'ms');
+    }
+
+    // Lazy load remaining sections
+    function lazyLoadSections() {
+        const container = document.getElementById('lazyLoadContainer');
+        if (!container) return;
+        
+        // Use requestIdleCallback for non-critical content
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => loadRemainingContent(container), { timeout: 2000 });
+        } else {
+            setTimeout(() => loadRemainingContent(container), 100);
+        }
+    }
+
+    // Load remaining dashboard sections
+    async function loadRemainingContent(container) {
+        try {
+            const response = await fetch('{{ url_for("get_dashboard_sections") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sections: ['moveOuts', 'onlinePayments', 'notifications', 'leasingActivity', 'keyMetrics', 'portfolio', 'delinquencies', 'maintenance', 'insurance'] })
+            });
+            
+            const data = await response.json();
+            
+            // Create sections progressively
+            for (const section of data.sections) {
+                await renderSection(container, section);
+                // Small delay to prevent blocking
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            
+            // Initialize charts after sections are loaded
+            if (window.initializeCharts) {
+                requestAnimationFrame(() => {
+                    window.initializeCharts();
+                });
+            }
+            
+            perfData.fullyLoaded = performance.now();
+            console.log('Fully loaded:', perfData.fullyLoaded - perfData.start, 'ms');
+            
+        } catch (error) {
+            console.error('Error loading sections:', error);
+            // Fallback to static content
+            loadStaticSections(container);
+        }
+    }
+
+    // Render individual section
+    async function renderSection(container, sectionData) {
+        const section = document.createElement('div');
+        section.className = 'dashboard-section';
+        section.innerHTML = sectionData.html;
+        container.appendChild(section);
+    }
+
+    // Toggle section visibility
+    function toggleSection(sectionId) {
+        const content = document.getElementById(sectionId);
+        if (!content) return;
+        
+        const arrow = content.previousElementSibling.querySelector('.section-arrow');
+        
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            arrow.classList.remove('collapsed');
+        } else {
+            content.classList.add('collapsed');
+            arrow.classList.add('collapsed');
+        }
+    }
+
+    // Optimize images loading
+    function lazyLoadImages() {
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        imageObserver.unobserve(img);
+                    }
+                });
+            });
+
+            document.querySelectorAll('img.lazy').forEach(img => imageObserver.observe(img));
+        }
+    }
+
+    // Debounce function for scroll events
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        perfData.domLoaded = performance.now();
+        console.log('DOM loaded:', perfData.domLoaded - perfData.start, 'ms');
+        
+        // Render critical content first
+        renderCriticalContent();
+        
+        // Then lazy load the rest
+        lazyLoadSections();
+        
+        // Setup image lazy loading
+        lazyLoadImages();
+    });
+
+    // Fallback static content loader
+    function loadStaticSections(container) {
+        // This would contain the HTML for remaining sections as a fallback
+        const sectionsHTML = `
+            <!-- Move Outs Section -->
+            <div class="dashboard-section">
+                <div class="section-header" onclick="toggleSection('moveOutsContent')">
+                    <span class="section-arrow collapsed">▼</span>
+                    <h6 class="section-title">Move Outs</h6>
+                </div>
+                <div id="moveOutsContent" class="section-content collapsed">
+                    <!-- Content will be loaded -->
+                </div>
+            </div>
+
+            <!-- Online Payments Section -->
+            <div class="dashboard-section">
+                <div class="section-header" onclick="toggleSection('onlinePaymentsContent')">
+                    <span class="section-arrow collapsed">▼</span>
+                    <h6 class="section-title">Online Payments</h6>
+                </div>
+                <div id="onlinePaymentsContent" class="section-content collapsed">
+                    <!-- Content will be loaded -->
+                </div>
+            </div>
+
+            <!-- Add more sections as needed -->
+        `;
+        
+        container.innerHTML = sectionsHTML;
+    }
+
+    // Defer Chart.js loading
+    function loadChartLibrary() {
+        return new Promise((resolve, reject) => {
+            if (window.Chart) {
+                resolve();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+            script.async = true;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    // Initialize charts only when needed and visible
+    window.initializeCharts = async function() {
+        await loadChartLibrary();
+        
+        // Use requestAnimationFrame for smooth rendering
+        requestAnimationFrame(() => {
+            initializeVisibleCharts();
+        });
+    };
+
+    function initializeVisibleCharts() {
+        // Only initialize charts that are visible
+        const chartContainers = document.querySelectorAll('canvas[data-chart-type]');
+        
+        chartContainers.forEach(canvas => {
+            if (isElementInViewport(canvas) && !canvas.hasAttribute('data-initialized')) {
+                initializeChart(canvas);
+                canvas.setAttribute('data-initialized', 'true');
+            }
+        });
+    }
+
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    function initializeChart(canvas) {
+        const chartType = canvas.dataset.chartType;
+        const chartData = JSON.parse(canvas.dataset.chartData || '{}');
+        
+        // Initialize chart with data
+        new Chart(canvas.getContext('2d'), {
+            type: chartType,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value.toLocaleString();
-                            }
-                        }
-                    }
+                animation: {
+                    duration: 500 // Faster animation
                 }
             }
         });
-    </script>
-</body>
-</html>
+    }
+
+    // Cache API responses
+    const apiCache = new Map();
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+    async function fetchWithCache(url, options = {}) {
+        const cacheKey = url + JSON.stringify(options);
+        const cached = apiCache.get(cacheKey);
+        
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+            return cached.data;
+        }
+        
+        const response = await fetch(url, options);
+        const data = await response.json();
+        
+        apiCache.set(cacheKey, {
+            data: data,
+            timestamp: Date.now()
+        });
+        
+        return data;
+    }
+
+    // Optimize scroll performance
+    let ticking = false;
+    function handleScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                initializeVisibleCharts();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+
+    // Add scroll listener with debouncing
+    window.addEventListener('scroll', debounce(handleScroll, 100), { passive: true });
+
+    // Preconnect to external domains
+    function addPreconnect(url) {
+        const link = document.createElement('link');
+        link.rel = 'preconnect';
+        link.href = url;
+        document.head.appendChild(link);
+    }
+
+    // Preconnect to CDNs
+    addPreconnect('https://cdn.jsdelivr.net');
+    addPreconnect('https://cdnjs.cloudflare.com');
+</script>
+
+<!-- Defer Chart.js loading until needed -->
+<script>
+    // Load Chart.js only when user scrolls or after initial load
+    let chartsLoaded = false;
+    function loadChartsIfNeeded() {
+        if (!chartsLoaded && document.querySelector('canvas[data-chart-type]')) {
+            chartsLoaded = true;
+            loadChartLibrary().then(() => {
+                initializeVisibleCharts();
+            });
+        }
+    }
+    
+    // Load charts on scroll or after 2 seconds
+    window.addEventListener('scroll', loadChartsIfNeeded, { once: true, passive: true });
+    setTimeout(loadChartsIfNeeded, 2000);
+</script>
+{% endblock %}
