@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Reports</h2>
+        <div class="header-tabs">
+            <ul class="nav nav-tabs" style="border-bottom: none;">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('reports') }}" style="background-color: #FFF; color: #0B5394; border: 1px solid #DEE2E6; border-bottom: 1px solid #FFF; margin-bottom: -1px;">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('scheduled_reports') }}" style="color: #0B5394;">Scheduled Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reporting_metrics') }}" style="color: #0B5394;">Metrics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('surveys') }}" style="color: #0B5394;">Surveys</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-body">
+    <style>
+        .report-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-category {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        
+        .report-category h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0B5394;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #E9ECEF;
+        }
+        
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .report-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 13px;
+        }
+        
+        .report-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .report-list a {
+            color: #0B5394;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-list a:hover {
+            color: #073763;
+            text-decoration: underline;
+        }
+        
+        .report-badge {
+            background-color: #F8F9FA;
+            color: #6C757D;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .report-search {
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            background-color: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .search-box input {
+            width: 60%;
+            padding: 8px 12px;
+            border: 1px solid #DEE2E6;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .search-box button {
+            padding: 8px 20px;
+            background-color: #0B5394;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 13px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .search-box button:hover {
+            background-color: #073763;
+        }
+        
+        .quick-links {
+            background-color: #E3F2FD;
+            border: 1px solid #4A90E2;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-links h5 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0B5394;
+            margin-bottom: 10px;
+        }
+        
+        .quick-links .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-links .btn-group button {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #0B5394;
+            color: #0B5394;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .quick-links .btn-group button:hover {
+            background-color: #0B5394;
+            color: white;
+        }
+    </style>
+
+    <!-- Search Section -->
+    <div class="report-search">
+        <div class="search-box">
+            <input type="text" placeholder="Search for a report..." id="reportSearch">
+            <button onclick="searchReports()">Search</button>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="quick-links">
+        <h5>Popular Reports</h5>
+        <div class="btn-group">
+            <button onclick="location.href='#'">Rent Roll</button>
+            <button onclick="location.href='#'">Delinquency Report</button>
+            <button onclick="location.href='#'">Income Statement</button>
+            <button onclick="location.href='#'">Tenant Ledger</button>
+            <button onclick="location.href='#'">Balance Sheet</button>
+            <button onclick="location.href='#'">Unit Vacancy Detail</button>
+        </div>
+    </div>
+
+    <!-- Report Categories -->
+    <div class="report-categories">
+        <!-- Financial Reports -->
+        <div class="report-category">
+            <h4>Financial Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Income Statement <span class="report-badge">Monthly</span></a></li>
+                <li><a href="#">Balance Sheet <span class="report-badge">Monthly</span></a></li>
+                <li><a href="#">Cash Flow Statement <span class="report-badge">Monthly</span></a></li>
+                <li><a href="#">Trial Balance</a></li>
+                <li><a href="#">General Ledger</a></li>
+                <li><a href="#">Profit & Loss by Property</a></li>
+                <li><a href="#">Budget Variance Report</a></li>
+                <li><a href="#">Year-to-Date Comparison</a></li>
+                <li><a href="#">12 Month Income/Expense</a></li>
+                <li><a href="#">Owner Distribution Report</a></li>
+            </ul>
+        </div>
+
+        <!-- Tenant Reports -->
+        <div class="report-category">
+            <h4>Tenant Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Rent Roll <span class="report-badge">Current</span></a></li>
+                <li><a href="#">Tenant Ledger</a></li>
+                <li><a href="#">Delinquency Report <span class="report-badge">Daily</span></a></li>
+                <li><a href="#">Aged Receivables</a></li>
+                <li><a href="#">Tenant Contact List</a></li>
+                <li><a href="#">Move-In/Move-Out Report</a></li>
+                <li><a href="#">Lease Expiration Report</a></li>
+                <li><a href="#">Security Deposit Report</a></li>
+                <li><a href="#">Tenant Insurance Compliance</a></li>
+                <li><a href="#">Payment History</a></li>
+            </ul>
+        </div>
+
+        <!-- Property Reports -->
+        <div class="report-category">
+            <h4>Property Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Property Directory</a></li>
+                <li><a href="#">Unit Directory</a></li>
+                <li><a href="#">Vacancy Report <span class="report-badge">Current</span></a></li>
+                <li><a href="#">Unit Vacancy Detail</a></li>
+                <li><a href="#">Occupancy Trend Analysis</a></li>
+                <li><a href="#">Market Rent Analysis</a></li>
+                <li><a href="#">Property Performance Summary</a></li>
+                <li><a href="#">Amenity Usage Report</a></li>
+                <li><a href="#">Capital Improvements</a></li>
+                <li><a href="#">Property Tax Report</a></li>
+            </ul>
+        </div>
+
+        <!-- Maintenance Reports -->
+        <div class="report-category">
+            <h4>Maintenance Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Work Order Summary</a></li>
+                <li><a href="#">Open Work Orders</a></li>
+                <li><a href="#">Completed Work Orders</a></li>
+                <li><a href="#">Vendor Performance</a></li>
+                <li><a href="#">Maintenance Cost Analysis</a></li>
+                <li><a href="#">Unit Turn Report</a></li>
+                <li><a href="#">Preventive Maintenance Schedule</a></li>
+                <li><a href="#">Inspection History</a></li>
+                <li><a href="#">Make Ready Report</a></li>
+                <li><a href="#">Equipment Inventory</a></li>
+            </ul>
+        </div>
+
+        <!-- Accounting Reports -->
+        <div class="report-category">
+            <h4>Accounting Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Accounts Payable Aging</a></li>
+                <li><a href="#">Accounts Receivable Aging</a></li>
+                <li><a href="#">Check Register</a></li>
+                <li><a href="#">Vendor Ledger</a></li>
+                <li><a href="#">1099 Report <span class="report-badge">Annual</span></a></li>
+                <li><a href="#">Bank Reconciliation</a></li>
+                <li><a href="#">Journal Entry Report</a></li>
+                <li><a href="#">Chart of Accounts</a></li>
+                <li><a href="#">Deposit Register</a></li>
+                <li><a href="#">Bill Payment History</a></li>
+            </ul>
+        </div>
+
+        <!-- Owner Reports -->
+        <div class="report-category">
+            <h4>Owner Reports</h4>
+            <ul class="report-list">
+                <li><a href="#">Owner Statement <span class="report-badge">Monthly</span></a></li>
+                <li><a href="#">Owner Draw Report</a></li>
+                <li><a href="#">Owner Distribution Summary</a></li>
+                <li><a href="#">Owner Contact List</a></li>
+                <li><a href="#">Management Fee Report</a></li>
+                <li><a href="#">Owner Portal Activity</a></li>
+                <li><a href="#">Owner Tax Documents</a></li>
+                <li><a href="#">Reserve Fund Report</a></li>
+                <li><a href="#">Owner Equity Report</a></li>
+                <li><a href="#">CAM Reconciliation</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchReports() {
+        const searchTerm = document.getElementById('reportSearch').value.toLowerCase();
+        const reportItems = document.querySelectorAll('.report-list li');
+        
+        reportItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Allow search on Enter key
+    document.getElementById('reportSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchReports();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduled Reports - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Scheduled Reports</h2>
+        <div class="header-tabs">
+            <ul class="nav nav-tabs" style="border-bottom: none;">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reports') }}" style="color: #0B5394;">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('scheduled_reports') }}" style="background-color: #FFF; color: #0B5394; border: 1px solid #DEE2E6; border-bottom: 1px solid #FFF; margin-bottom: -1px;">Scheduled Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reporting_metrics') }}" style="color: #0B5394;">Metrics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('surveys') }}" style="color: #0B5394;">Surveys</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-body">
+    <style>
+        .scheduled-reports-container {
+            background-color: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .search-container {
+            background-color: #F8F9FA;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #DEE2E6;
+        }
+        
+        .search-text {
+            color: #6C757D;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .data-table {
+            background-color: white;
+        }
+        
+        .data-table table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background-color: #F8F9FA;
+            color: #212529;
+            font-weight: 600;
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 2px solid #DEE2E6;
+            font-size: 11px;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .data-table th.sortable {
+            cursor: pointer;
+        }
+        
+        .data-table th.sortable:after {
+            content: "↕";
+            position: absolute;
+            right: 10px;
+            color: #6C757D;
+            font-size: 10px;
+        }
+        
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #F0F0F0;
+            vertical-align: middle;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #F8F9FA;
+        }
+        
+        .report-name {
+            color: #0B5394;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .report-name:hover {
+            text-decoration: underline;
+        }
+        
+        .report-type {
+            color: #6C757D;
+            font-size: 11px;
+        }
+        
+        .frequency-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .frequency-monthly {
+            background-color: #E3F2FD;
+            color: #0B5394;
+        }
+        
+        .frequency-weekly {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .last-sent-date {
+            color: #495057;
+        }
+        
+        .page-controls {
+            padding: 15px 20px;
+            background-color: #F8F9FA;
+            border-top: 1px solid #DEE2E6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-info {
+            color: #6C757D;
+            font-size: 13px;
+        }
+        
+        .page-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .page-links a {
+            color: #0B5394;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 5px 10px;
+            border: 1px solid #DEE2E6;
+            border-radius: 3px;
+            background-color: white;
+        }
+        
+        .page-links a:hover {
+            background-color: #E3F2FD;
+        }
+        
+        .page-links a.active {
+            background-color: #0B5394;
+            color: white;
+        }
+        
+        .action-bar {
+            padding: 15px 20px;
+            background-color: white;
+            border-bottom: 1px solid #DEE2E6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-new-schedule {
+            background-color: #0B5394;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-new-schedule:hover {
+            background-color: #073763;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #495057;
+        }
+        
+        .filter-btn:hover {
+            background-color: #F8F9FA;
+        }
+        
+        .filter-btn.active {
+            background-color: #E3F2FD;
+            border-color: #0B5394;
+            color: #0B5394;
+        }
+    </style>
+
+    <div class="scheduled-reports-container">
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="btn-new-schedule">
+                <i class="fas fa-plus"></i> New Scheduled Report
+            </button>
+            <div class="filter-buttons">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Active</button>
+                <button class="filter-btn">Paused</button>
+            </div>
+        </div>
+
+        <!-- Search Container -->
+        <div class="search-container">
+            <p class="search-text">Click here to search</p>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable">Name ↑</th>
+                        <th>Reports</th>
+                        <th class="sortable">Frequency</th>
+                        <th class="sortable">Last Sent On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Brentwood Prelim EOM Rent Roll</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Marcin's Itemized Rent Roll - Brentwood Park</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/31/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Delinquency</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Copy of Delinquency</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/10/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Lease Expiration Detail By Month Jan 2018 - 2020</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Copy of Lease Expiration Detail By Month Jan 2018 - 20120</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-weekly">Weekly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">8/5/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">MIDTOWN Rent Roll</a>
+                        </td>
+                        <td>
+                            <span class="report-type">MIDTOWN Rent Roll</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/16/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">MIDTOWN: Current, Evict, Notice, Vacant-Rented, Vacant-Unrented</a>
+                        </td>
+                        <td>
+                            <span class="report-type">REFORMAT to see Current, Evict, Notice, Copy of Rent Roll</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-weekly">Weekly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">8/1/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Norclay 15th Rent Roll</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Norclay Apts - Rent Roll</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/15/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Randall Court Prelim EOM Rent Roll</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Marcin's Itemized Rent Roll - Randall Court</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/31/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Today's Rent Roll Midtown</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Today's Rent Roll</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/31/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Villas of Mur-Len Prelim EOM Rent roll</a>
+                        </td>
+                        <td>
+                            <span class="report-type">Marcin's Itemized Rent Roll - Villas of MurLen</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/31/2025</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="#" class="report-name">Work Orders Not Complete Last 90 Days</a>
+                        </td>
+                        <td>
+                            <span class="report-type">New or Assigned Work Orders Last 90 days_Not Complete</span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge frequency-monthly">Monthly</span>
+                        </td>
+                        <td>
+                            <span class="last-sent-date">7/12/2025</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Page Controls -->
+        <div class="page-controls">
+            <div class="page-info">
+                Showing 1-10 of 10 results
+            </div>
+            <div class="page-links">
+                <a href="#">Privacy</a>
+                <span style="color: #DEE2E6;">|</span>
+                <a href="#">Help & Training</a>
+                <span style="color: #DEE2E6;">|</span>
+                <a href="#">Make a Suggestion ›</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add sorting functionality
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            // Toggle sort direction
+            const currentText = this.textContent;
+            if (currentText.includes('↑')) {
+                this.textContent = currentText.replace('↑', '↓');
+            } else {
+                this.textContent = currentText.replace('↓', '↑');
+            }
+            
+            // Here you would implement actual sorting logic
+            console.log('Sorting by:', this.textContent);
+        });
+    });
+
+    // Search functionality
+    document.querySelector('.search-container').addEventListener('click', function() {
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search scheduled reports...';
+        searchInput.style.width = '300px';
+        searchInput.style.padding = '8px';
+        searchInput.style.border = '1px solid #DEE2E6';
+        searchInput.style.borderRadius = '3px';
+        
+        this.innerHTML = '';
+        this.appendChild(searchInput);
+        searchInput.focus();
+    });
+</script>
+{% endblock %}

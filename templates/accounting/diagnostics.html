@@ -1,772 +1,324 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Diagnostics - AIVIIZN</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends "base.html" %}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-            font-size: 13px;
-            color: #333;
-            background: #f5f5f5;
-            height: 100vh;
-            overflow: hidden;
-        }
+{% block title %}Financial Diagnostics - Property Management{% endblock %}
 
-        .app-container {
-            display: flex;
-            height: 100vh;
-        }
+{% block content %}
+<div class="content-header">
+    <h2>Financial Diagnostics</h2>
+</div>
 
-        /* Left Sidebar */
-        .sidebar {
-            width: 200px;
-            background: #f8f9fa;
-            border-right: 1px solid #dee2e6;
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
+<div class="content-body">
+    <!-- Sub-navigation tabs for Accounting section -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('receivables') }}">Receivables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('payables') }}">Payables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bank_accounts') }}">Bank Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('journal_entries') }}">Journal Entries</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bank_transfers') }}">Bank Transfers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('gl_accounts') }}">GL Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('diagnostics') }}">Diagnostics</a>
+        </li>
+    </ul>
 
-        .sidebar-menu {
-            padding: 0;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .menu-item:hover {
-            background: #e9ecef;
-        }
-
-        .menu-item.active {
-            background: #cfe2ff;
-        }
-
-        .menu-item.header {
-            font-weight: 600;
-            background: #e9ecef;
-            cursor: default;
-        }
-
-        .menu-icon {
-            width: 20px;
-            margin-right: 10px;
-            text-align: center;
-        }
-
-        .menu-badge {
-            margin-left: auto;
-            background: #dc3545;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .submenu {
-            padding-left: 30px;
-            background: white;
-        }
-
-        .submenu .menu-item {
-            padding: 8px 15px;
-            font-size: 12px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 30px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .nav-tab {
-            color: #666;
-            text-decoration: none;
-            padding: 5px 0;
-            border-bottom: 2px solid transparent;
-            font-size: 13px;
-        }
-
-        .nav-tab.active {
-            color: #0d6efd;
-            border-bottom-color: #0d6efd;
-        }
-
-        /* Page Content */
-        .page-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: white;
-        }
-
-        .page-header {
-            margin-bottom: 20px;
-        }
-
-        .page-title {
-            font-size: 24px;
-            font-weight: 400;
-            margin-bottom: 20px;
-        }
-
-        /* Filter Box */
-        .filter-box {
-            background: white;
-            border: 2px solid #0d6efd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .filter-box::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 10px solid #0d6efd;
-        }
-
-        .filter-header {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .filter-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex: 1;
-        }
-
-        .filter-label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .filter-input, .filter-select {
-            padding: 6px 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
-        .filter-select {
-            width: 100%;
-        }
-
-        .btn-search {
-            background: #0d6efd;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .btn-search:hover {
-            background: #0b5ed7;
-        }
-
-        /* Diagnostic Sections */
-        .diagnostic-section {
-            margin-bottom: 30px;
-            background: white;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-left: 4px solid #0d6efd;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .section-header:hover {
-            background: #e9ecef;
-        }
-
-        .collapse-icon {
-            margin-right: 10px;
-            transition: transform 0.3s;
-        }
-
-        .section-header.collapsed .collapse-icon {
-            transform: rotate(-90deg);
-        }
-
-        .info-icon {
-            margin-left: 10px;
-            color: #0d6efd;
-            cursor: help;
-        }
-
-        .section-content {
-            padding: 15px;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-top: none;
-        }
-
-        /* Table Styles */
-        .diagnostic-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .diagnostic-table th {
-            background: #f8f9fa;
-            padding: 10px;
-            text-align: left;
-            font-weight: 500;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .diagnostic-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .diagnostic-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .diagnostic-table .property-name {
-            color: #0d6efd;
-            cursor: pointer;
-        }
-
-        .diagnostic-table .property-name:hover {
-            text-decoration: underline;
-        }
-
-        .diagnostic-table .amount {
-            text-align: right;
-            font-family: 'Courier New', monospace;
-        }
-
-        .diagnostic-table .amount.negative {
-            color: #dc3545;
-        }
-
-        .diagnostic-table .amount.positive {
-            color: #198754;
-        }
-
-        /* Print Button */
-        .btn-print {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border: 1px solid #dee2e6;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .btn-print:hover {
-            background: #f8f9fa;
-        }
-
-        /* Right Panel - Tasks */
-        .right-panel {
-            width: 300px;
-            background: white;
-            border-left: 1px solid #dee2e6;
-            overflow-y: auto;
-        }
-
-        .panel-header {
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-close {
-            cursor: pointer;
-            color: #666;
-        }
-
-        .help-section {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .help-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 13px;
-        }
-
-        .help-link {
-            color: #0d6efd;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .help-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Company Logo */
-        .company-logo {
-            padding: 15px;
-            text-align: center;
-            font-weight: 600;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <!-- Left Sidebar -->
-        <div class="sidebar">
-            <div class="company-logo">AIVIIZN</div>
-            <div class="sidebar-menu">
-                <div class="menu-item">
-                    <span class="menu-icon">📊</span>
-                    <span>Dashboard</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">📅</span>
-                    <span>Calendar</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">🏘️</span>
-                    <span>Leasing</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">🏠</span>
-                    <span>Properties</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">👥</span>
-                    <span>People</span>
-                </div>
-                <div class="menu-item active">
-                    <span class="menu-icon">💰</span>
-                    <span>Accounting</span>
-                </div>
-                <div class="submenu">
-                    <div class="menu-item">Receivables</div>
-                    <div class="menu-item">Payables</div>
-                    <div class="menu-item">Bank Accounts</div>
-                    <div class="menu-item">Journal Entries</div>
-                    <div class="menu-item">Bank Transfers</div>
-                    <div class="menu-item">GL Accounts</div>
-                    <div class="menu-item active">Diagnostics</div>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">🔧</span>
-                    <span>Maintenance</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">📈</span>
-                    <span>Reporting</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">✉️</span>
-                    <span>Communication</span>
-                </div>
-                <div class="menu-item">
-                    <span class="menu-icon">🆕</span>
-                    <span>What's New</span>
-                    <span class="menu-badge">4</span>
-                </div>
-            </div>
-            <div style="padding: 15px; border-top: 1px solid #dee2e6; margin-top: auto;">
-                <small style="color: #666;">AIVIIZN</small>
+    <div class="diagnostics-container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <p style="font-weight: 500; margin-bottom: 15px;">To view for all properties, click Search, or filter by property below.</p>
+            <div class="filter-controls">
+                <input type="text" class="filter-input" placeholder="Properties" style="flex: 2;">
+                <select class="filter-select">
+                    <option>Show All Properties</option>
+                </select>
+                <button class="btn btn-primary btn-sm">Search</button>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Navigation -->
-            <div class="top-nav">
-                <nav class="nav-tabs">
-                    <a href="#" class="nav-tab">Receivables</a>
-                    <a href="#" class="nav-tab">Payables</a>
-                    <a href="#" class="nav-tab">Bank Accounts</a>
-                    <a href="#" class="nav-tab">Journal Entries</a>
-                    <a href="#" class="nav-tab">Bank Transfers</a>
-                    <a href="#" class="nav-tab">GL Accounts</a>
-                    <a href="#" class="nav-tab active">Diagnostics</a>
-                </nav>
+        <!-- Security Deposit Funds Mismatch -->
+        <div class="diagnostic-section">
+            <div class="section-header" onclick="toggleDiagnosticSection(this)">
+                <span class="section-arrow">▼</span>
+                <span class="section-title">Security Deposit Funds Mismatch ⓘ</span>
             </div>
-
-            <!-- Page Content -->
-            <div class="page-content">
-                <div class="page-header">
-                    <h1 class="page-title">Financial Diagnostics</h1>
-                </div>
-
-                <!-- Filter Box -->
-                <div class="filter-box">
-                    <div class="filter-header">To view for all properties, click Search, or filter by property below.</div>
-                    <div class="filter-controls">
-                        <div class="filter-group" style="flex: 2;">
-                            <label class="filter-label">Properties</label>
-                            <input type="text" class="filter-input" placeholder="">
-                        </div>
-                        <div class="filter-group">
-                            <label class="filter-label">&nbsp;</label>
-                            <select class="filter-select">
-                                <option>Show All Properties</option>
-                            </select>
-                        </div>
-                        <div style="align-self: flex-end;">
-                            <button class="btn-search">Search</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security Deposit Funds Mismatch -->
-                <div class="diagnostic-section">
-                    <div class="section-header">
-                        <span class="collapse-icon">▼</span>
-                        Security Deposit Funds Mismatch
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                    <div class="section-content">
-                        <table class="diagnostic-table">
-                            <thead>
-                                <tr>
-                                    <th>Property</th>
-                                    <th>Deposit Account Balance (General Ledger) <span class="info-icon">ⓘ</span></th>
-                                    <th>Deposit Account Balance (Security Deposit Funds) <span class="info-icon">ⓘ</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="property-name">(BARR) Rock Ridge Ranch Apartments</td>
-                                    <td class="amount">34,692.00</td>
-                                    <td class="amount">35,073.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">3739 Wyandotte Apartments</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">4,250.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">4504 Terrace / Cottone Properties LLC</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">600.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">BAR Wyandotte / BAR Wyandotte LLC</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">12,000.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Bella Condo</td>
-                                    <td class="amount">600.00</td>
-                                    <td class="amount">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Brushwood Apts / Brush Creek Holdings LLC</td>
-                                    <td class="amount">10,686.50</td>
-                                    <td class="amount">9,733.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Highland / Highland Ventures</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">5,097.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Kaanapali Apartments / BAR Development LLC</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">7,300.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">La Casa / KC Virginia LLC</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">4,300.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Lincrest Apts / Linwood Holdings LLC</td>
-                                    <td class="amount">15,993.75</td>
-                                    <td class="amount">9,600.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">Shadow Creek Apartments</td>
-                                    <td class="amount">10,516.00</td>
-                                    <td class="amount">10,366.00</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Escrow Cash Account Balance Mismatch -->
-                <div class="diagnostic-section">
-                    <div class="section-header">
-                        <span class="collapse-icon">▼</span>
-                        Escrow Cash Account Balance Mismatch
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                    <div class="section-content">
-                        <table class="diagnostic-table">
-                            <thead>
-                                <tr>
-                                    <th>Property</th>
-                                    <th>Escrow Cash GL Balance <span class="info-icon">ⓘ</span></th>
-                                    <th>Deposit GL Accounts <span class="info-icon">ⓘ</span></th>
-                                    <th>All GL Accounts w/ Escrow Cash Offset <span class="info-icon">ⓘ</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="property-name">(BARR) Rock Ridge Ranch Apartments</td>
-                                    <td class="amount">246,927.56</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">0.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">(DO NOT USE)Rock Ridge Ranch Apts / Rock Ridge Ranch Holdings LLC</td>
-                                    <td class="amount negative">-6,808.50</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">3,175.00</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">10706 Bennington / JGPH Holdings LLC</td>
-                                    <td class="amount">323.55</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">323.55</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">11005 Bennington / JGPH Holdings LLC</td>
-                                    <td class="amount">1,024.51</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">1,024.51</td>
-                                </tr>
-                                <tr>
-                                    <td class="property-name">3825 Baltimore Apartments / Tannahill Moran</td>
-                                    <td class="amount">3,052.40</td>
-                                    <td class="amount">0.00</td>
-                                    <td class="amount">3,152.40</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Non-Zero Security Clearing Account Balances -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Non-Zero Security Clearing Account Balances
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Negative Balance on Additional Fee GL Accounts -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Negative Balance on Additional Fee GL Accounts
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Positive Balance on Additional Fee GL Accounts -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Positive Balance on Additional Fee GL Accounts
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Tenants and Homeowners With Unused Prepayments / Open Charges / Open Credits -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Tenants and Homeowners With Unused Prepayments / Open Charges / Open Credits
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Prepayment Balance Mismatch -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Prepayment Balance Mismatch
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Bank Account Reconciliation Lapses Over 60 Days -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Bank Account Reconciliation Lapses Over 60 Days
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Unused Prepayments for Past Tenants -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Unused Prepayments for Past Tenants
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
-
-                <!-- Unused Prepayments Associated with a Non-Prepay GL Account -->
-                <div class="diagnostic-section">
-                    <div class="section-header collapsed">
-                        <span class="collapse-icon">▼</span>
-                        Unused Prepayments Associated with a Non-Prepay GL Account
-                        <span class="info-icon">ⓘ</span>
-                    </div>
-                </div>
+            <div class="section-content">
+                <table class="diagnostic-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Deposit Account Balance (General Ledger) ⓘ</th>
+                            <th>Deposit Account Balance (Security Deposit Funds) ⓘ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="property-link">(BARR) Rock Ridge Ranch Apartments</td>
+                            <td style="text-align: right;">34,692.00</td>
+                            <td style="text-align: right;">35,073.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">3739 Wyandotte Apartments</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">4,250.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">4504 Terrace / Cottone Properties LLC</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">600.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">BAR Wyandotte / BAR Wyandotte LLC</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">12,000.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Bella Condo</td>
+                            <td style="text-align: right;">600.00</td>
+                            <td style="text-align: right;">0.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Brushwood Apts / Brush Creek Holdings LLC</td>
+                            <td style="text-align: right;">10,686.50</td>
+                            <td style="text-align: right;">9,733.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Highland / Highland Ventures</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">5,097.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Kaanapali Apartments / BAR Development LLC</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">7,300.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">La Casa / KC Virginia LLC</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">4,300.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Lincrest Apts / Linwood Holdings LLC</td>
+                            <td style="text-align: right;">15,993.75</td>
+                            <td style="text-align: right;">9,600.00</td>
+                        </tr>
+                        <tr>
+                            <td class="property-link">Shadow Creek Apartments</td>
+                            <td style="text-align: right;">10,516.00</td>
+                            <td style="text-align: right;">10,366.00</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Right Panel - Tasks & Help -->
-        <div class="right-panel">
-            <div class="panel-header">
-                <span>Tasks</span>
-                <span class="panel-close">✕</span>
+        <!-- Escrow Cash Account Balance Mismatch -->
+        <div class="diagnostic-section">
+            <div class="section-header" onclick="toggleDiagnosticSection(this)">
+                <span class="section-arrow">▼</span>
+                <span class="section-title">Escrow Cash Account Balance Mismatch ⓘ</span>
             </div>
-            
-            <div class="help-section">
-                <div class="help-title">🆘 Help Topics</div>
-                <div><a href="#" class="help-link">Financial Diagnostics Help</a></div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">📊 Reports</div>
-                <div><a href="#" class="help-link">Bank Account Activity</a></div>
-                <div><a href="#" class="help-link">General Ledger</a></div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">⭐ Tasks</div>
-                <div style="padding: 10px; color: #666; font-size: 12px;">No tasks available</div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">💬 Support</div>
-                <div style="padding: 10px;">
-                    <button style="width: 100%; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Chat with Support
-                    </button>
-                </div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">🔗 Assistant</div>
-                <div style="padding: 10px; color: #666; font-size: 12px;">
-                    Click Assistant in the top right for help with any task.
-                </div>
+            <div class="section-content">
+                <table class="diagnostic-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Escrow Cash GL Balance ⓘ</th>
+                            <th>Deposit GL Accounts ⓘ</th>
+                            <th>All GL Accounts w/ Escrow Cash Offset ⓘ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="property-link">(BARR) Rock Ridge Ranch Apartments</td>
+                            <td style="text-align: right;">246,927.56</td>
+                            <td style="text-align: right;">0.00</td>
+                            <td style="text-align: right;">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Print Button -->
-    <button class="btn-print">
-        <span>🖨️</span>
-        <span>Print</span>
-    </button>
+<style>
+    .diagnostics-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
 
-    <script>
-        // Toggle section collapse
-        document.querySelectorAll('.section-header').forEach(header => {
-            header.addEventListener('click', function() {
-                this.classList.toggle('collapsed');
-                const content = this.nextElementSibling;
-                if (content) {
-                    content.style.display = this.classList.contains('collapsed') ? 'none' : 'block';
-                }
-            });
-        });
+    .filter-section {
+        background: white;
+        border: 2px solid #0B5394;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        position: relative;
+    }
 
-        // Initialize collapsed sections
-        document.querySelectorAll('.section-header.collapsed').forEach(header => {
-            const content = header.nextElementSibling;
-            if (content) {
-                content.style.display = 'none';
-            }
-        });
+    .filter-section::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #0B5394;
+    }
 
-        // Print functionality
-        document.querySelector('.btn-print').addEventListener('click', function() {
-            window.print();
-        });
+    .filter-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
 
-        // Close right panel
-        document.querySelector('.panel-close').addEventListener('click', function() {
-            document.querySelector('.right-panel').style.display = 'none';
-        });
-    </script>
-</body>
-</html>
+    .filter-input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        min-width: 180px;
+    }
+
+    .diagnostic-section {
+        margin-bottom: 20px;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        background: #f8f9fa;
+        border-left: 4px solid #0B5394;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .section-header:hover {
+        background: #e9ecef;
+    }
+
+    .section-arrow {
+        margin-right: 10px;
+        transition: transform 0.3s;
+    }
+
+    .section-arrow.collapsed {
+        transform: rotate(-90deg);
+    }
+
+    .section-title {
+        flex: 1;
+    }
+
+    .section-content {
+        padding: 15px;
+        background: white;
+    }
+
+    .section-content.collapsed {
+        display: none;
+    }
+
+    .diagnostic-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .diagnostic-table th {
+        background: #f8f9fa;
+        padding: 10px;
+        text-align: left;
+        font-weight: 500;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .diagnostic-table td {
+        padding: 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .diagnostic-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .property-link {
+        color: #0B5394;
+        cursor: pointer;
+    }
+
+    .property-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    function toggleDiagnosticSection(header) {
+        const arrow = header.querySelector('.section-arrow');
+        const content = header.nextElementSibling;
+        
+        if (arrow.classList.contains('collapsed')) {
+            arrow.classList.remove('collapsed');
+            content.classList.remove('collapsed');
+        } else {
+            arrow.classList.add('collapsed');
+            content.classList.add('collapsed');
+        }
+    }
+</script>
+{% endblock %}
