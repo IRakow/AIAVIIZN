@@ -1,19 +1,82 @@
 {% extends "base.html" %}
 
-{% block title %}Rental Applications{% endblock %}
-
-{% block tabs %}
-<a href="/dashboard" class="tab-nav-item">Dashboard</a>
-<a href="/vacancies" class="tab-nav-item">Vacancies</a>
-<a href="/guest-cards" class="tab-nav-item">Guest Cards</a>
-<a href="/rental-applications" class="tab-nav-item active">Rental Applications</a>
-<a href="/leases" class="tab-nav-item">Leases</a>
-<a href="/renewals" class="tab-nav-item">Renewals</a>
-<a href="/metrics" class="tab-nav-item">Metrics</a>
-{% endblock %}
+{% block title %}Rental Applications - Property Management{% endblock %}
 
 {% block content %}
+<div class="content-header">
+    <h2>Rental Applications</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="rental-applications-container">
+        <!-- Search Box -->
+        <div class="search-box" onclick="openSearch()">
+            Click here to search
+        </div>
+
 <style>
+    .rental-applications-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
+    /* Search Box */
+    .search-box {
+        background-color: white;
+        border: 2px solid #0B5394;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+        color: #6c757d;
+        transition: all 0.3s;
+    }
+
+    .search-box:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-box::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid white;
+    }
+
     .applications-header {
         display: flex;
         justify-content: space-between;
@@ -112,14 +175,54 @@
         background: #dc3545;
         color: white;
     }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+
+    /* Data table override specific styles */
+    .data-table {
+        margin-top: 0;
+    }
+
+    .data-table th {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .data-table th:hover {
+        background-color: #e9ecef;
+    }
 </style>
 
-<div class="applications-header">
+        <div class="applications-header">
     <h1 class="page-title">Rental Applications</h1>
     <button class="btn btn-primary" onclick="newApplication()">+ New Application</button>
-</div>
+        </div>
 
-<div class="filter-bar">
+        <div class="filter-bar">
     <label>Status:</label>
     <select id="statusFilter">
         <option value="all">All Statuses</option>
@@ -143,9 +246,9 @@
     <input type="date" id="toDate">
     
     <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
-</div>
+        </div>
 
-<div class="data-table">
+        <div class="data-table">
     <table>
         <thead>
             <tr>
@@ -231,9 +334,18 @@
             {% endfor %}
         </tbody>
     </table>
+        </div>
+    </div>
 </div>
 
 <script>
+function openSearch() {
+    const searchQuery = prompt('Enter search query:');
+    if (searchQuery) {
+        window.location.href = `/rental-applications?search=${encodeURIComponent(searchQuery)}`;
+    }
+}
+
 function newApplication() {
     window.location.href = '/rental-applications/new';
 }
@@ -306,37 +418,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% endblock %}
-
-{% block tasks_panel %}
-<div class="tasks-panel" id="tasksPanel">
-    <div class="tasks-header">
-        <h3>Application Tasks</h3>
-        <button class="close-btn" onclick="toggleTasksPanel()">×</button>
-    </div>
-    <div class="tasks-content">
-        <div class="task-section-title">Quick Actions</div>
-        <div class="task-item" onclick="newApplication()">+ New Application</div>
-        <div class="task-item">Run Credit Check</div>
-        <div class="task-item">Background Check</div>
-        <div class="task-item">Request References</div>
-        
-        <div class="task-section-title">Bulk Actions</div>
-        <div class="task-item">Export Applications</div>
-        <div class="task-item">Send Follow-ups</div>
-        <div class="task-item">Archive Old Applications</div>
-        
-        <div class="task-section-title">Reports</div>
-        <div class="task-item">Application Summary</div>
-        <div class="task-item">Conversion Rate</div>
-        <div class="task-item">Average Processing Time</div>
-        <div class="task-item">Denial Reasons</div>
-        
-        <div class="task-section-title">Settings</div>
-        <div class="task-item">Application Criteria</div>
-        <div class="task-item">Auto-Approval Rules</div>
-        <div class="task-item">Email Templates</div>
-        <div class="task-item">Application Fees</div>
-    </div>
-</div>
 {% endblock %}
