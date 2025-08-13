@@ -1,51 +1,49 @@
-{% extends "base.html" %}
-
 {% block title %}Leases - Property Management{% endblock %}
 
 {% block content %}
-<div class="content-header">
+<div class=\"content-header\">
     <h2>Leases</h2>
 </div>
 
-<div class="content-body">
+<div class=\"content-body\">
     <!-- Sub-navigation tabs -->
-    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+    <ul class=\"nav nav-tabs mb-3\" style=\"background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;\">
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('vacancies') }}\">Vacancies</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('guest_cards') }}\">Guest Cards</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('rental_applications') }}\">Rental Applications</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link active" href="{{ url_for('leases') }}">Leases</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link active\" href=\"{{ url_for('leases') }}\">Leases</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('renewals') }}\">Renewals</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('leasing_metrics') }}\">Metrics</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        <li class=\"nav-item\">
+            <a class=\"nav-link\" href=\"{{ url_for('signals') }}\">Signals</a>
         </li>
     </ul>
 
-    <div class="leases-container">
-        <h3 class="page-title">Leases</h3>
+    <div class=\"leases-container\">
+        <h3 class=\"page-title\">Leases</h3>
 
         <!-- Status Filter Tabs -->
-        <div class="status-tabs">
-            <button class="status-tab active" onclick="filterLeases('all')">All</button>
-            <button class="status-tab" onclick="filterLeases('ready')">Ready to Countersign</button>
-            <button class="status-tab" onclick="filterLeases('out')">Out for Signing</button>
-            <button class="status-tab" onclick="filterLeases('printed')">Printed</button>
+        <div class=\"status-tabs\">
+            <button class=\"status-tab active\" onclick=\"filterLeases('all')\">All</button>
+            <button class=\"status-tab\" onclick=\"filterLeases('ready')\">Ready to Countersign</button>
+            <button class=\"status-tab\" onclick=\"filterLeases('out')\">Out for Signing</button>
+            <button class=\"status-tab\" onclick=\"filterLeases('printed')\">Printed</button>
         </div>
 
         <!-- Data Table -->
-        <div class="data-table">
+        <div class=\"data-table\">
             <table>
                 <thead>
                     <tr>
@@ -63,7 +61,7 @@
                         <td>03/12/2025 10:06 AM</td>
                         <td>Ready to Countersign</td>
                         <td>
-                            <button class="btn-countersign">Countersign</button>
+                            <button class=\"btn-countersign\">Countersign</button>
                         </td>
                     </tr>
                     <tr>
@@ -72,7 +70,7 @@
                         <td>08/01/2025 04:48 PM</td>
                         <td>Ready to Countersign</td>
                         <td>
-                            <button class="btn-countersign">Countersign</button>
+                            <button class=\"btn-countersign\">Countersign</button>
                         </td>
                     </tr>
                     <tr>
@@ -81,7 +79,7 @@
                         <td>08/11/2025 11:34 AM</td>
                         <td>Ready to Countersign</td>
                         <td>
-                            <button class="btn-countersign">Countersign</button>
+                            <button class=\"btn-countersign\">Countersign</button>
                         </td>
                     </tr>
                     <tr>
@@ -90,7 +88,7 @@
                         <td>08/12/2025 03:40 PM</td>
                         <td>Ready to Countersign</td>
                         <td>
-                            <button class="btn-countersign">Countersign</button>
+                            <button class=\"btn-countersign\">Countersign</button>
                         </td>
                     </tr>
                 </tbody>
@@ -98,12 +96,12 @@
         </div>
 
         <!-- Footer Links -->
-        <div class="footer-links">
-            <a href="#">Privacy</a>
-            <span class="divider">|</span>
-            <a href="#">Help & Training</a>
-            <span class="divider">|</span>
-            <a href="#">Make a Suggestion »</a>
+        <div class=\"footer-links\">
+            <a href=\"#\">Privacy</a>
+            <span class=\"divider\">|</span>
+            <a href=\"#\">Help & Training</a>
+            <span class=\"divider\">|</span>
+            <a href=\"#\">Make a Suggestion »</a>
         </div>
     </div>
 </div>
@@ -294,4 +292,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-{% endblock %}
+{% endblock %}`
+}

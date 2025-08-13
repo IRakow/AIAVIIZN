@@ -61,391 +61,178 @@
             <button class="btn btn-outline-secondary btn-sm">Clear Filters</button>
         </div>
 
-        <!-- Data Table -->
-        <div class="data-table">
-            <table>
+        <!-- Bank Accounts Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Account Name <span class="sort-icon">↕</span></th>
-                        <th>Bank <span class="sort-icon">↕</span></th>
-                        <th>Account Number <span class="sort-icon">↕</span></th>
-                        <th>Last Reconciliation <span class="sort-icon">↕</span></th>
-                        <th>Payments Enabled <span class="sort-icon">↕</span></th>
-                        <th>Auto-Reconciliation <span class="sort-icon">↕</span></th>
+                        <th>Account Name <span class="sort-arrow">↑</span></th>
+                        <th>Bank <span class="sort-arrow">↓</span></th>
+                        <th>Account Number <span class="sort-arrow">↓</span></th>
+                        <th>Last Reconciliation <span class="sort-arrow">↓</span></th>
+                        <th>Payments Enabled <span class="sort-arrow">↓</span></th>
+                        <th>Auto-Reconciliation <span class="sort-arrow">↓</span></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% if accounts %}
-                        {% for account in accounts %}
-                        <tr>
-                            <td class="account-name">{{ account.name }}</td>
-                            <td>{{ account.bank }}</td>
-                            <td>{{ account.account_number }}</td>
-                            <td>{{ account.last_reconciliation }}</td>
-                            <td>
-                                {% if account.payments_enabled == 'ENABLED' %}
-                                    <span class="status-enabled">ENABLED</span>
-                                {% else %}
-                                    <span class="status-disabled">NOT ENABLED</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if account.auto_reconciliation == 'PLAID' %}
-                                    <span class="status-enabled">PLAID</span>
-                                {% else %}
-                                    <span class="status-disabled">NOT ENABLED</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <!-- Sample data for demonstration -->
-                        <tr>
-                            <td class="account-name">3825 Baltimore / Finkelstein</td>
-                            <td>US Bank</td>
-                            <td>********2041</td>
-                            <td>07/31/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">40th St Escrow</td>
-                            <td>US Bank</td>
-                            <td>********7206</td>
-                            <td>11/30/2021</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">40th st property</td>
-                            <td>US Bank</td>
-                            <td>********3228</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">AC Equity, LLC / Highland</td>
-                            <td>US Bank</td>
-                            <td>********2234</td>
-                            <td>07/31/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Aspen Village Apts/EM2 Investments, LLC</td>
-                            <td>Bank of America</td>
-                            <td>********0610</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Barton Crossing/Flint</td>
-                            <td>Arvest</td>
-                            <td>****1304</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Blue Ridge Manor</td>
-                            <td>US Bank</td>
-                            <td>********1556</td>
-                            <td>07/31/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Booth Apartments / Michael Sullivan</td>
-                            <td>US Bank</td>
-                            <td>********6994</td>
-                            <td>07/31/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Booth Apts / FBB</td>
-                            <td>First Business Bank</td>
-                            <td>****3934</td>
-                            <td>08/01/2020</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Brentwood park / escrow</td>
-                            <td>US Bank</td>
-                            <td>********6928</td>
-                            <td>04/30/2020</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Brentwood Park / Operating</td>
-                            <td>US Bank</td>
-                            <td>********6910</td>
-                            <td>04/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Brentwood Park Ventures Const Res</td>
-                            <td>US Bank</td>
-                            <td>********6340</td>
-                            <td>06/30/2021</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Castle Row Apts/EM2 Investments, LLC</td>
-                            <td>Bank of America</td>
-                            <td>********0449</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Charlotte Park Apartments LLC</td>
-                            <td>UMB Bank</td>
-                            <td>********6025</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">CP001 Dummy</td>
-                            <td>US Bank</td>
-                            <td>********9646</td>
-                            <td>01/01/2012</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Eaton Apartments operating</td>
-                            <td>NBKC</td>
-                            <td>***0625</td>
-                            <td>06/30/2025</td>
-                            <td><span class="status-enabled">ENABLED</span></td>
-                            <td><span class="status-enabled">PLAID</span></td>
-                        </tr>
-                        <tr>
-                            <td class="account-name">Eaton Escrow</td>
-                            <td>NBKC</td>
-                            <td>*3084</td>
-                            <td>01/17/2024</td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                            <td><span class="status-disabled">NOT ENABLED</span></td>
-                        </tr>
-                    {% endif %}
+                    {% for account in bank_accounts %}
+                    <tr>
+                        <td>{{ account.name }}</td>
+                        <td>{{ account.bank }}</td>
+                        <td>{{ account.account_number }}</td>
+                        <td>{{ account.last_reconciliation }}</td>
+                        <td>
+                            <span class="badge {% if account.payments_enabled == 'ENABLED' %}badge-success{% else %}badge-secondary{% endif %}">
+                                {{ account.payments_enabled }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if account.auto_reconciliation == 'PLAID' %}badge-info{% else %}badge-secondary{% endif %}">
+                                {{ account.auto_reconciliation }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<!-- Tasks Panel -->
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h5>Tasks</h5>
+        <button class="btn btn-sm">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-item">
+            <a href="#">New Bank Account</a>
+        </div>
+        <div class="task-item">
+            <a href="#">New Bank Deposit</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Bank Feed</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Reconcile</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Close Accounting Period</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Enable Bank Accounts for Online Payments</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Link With Bank</a>
+        </div>
+        
+        <div class="tasks-subheader">Reports</div>
+        <div class="task-item">
+            <a href="#">Check Register</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Deposit Register</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Trust Account Balance</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Bank Account Association</a>
+        </div>
+    </div>
+</div>
+
 <style>
-    .bank-accounts-container {
-        background-color: white;
-        border-radius: 4px;
-        padding: 20px;
-    }
+.bank-changes-alert {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
 
-    .bank-changes-alert {
-        background: #fff3cd;
-        border: 1px solid #ffc107;
-        padding: 15px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-    }
+.bank-changes-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
 
-    .bank-changes-alert h3 {
-        margin: 0 0 10px 0;
-        font-size: 16px;
-        color: #856404;
-    }
+.bank-change-item {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    min-width: 150px;
+}
 
-    .bank-changes-content {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+.arrow {
+    font-size: 24px;
+    color: #1976d2;
+}
 
-    .bank-change-item {
-        flex: 0 0 auto;
-    }
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
-    .bank-change-item strong {
-        color: #212529;
-    }
+.filter-input {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 200px;
+}
 
-    .text-muted {
-        color: #6c757d;
-        font-size: 11px;
-    }
+.badge-info {
+    background-color: #17a2b8;
+}
 
-    .arrow {
-        font-size: 20px;
-        color: #856404;
-    }
+.tasks-panel {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-    .bank-change-action {
-        margin-left: auto;
-    }
+.tasks-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
 
-    .filter-section {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        align-items: center;
-    }
+.tasks-content {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
 
-    .filter-input {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        font-size: 14px;
-    }
+.task-item {
+    padding: 5px 0;
+}
 
-    .filter-input:focus {
-        outline: none;
-        border-color: #0B5394;
-        box-shadow: 0 0 0 2px rgba(11, 83, 148, 0.1);
-    }
+.task-item a {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
 
-    .btn-outline-primary {
-        color: #0B5394;
-        border: 1px solid #0B5394;
-        background: white;
-    }
+.task-item a:hover {
+    text-decoration: underline;
+}
 
-    .btn-outline-primary:hover {
-        background: #0B5394;
-        color: white;
-    }
-
-    .btn-outline-secondary {
-        color: #6c757d;
-        border: 1px solid #dee2e6;
-        background: #f8f9fa;
-    }
-
-    .btn-outline-secondary:hover {
-        background: #e9ecef;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 13px;
-        border-radius: 3px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .account-name {
-        color: #0B5394;
-        font-weight: 500;
-        cursor: pointer;
-    }
-
-    .account-name:hover {
-        text-decoration: underline;
-    }
-
-    .status-enabled {
-        color: #28a745;
-        font-weight: 600;
-        font-size: 12px;
-    }
-
-    .status-disabled {
-        color: #dc3545;
-        font-weight: 600;
-        font-size: 12px;
-    }
-
-    .sort-icon {
-        font-size: 10px;
-        color: #6c757d;
-        margin-left: 5px;
-    }
-
-    /* Override base.html nav-tabs styles for sub-navigation */
-    .content-body .nav-tabs {
-        border-bottom: 1px solid #dee2e6;
-    }
-
-    .content-body .nav-tabs .nav-link {
-        color: #495057;
-        background: transparent;
-        border: 1px solid transparent;
-        border-bottom: none;
-        font-size: 13px;
-        padding: 8px 16px;
-    }
-
-    .content-body .nav-tabs .nav-link:hover {
-        border-color: #e9ecef #e9ecef #dee2e6;
-        background: #f8f9fa;
-    }
-
-    .content-body .nav-tabs .nav-link.active {
-        color: #495057;
-        background: white;
-        border-color: #dee2e6 #dee2e6 white;
-        font-weight: 500;
-    }
-
-    /* Data table specific styles */
-    .data-table {
-        margin-top: 0;
-    }
-
-    .data-table th {
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .data-table th:hover {
-        background-color: #e9ecef;
-    }
-
-    .data-table table {
-        width: 100%;
-    }
-
-    .data-table tbody tr:hover {
-        background-color: #f8f9fa;
-    }
+.tasks-subheader {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
 </style>
-
-<script>
-    // Sort functionality
-    document.querySelectorAll('th').forEach(header => {
-        if (header.querySelector('.sort-icon')) {
-            header.addEventListener('click', function() {
-                console.log('Sorting by:', this.textContent);
-                // Implement sorting logic here
-            });
-        }
-    });
-
-    // Filter functionality
-    document.querySelectorAll('.filter-input').forEach(input => {
-        input.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') {
-                console.log('Filtering by:', this.placeholder, '=', this.value);
-                // Implement filtering logic here
-            }
-        });
-    });
-
-    // Account name click handler
-    document.querySelectorAll('.account-name').forEach(name => {
-        name.addEventListener('click', function() {
-            console.log('Opening account details for:', this.textContent);
-            // Navigate to account details
-        });
-    });
-</script>
 {% endblock %}

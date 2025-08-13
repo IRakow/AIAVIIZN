@@ -19,566 +19,295 @@
     </div>
 </div>
 
-<div class="content-body" style="padding: 15px;">
+<div class="content-body" style="padding: 15px; background: #f8f9fa;">
     <!-- Financial Diagnostics Alert -->
-    <div class="alert alert-info alert-dismissible fade show" role="alert" style="background: #d1ecf1; border: 1px solid #bee5eb;">
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="background: #d1ecf1; border: 1px solid #bee5eb; font-size: 13px;">
         <i class="fas fa-info-circle"></i>
         Have you checked your Financial Diagnostics Page recently? 
         <a href="{{ url_for('diagnostics') }}" class="alert-link">Click here</a> to check up on your Financial Health. 
         <a href="#" class="alert-link">Remind me in 7 days</a> | 
         <a href="#" class="alert-link">I'm fine... don't show this message again</a>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" style="font-size: 10px;"></button>
     </div>
 
     <!-- Loading Skeleton -->
-    <div id="loadingSkeleton">
-        <div class="skeleton-section">
-            <div class="skeleton-header"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line short"></div>
-            </div>
-        </div>
-        <div class="skeleton-section">
-            <div class="skeleton-header"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line short"></div>
-            </div>
+    <div id="loadingSkeleton" style="display: block;">
+        <div class="skeleton-container">
+            <div class="skeleton-box" style="height: 200px; margin-bottom: 20px;"></div>
+            <div class="skeleton-box" style="height: 150px; margin-bottom: 20px;"></div>
+            <div class="skeleton-box" style="height: 300px;"></div>
         </div>
     </div>
 
-    <!-- Main Dashboard Container (Hidden initially) -->
+    <!-- Main Dashboard Content -->
     <div id="dashboardContent" style="display: none;">
-        <!-- Critical: Move Ins Section (Above the fold) -->
-        <div class="dashboard-section">
-            <div class="section-header" onclick="toggleSection('moveInsContent')">
-                <span class="section-arrow">▼</span>
-                <h6 class="section-title">Move Ins</h6>
+        
+        <!-- Move Ins Section -->
+        <div class="dashboard-section mb-4">
+            <div class="section-header" onclick="toggleSection('moveIns')" style="cursor: pointer; padding: 10px; background: white; border: 1px solid #dee2e6; border-radius: 4px;">
+                <span class="section-arrow" style="display: inline-block; transition: transform 0.3s;">▼</span>
+                <span class="fw-bold" style="font-size: 14px;">Move Ins</span>
             </div>
-            <div id="moveInsContent" class="section-content">
-                <div class="update-notice">
-                    <span class="badge bg-info">NEW</span>
-                    <span>Move Ins Updated</span>
-                    <p class="mb-2 mt-2">We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
-                    <button class="btn btn-sm btn-primary">
-                        <i class="fas fa-comment"></i> FEEDBACK
-                    </button>
+            <div id="moveIns" class="section-content" style="background: white; border: 1px solid #dee2e6; border-top: none; padding: 15px;">
+                <div class="update-notice" style="background: #e8f4fd; border: 1px solid #bee5eb; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-info me-2">NEW</span>
+                        <div class="flex-grow-1">
+                            <strong>Move Ins Updated</strong>
+                            <p class="mb-2 mt-2" style="font-size: 13px;">We've added some key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+                            <button class="btn btn-sm btn-primary">
+                                <i class="fas fa-comment"></i> FEEDBACK
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="table-responsive mt-3">
-                    <table class="table table-sm table-hover">
-                        <thead>
+                <div class="search-box text-center mb-3" style="padding: 15px; background: #f8f9fa; border-radius: 4px;">
+                    <div style="position: relative; display: inline-block; width: 60%;">
+                        <input type="text" class="form-control" placeholder="Search by property, unit or group" style="border-radius: 20px;">
+                        <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #f8f9fa;"></div>
+                    </div>
+                </div>
+
+                <div class="table-controls mb-2 d-flex justify-content-between align-items-center">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search by property, unit or group" style="width: 300px;">
+                    <select class="form-select form-select-sm" style="width: 150px;">
+                        <option>Lease Status</option>
+                        <option>Active</option>
+                        <option>Pending</option>
+                    </select>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showFinished">
+                        <label class="form-check-label" for="showFinished" style="font-size: 13px;">
+                            Show Finished Move Ins
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover" style="font-size: 12px;">
+                        <thead style="background: #f8f9fa;">
                             <tr>
-                                <th>Future Tenant</th>
-                                <th>Property - Unit</th>
-                                <th>Lease</th>
-                                <th>Portal</th>
-                                <th>Balance</th>
+                                <th>Future Tenant ↕</th>
+                                <th>Property - Unit ↕</th>
+                                <th>Lease ↕</th>
+                                <th>Portal ↕</th>
+                                <th>Balance ↕</th>
                                 <th>Insurance</th>
-                                <th>Move In Date</th>
+                                <th>Move In Date ↕</th>
                             </tr>
                         </thead>
-                        <tbody id="moveInsTableBody">
-                            <!-- Will be populated by JavaScript -->
+                        <tbody>
+                            <tr>
+                                <td style="color: #0066cc;">Sainge, Samuel</td>
+                                <td>-</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>$400.00</td>
+                                <td><span class="text-danger">Not Covered</span></td>
+                                <td>07/25/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Bell, Telia R.</td>
+                                <td>-</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>$0.00</td>
+                                <td><span class="text-danger">Not Covered</span></td>
+                                <td>08/01/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Carlson, Eric A.</td>
+                                <td>Campbell Apartments - 3403 #4</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$727.74</td>
+                                <td><span class="text-success">Covered</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Stivers, Rachel A.</td>
+                                <td>Grandview 17 Townhomes / Grandview 17 KC LLC - 13825 A</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$930.92</td>
+                                <td><span class="text-warning">Pending</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Yoder, Julianna R.</td>
+                                <td>Villas of Mur-Len / TSI Villas of Mur-Len - 205 U</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>$807.04</td>
+                                <td><span class="text-success">Covered</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Ventura Sarmiento, Reiman</td>
+                                <td>(BARR) Rock Ridge Ranch Apartments - 59A</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$607.74</td>
+                                <td><span class="text-success">Covered</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Patterson, Shyanne J.</td>
+                                <td>Aspen Village Apartments - 3610 #02</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$706.40</td>
+                                <td><span class="text-warning">Pending</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Goodwin, Marcel L.</td>
+                                <td>(BARR) Rock Ridge Ranch Apartments - 69A-R</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$923.18</td>
+                                <td><span class="text-warning">Pending</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Harvey, Alahzeyai S.</td>
+                                <td>Eaton Apartments / D&T - 3001</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="text-success">-$927.05</td>
+                                <td><span class="text-warning">Pending</span></td>
+                                <td>08/08/2025</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Castro, Laura L.</td>
+                                <td>Eaton Apartments / D&T - 3043</td>
+                                <td><span class="badge bg-primary">Fully Executed</span></td>
+                                <td></td>
+                                <td>$0.00</td>
+                                <td><span class="text-warning">Pending</span></td>
+                                <td>08/11/2025</td>
+                            </tr>
                         </tbody>
                     </table>
-                    <div class="pagination-info">
-                        <span>Displaying: 1-10 of 25</span>
-                        <div class="pagination-controls">
-                            <button class="btn btn-sm btn-outline-secondary"><<</button>
-                            <button class="btn btn-sm btn-outline-secondary"><</button>
-                            <span class="mx-2">1 2 3</span>
-                            <button class="btn btn-sm btn-outline-secondary">></button>
-                            <button class="btn btn-sm btn-outline-secondary">>></button>
-                        </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 12px;">
+                    <span>Displaying: 1-10 of 25</span>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;"><<</button>
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;"><</button>
+                        <span class="mx-2">1 2 3</span>
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;">></button>
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;">>></button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Other sections will be lazy loaded -->
-        <div id="lazyLoadContainer"></div>
-    </div>
-</div>
-
-<style>
-    /* Critical CSS - Inline for faster initial render */
-    .dashboard-section {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        margin-bottom: 15px;
-    }
-    
-    .section-header {
-        background: #f8f9fa;
-        padding: 10px 15px;
-        cursor: pointer;
-        border-bottom: 1px solid #dee2e6;
-        display: flex;
-        align-items: center;
-    }
-    
-    .section-header:hover {
-        background: #e9ecef;
-    }
-    
-    .section-arrow {
-        margin-right: 10px;
-        transition: transform 0.3s;
-    }
-    
-    .section-arrow.collapsed {
-        transform: rotate(-90deg);
-    }
-    
-    .section-title {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        flex: 1;
-    }
-    
-    .section-content {
-        padding: 15px;
-    }
-    
-    .section-content.collapsed {
-        display: none;
-    }
-    
-    .update-notice {
-        background: #e8f4fd;
-        padding: 10px;
-        border-left: 3px solid #0B5394;
-        margin-bottom: 15px;
-    }
-    
-    .status-badge {
-        padding: 2px 8px;
-        border-radius: 3px;
-        font-size: 11px;
-        font-weight: 500;
-    }
-    
-    .status-badge.active {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .status-badge.fully-executed {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-    
-    .status-badge.covered {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .status-badge.not-covered {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    
-    .status-badge.pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-    
-    /* Loading Skeleton */
-    .skeleton-section {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        margin-bottom: 15px;
-        overflow: hidden;
-    }
-    
-    .skeleton-header {
-        height: 40px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-    }
-    
-    .skeleton-content {
-        padding: 15px;
-    }
-    
-    .skeleton-line {
-        height: 20px;
-        margin-bottom: 10px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-    }
-    
-    .skeleton-line.short {
-        width: 60%;
-    }
-    
-    @keyframes loading {
-        0% {
-            background-position: 200% 0;
-        }
-        100% {
-            background-position: -200% 0;
-        }
-    }
-    
-    /* Defer non-critical styles */
-    .pagination-info {
-        margin-top: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 12px;
-    }
-</style>
-
-<!-- Defer non-critical CSS -->
-<link rel="preload" href="{{ url_for('static', filename='css/dashboard-extended.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-extended.css') }}"></noscript>
-
-<script>
-    // Performance monitoring
-    const perfData = {
-        start: performance.now(),
-        firstPaint: 0,
-        domLoaded: 0,
-        fullyLoaded: 0
-    };
-
-    // Critical data for initial render
-    const criticalData = {
-        moveIns: [
-            { tenant: 'Sainge, Samuel', unit: '-', lease: '-', portal: 'Active', balance: 400.00, insurance: 'Not Covered', date: '07/25/2025' },
-            { tenant: 'Bell, Telia R.', unit: '-', lease: '-', portal: 'Active', balance: 0.00, insurance: 'Not Covered', date: '08/01/2025' },
-            { tenant: 'Carlson, Eric A.', unit: 'Campbell Apartments - 3403 #4', lease: 'Fully Executed', portal: 'Active', balance: -727.74, insurance: 'Covered', date: '08/08/2025' },
-            { tenant: 'Stivers, Rachel A.', unit: 'Grandview 17 Townhomes / Grandview 17 KC LLC - 13825 A', lease: 'Fully Executed', portal: 'Active', balance: -930.92, insurance: 'Pending', date: '08/08/2025' },
-            { tenant: 'Yoder, Julianna R.', unit: 'Villas of Mur-Len / TSI Villas of Mur-Len - 205 U', lease: 'Fully Executed', portal: 'Active', balance: 807.04, insurance: 'Covered', date: '08/08/2025' }
-        ]
-    };
-
-    // Render critical content immediately
-    function renderCriticalContent() {
-        const tbody = document.getElementById('moveInsTableBody');
-        if (!tbody) return;
-        
-        const fragment = document.createDocumentFragment();
-        
-        criticalData.moveIns.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${item.tenant}</td>
-                <td>${item.unit}</td>
-                <td>${item.lease !== '-' ? `<span class="status-badge fully-executed">${item.lease}</span>` : '-'}</td>
-                <td><span class="status-badge active">${item.portal}</span></td>
-                <td class="${item.balance < 0 ? 'text-danger' : ''}">$${item.balance.toFixed(2)}</td>
-                <td><span class="status-badge ${item.insurance === 'Covered' ? 'covered' : item.insurance === 'Pending' ? 'pending' : 'not-covered'}">${item.insurance}</span></td>
-                <td>${item.date}</td>
-            `;
-            fragment.appendChild(tr);
-        });
-        
-        tbody.appendChild(fragment);
-        
-        // Show content and hide skeleton
-        document.getElementById('loadingSkeleton').style.display = 'none';
-        document.getElementById('dashboardContent').style.display = 'block';
-        
-        perfData.firstPaint = performance.now();
-        console.log('First paint:', perfData.firstPaint - perfData.start, 'ms');
-    }
-
-    // Lazy load remaining sections
-    function lazyLoadSections() {
-        const container = document.getElementById('lazyLoadContainer');
-        if (!container) return;
-        
-        // Use requestIdleCallback for non-critical content
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => loadRemainingContent(container), { timeout: 2000 });
-        } else {
-            setTimeout(() => loadRemainingContent(container), 100);
-        }
-    }
-
-    // Load remaining dashboard sections
-    async function loadRemainingContent(container) {
-        try {
-            const response = await fetch('{{ url_for("get_dashboard_sections") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ sections: ['moveOuts', 'onlinePayments', 'notifications', 'leasingActivity', 'keyMetrics', 'portfolio', 'delinquencies', 'maintenance', 'insurance'] })
-            });
-            
-            const data = await response.json();
-            
-            // Create sections progressively
-            for (const section of data.sections) {
-                await renderSection(container, section);
-                // Small delay to prevent blocking
-                await new Promise(resolve => setTimeout(resolve, 10));
-            }
-            
-            // Initialize charts after sections are loaded
-            if (window.initializeCharts) {
-                requestAnimationFrame(() => {
-                    window.initializeCharts();
-                });
-            }
-            
-            perfData.fullyLoaded = performance.now();
-            console.log('Fully loaded:', perfData.fullyLoaded - perfData.start, 'ms');
-            
-        } catch (error) {
-            console.error('Error loading sections:', error);
-            // Fallback to static content
-            loadStaticSections(container);
-        }
-    }
-
-    // Render individual section
-    async function renderSection(container, sectionData) {
-        const section = document.createElement('div');
-        section.className = 'dashboard-section';
-        section.innerHTML = sectionData.html;
-        container.appendChild(section);
-    }
-
-    // Toggle section visibility
-    function toggleSection(sectionId) {
-        const content = document.getElementById(sectionId);
-        if (!content) return;
-        
-        const arrow = content.previousElementSibling.querySelector('.section-arrow');
-        
-        if (content.classList.contains('collapsed')) {
-            content.classList.remove('collapsed');
-            arrow.classList.remove('collapsed');
-        } else {
-            content.classList.add('collapsed');
-            arrow.classList.add('collapsed');
-        }
-    }
-
-    // Optimize images loading
-    function lazyLoadImages() {
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        imageObserver.unobserve(img);
-                    }
-                });
-            });
-
-            document.querySelectorAll('img.lazy').forEach(img => imageObserver.observe(img));
-        }
-    }
-
-    // Debounce function for scroll events
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Initialize dashboard
-    document.addEventListener('DOMContentLoaded', function() {
-        perfData.domLoaded = performance.now();
-        console.log('DOM loaded:', perfData.domLoaded - perfData.start, 'ms');
-        
-        // Render critical content first
-        renderCriticalContent();
-        
-        // Then lazy load the rest
-        lazyLoadSections();
-        
-        // Setup image lazy loading
-        lazyLoadImages();
-    });
-
-    // Fallback static content loader
-    function loadStaticSections(container) {
-        // This would contain the HTML for remaining sections as a fallback
-        const sectionsHTML = `
-            <!-- Move Outs Section -->
-            <div class="dashboard-section">
-                <div class="section-header" onclick="toggleSection('moveOutsContent')">
-                    <span class="section-arrow collapsed">▼</span>
-                    <h6 class="section-title">Move Outs</h6>
+        <!-- Move Outs Section -->
+        <div class="dashboard-section mb-4">
+            <div class="section-header" onclick="toggleSection('moveOuts')" style="cursor: pointer; padding: 10px; background: white; border: 1px solid #dee2e6; border-radius: 4px;">
+                <span class="section-arrow">▼</span>
+                <span class="fw-bold" style="font-size: 14px;">Move Outs</span>
+            </div>
+            <div id="moveOuts" class="section-content" style="background: white; border: 1px solid #dee2e6; border-top: none; padding: 15px;">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover" style="font-size: 12px;">
+                        <thead style="background: #f8f9fa;">
+                            <tr>
+                                <th>Tenant Name ↕</th>
+                                <th>Move Out Type ↕</th>
+                                <th>Property - Unit ↕</th>
+                                <th>Move Out Date ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color: #0066cc;">Jones, Alisa</td>
+                                <td>All Tenants</td>
+                                <td>Walnut Ridge Apts - 6118-C</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Mitchell, Cameron M.</td>
+                                <td>All Tenants</td>
+                                <td>Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 04-07</td>
+                                <td>96 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Crawford, Susan</td>
+                                <td>All Tenants</td>
+                                <td>Homestead Villas 4-Plex - 4838 Terr</td>
+                                <td>32 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Wilson, Amelia J.</td>
+                                <td>All Tenants</td>
+                                <td>Valentine Apartments - 3747 #03</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Craddock, Jaylen C.</td>
+                                <td>All Tenants</td>
+                                <td>Aspen Village Apartments - 3610 #04</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Edwards, Amber L.</td>
+                                <td>All Tenants</td>
+                                <td>3825 Baltimore - 3827 #02</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Zhang, Weijie</td>
+                                <td>All Tenants</td>
+                                <td>Eaton Apartments / D&T - 3003</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Matthews, Donald</td>
+                                <td>All Tenants</td>
+                                <td>Longmeadow Apartments - #15B</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Forson, Kayla</td>
+                                <td>All Tenants</td>
+                                <td>Walnut Ridge Apts - 6110 1/2 A NW Bell Rd.</td>
+                                <td>7 days ago</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #0066cc;">Smothers, Seth T.</td>
+                                <td>All Tenants</td>
+                                <td>Charlotte Park Apartments - 803 #1E</td>
+                                <td>7 days ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div id="moveOutsContent" class="section-content collapsed">
-                    <!-- Content will be loaded -->
+                <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 12px;">
+                    <span>Displaying: 1-10 of 50</span>
+                    <div class="pagination-controls">
+                        <span class="mx-2">1 2 3 4 5</span>
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;">></button>
+                        <button class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px;">>></button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Online Payments Section -->
-            <div class="dashboard-section">
-                <div class="section-header" onclick="toggleSection('onlinePaymentsContent')">
-                    <span class="section-arrow collapsed">▼</span>
-                    <h6 class="section-title">Online Payments</h6>
-                </div>
-                <div id="onlinePaymentsContent" class="section-content collapsed">
-                    <!-- Content will be loaded -->
-                </div>
+        <!-- Online Payments Section -->
+        <div class="dashboard-section mb-4">
+            <div class="section-header" onclick="toggleSection('onlinePayments')" style="cursor: pointer; padding: 10px; background: white; border: 1px solid #dee2e6; border-radius: 4px;">
+                <span class="section-arrow">▼</span>
+                <span class="fw-bold" style="font-size: 14px;">Online Payments</span>
             </div>
-
-            <!-- Add more sections as needed -->
-        `;
-        
-        container.innerHTML = sectionsHTML;
-    }
-
-    // Defer Chart.js loading
-    function loadChartLibrary() {
-        return new Promise((resolve, reject) => {
-            if (window.Chart) {
-                resolve();
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
-            script.async = true;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-    }
-
-    // Initialize charts only when needed and visible
-    window.initializeCharts = async function() {
-        await loadChartLibrary();
-        
-        // Use requestAnimationFrame for smooth rendering
-        requestAnimationFrame(() => {
-            initializeVisibleCharts();
-        });
-    };
-
-    function initializeVisibleCharts() {
-        // Only initialize charts that are visible
-        const chartContainers = document.querySelectorAll('canvas[data-chart-type]');
-        
-        chartContainers.forEach(canvas => {
-            if (isElementInViewport(canvas) && !canvas.hasAttribute('data-initialized')) {
-                initializeChart(canvas);
-                canvas.setAttribute('data-initialized', 'true');
-            }
-        });
-    }
-
-    function isElementInViewport(el) {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-    }
-
-    function initializeChart(canvas) {
-        const chartType = canvas.dataset.chartType;
-        const chartData = JSON.parse(canvas.dataset.chartData || '{}');
-        
-        // Initialize chart with data
-        new Chart(canvas.getContext('2d'), {
-            type: chartType,
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 500 // Faster animation
-                }
-            }
-        });
-    }
-
-    // Cache API responses
-    const apiCache = new Map();
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-    async function fetchWithCache(url, options = {}) {
-        const cacheKey = url + JSON.stringify(options);
-        const cached = apiCache.get(cacheKey);
-        
-        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-            return cached.data;
-        }
-        
-        const response = await fetch(url, options);
-        const data = await response.json();
-        
-        apiCache.set(cacheKey, {
-            data: data,
-            timestamp: Date.now()
-        });
-        
-        return data;
-    }
-
-    // Optimize scroll performance
-    let ticking = false;
-    function handleScroll() {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                initializeVisibleCharts();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }
-
-    // Add scroll listener with debouncing
-    window.addEventListener('scroll', debounce(handleScroll, 100), { passive: true });
-
-    // Preconnect to external domains
-    function addPreconnect(url) {
-        const link = document.createElement('link');
-        link.rel = 'preconnect';
-        link.href = url;
-        document.head.appendChild(link);
-    }
-
-    // Preconnect to CDNs
-    addPreconnect('https://cdn.jsdelivr.net');
-    addPreconnect('https://cdnjs.cloudflare.com');
-</script>
-
-<!-- Defer Chart.js loading until needed -->
-<script>
-    // Load Chart.js only when user scrolls or after initial load
-    let chartsLoaded = false;
-    function loadChartsIfNeeded() {
-        if (!chartsLoaded && document.querySelector('canvas[data-chart-type]')) {
-            chartsLoaded = true;
-            loadChartLibrary().then(() => {
-                initializeVisibleCharts();
-            });
-        }
-    }
-    
-    // Load charts on scroll or after 2 seconds
-    window.addEventListener('scroll', loadChartsIfNeeded, { once: true, passive: true });
-    setTimeout(loadChartsIfNeeded, 2000);
-</script>
-{% endblock %}
+            <div id="onlinePayments" class="section-content" style="background: white; border: 1px solid #dee2e6; border-top: none; padding: 20px;">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h6 style="font-size: 13px; color: #6c757d;">Online Payment Statistics <i class="fas fa-info-circle text-info"></i></h6>
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="stat-box">
+                                <h2 style="color: #0891b2; font-size: 36px; margin: 0;">90%</h2>
+                                <p style="font-size: 12px; color: #6c757d; margin: 0;">Payments Collected Online</p>
+                                
