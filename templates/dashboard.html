@@ -1095,7 +1095,7 @@ function initializeCharts() {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return ' + (value / 1000000).toFixed(1) + 'M';
+                                return '$' + (value / 1000000).toFixed(1) + 'M';
                             }
                         }
                     }

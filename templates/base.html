@@ -498,7 +498,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu', this, event)">
                         <i class="fas fa-key"></i> Leasing
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -520,7 +520,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu', this, event)">
                         <i class="fas fa-users"></i> People
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -532,7 +532,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu', this, event)">
                         <i class="fas fa-calculator"></i> Accounting
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -548,7 +548,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu', this, event)">
                         <i class="fas fa-wrench"></i> Maintenance
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -566,7 +566,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu', this, event)">
                         <i class="fas fa-chart-bar"></i> Reporting
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -579,7 +579,7 @@
                 </div>
                 
                 <div class="sidebar-item">
-                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu', this)">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu', this, event)">
                         <i class="fas fa-envelope"></i> Communication
                         <i class="fas fa-chevron-down chevron-icon"></i>
                     </a>
@@ -784,7 +784,7 @@
     <!-- Custom JS -->
     <script>
         // Toggle dropdown menu with arrow rotation
-        function toggleDropdown(menuId, linkElement) {
+        function toggleDropdown(menuId, linkElement, event) {
             const dropdown = document.getElementById(menuId);
             const isOpen = dropdown.classList.contains('show');
             
