@@ -9,7 +9,7 @@ import random
 from decimal import Decimal
 from calendar_api import calendar_api
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 # Use a fixed secret key so sessions persist across deployments
 # In production, this should be an environment variable
 app.secret_key = 'aiviizn-secret-key-2025-keep-this-private-and-change-in-production'
@@ -37,6 +37,10 @@ def login_required(f):
     return decorated_function
 
 # Routes
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
 @app.route('/')
 def index():
     if 'user_id' in session:

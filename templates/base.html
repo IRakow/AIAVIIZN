@@ -15,6 +15,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Dashboard Extended CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-extended.css') }}">
+    
     <!-- Custom CSS -->
     <style>
         :root {
@@ -866,14 +869,17 @@
             const currentPath = window.location.pathname;
             
             // Auto-expand the relevant menu based on current page
-            if (currentPath.includes('/vacancies') || currentPath.includes('/guest_cards') || 
-                currentPath.includes('/rental_applications') || currentPath.includes('/leases') ||
+            if (currentPath.includes('/leasing/') || 
+                currentPath.includes('/vacancies') || currentPath.includes('/guest-cards') || 
+                currentPath.includes('/rental-applications') || currentPath.includes('/leases') ||
                 currentPath.includes('/renewals') || currentPath.includes('/metrics') || 
                 currentPath.includes('/signals')) {
                 const leasingMenu = document.getElementById('leasing-menu');
-                const leasingLink = leasingMenu.previousElementSibling;
-                leasingMenu.classList.add('show');
-                leasingLink.classList.add('expanded');
+                if (leasingMenu) {
+                    const leasingLink = leasingMenu.previousElementSibling;
+                    leasingMenu.classList.add('show');
+                    if (leasingLink) leasingLink.classList.add('expanded');
+                }
             }
             
             if (currentPath.includes('/tenants') || currentPath.includes('/owners') || 

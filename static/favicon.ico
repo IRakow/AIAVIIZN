@@ -1,1 +1,9 @@
-<!-- Placeholder for favicon -->
+<html>
+<head>
+    <title>Creating Favicon</title>
+</head>
+<body>
+    <!-- This is a placeholder. In production, you would add a real favicon.ico file -->
+    <p>Favicon placeholder</p>
+</body>
+</html>
