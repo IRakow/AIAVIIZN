@@ -1,579 +1,1724 @@
 {% extends "base.html" %}
 
-{% block title %}Projects - Property Management{% endblock %}
-{% block page_title %}Projects{% endblock %}
+{% block title %}Projects - AIVIIZN{% endblock %}
 
-{% block extra_css %}
+{% block styles %}
 <style>
-    .project-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        border: 1px solid #dee2e6;
+    /* Projects Page Specific Styles */
+    .content-header {
+        padding: 20px;
         background: white;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-header h2 {
+        font-size: 24px;
+        font-weight: 400;
+        color: #333;
+        margin: 0 0 20px 0;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        padding: 0 20px 20px 20px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 13px;
+        color: #495057;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .filter-input-wrapper {
+        position: relative;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .filter-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-clear:hover {
+        color: #495057;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .btn-more-filters {
+        background: white;
+        border: 1px solid #007bff;
+        color: #007bff;
+        padding: 8px 16px;
         border-radius: 4px;
         cursor: pointer;
         font-size: 13px;
     }
-    
-    .btn-success {
-        background: #28a745;
-        color: white;
-        border-color: #28a745;
+
+    .btn-more-filters:hover {
+        background: #e3f2fd;
     }
-    
-    .project-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .stat-card {
+
+    .btn-clear-filters {
         background: white;
-        padding: 15px;
-        border: 1px solid #dee2e6;
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        padding: 8px 16px;
         border-radius: 4px;
-    }
-    
-    .stat-label {
-        font-size: 11px;
-        color: #6c757d;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
-    
-    .stat-value {
-        font-size: 28px;
-        font-weight: 600;
-        color: #212529;
-    }
-    
-    .stat-change {
-        font-size: 12px;
-        color: #6c757d;
-        margin-top: 5px;
-    }
-    
-    .filter-section {
-        background: white;
-        padding: 15px;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        margin-bottom: 20px;
-    }
-    
-    .filter-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .filter-row input,
-    .filter-row select {
-        padding: 6px 10px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
+        cursor: pointer;
         font-size: 13px;
     }
-    
-    .projects-grid {
-        display: grid;
-        gap: 20px;
+
+    .btn-clear-filters:hover {
+        background: #ffebee;
     }
-    
-    .project-card {
+
+    .btn-new-project {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-new-project:hover {
+        background: #218838;
+    }
+
+    /* Projects Table */
+    .projects-table-container {
         background: white;
         border: 1px solid #dee2e6;
         border-radius: 4px;
         overflow: hidden;
+        margin-top: 20px;
     }
-    
-    .project-header-card {
-        padding: 15px 20px;
+
+    .projects-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .projects-table th {
         background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .projects-table th:hover {
+        background: #e9ecef;
+    }
+
+    .projects-table th .sort-icon {
+        display: inline-block;
+        margin-left: 5px;
+        color: #6c757d;
+        font-size: 10px;
+    }
+
+    .projects-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+    }
+
+    .projects-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .project-name {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .project-name:hover {
+        text-decoration: underline;
+    }
+
+    .budget-amount {
+        font-family: monospace;
+        text-align: right;
+    }
+
+    .budget-positive {
+        color: #28a745;
+    }
+
+    .budget-negative {
+        color: #dc3545;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-planning {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .status-in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-on-hold {
+        background: #ffe0b2;
+        color: #e65100;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+
+    .empty-state-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .empty-state-text {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* More Filters Panel */
+    .more-filters-panel {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .more-filters-panel.show {
+        display: block;
+    }
+
+    .more-filters-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
         border-bottom: 1px solid #dee2e6;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    
-    .project-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: #212529;
-    }
-    
-    .project-status {
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    
-    .status-planning {
-        background: #e3f2fd;
-        color: #1976d2;
-    }
-    
-    .status-in-progress {
-        background: #fff3cd;
-        color: #856404;
-    }
-    
-    .status-on-hold {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    
-    .status-completed {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .project-body {
-        padding: 20px;
-    }
-    
-    .project-details {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .detail-item {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .detail-label {
-        font-size: 11px;
-        color: #6c757d;
-        text-transform: uppercase;
-        margin-bottom: 3px;
-    }
-    
-    .detail-value {
-        font-size: 14px;
-        color: #212529;
+
+    .modal-title {
+        font-size: 18px;
         font-weight: 500;
+        color: #333;
     }
-    
-    .progress-section {
-        margin-bottom: 20px;
-    }
-    
-    .progress-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        font-size: 13px;
-    }
-    
-    .progress-bar-container {
-        height: 8px;
-        background: #e9ecef;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    
-    .progress-bar {
-        height: 100%;
-        background: #0d6efd;
-        transition: width 0.3s ease;
-    }
-    
-    .project-tasks {
-        margin-bottom: 20px;
-    }
-    
-    .tasks-header {
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #495057;
-    }
-    
-    .task-item {
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #f1f3f4;
-        font-size: 13px;
+        justify-content: center;
     }
-    
-    .task-checkbox {
-        margin-right: 10px;
+
+    .modal-close:hover {
+        color: #333;
     }
-    
-    .task-name {
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
         flex: 1;
     }
-    
-    .task-assignee {
-        color: #6c757d;
-        font-size: 12px;
-    }
-    
-    .task-completed {
-        text-decoration: line-through;
-        color: #6c757d;
-    }
-    
-    .project-footer {
+
+    .modal-footer {
         padding: 15px 20px;
-        background: #f8f9fa;
         border-top: 1px solid #dee2e6;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .project-actions {
-        display: flex;
+        justify-content: flex-end;
         gap: 10px;
     }
-    
-    .btn-sm {
-        padding: 5px 10px;
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        margin-bottom: 20px;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+
+    .progress-bar-wrapper {
+        background: #e9ecef;
+        border-radius: 4px;
+        height: 20px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: #007bff;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .progress-bar.over-budget {
+        background: #dc3545;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    /* Action Menu */
+    .action-menu {
+        position: relative;
+        display: inline-block;
+    }
+
+    .action-btn {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
         font-size: 12px;
     }
-    
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #6c757d;
+
+    .action-btn:hover {
+        background: #f8f9fa;
+    }
+
+    .action-dropdown {
+        position: absolute;
+        right: 0;
+        top: 100%;
         background: white;
         border: 1px solid #dee2e6;
         border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        min-width: 150px;
+        display: none;
     }
-    
-    .empty-state i {
-        font-size: 48px;
+
+    .action-dropdown.show {
+        display: block;
+    }
+
+    .action-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 13px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .action-item:last-child {
+        border-bottom: none;
+    }
+
+    .action-item:hover {
+        background: #f8f9fa;
+    }
+
+    .action-item.danger {
+        color: #dc3545;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
         margin-bottom: 20px;
-        color: #dee2e6;
     }
-    
-    .budget-indicator {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-left: 5px;
+
+    .summary-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 15px;
     }
-    
-    .budget-ok {
-        background: #28a745;
+
+    .summary-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 5px;
     }
-    
-    .budget-warning {
-        background: #ffc107;
+
+    .summary-value {
+        font-size: 24px;
+        font-weight: 500;
+        color: #333;
     }
-    
-    .budget-over {
-        background: #dc3545;
+
+    .summary-subtitle {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
     }
 </style>
 {% endblock %}
 
-{% block tabs %}
-<a href="{{ url_for('work_orders') }}" class="tab-nav-item">Work Orders</a>
-<a href="{{ url_for('recurring_work_orders') }}" class="tab-nav-item">Recurring Work Orders</a>
-<a href="{{ url_for('inspections') }}" class="tab-nav-item">Inspections</a>
-<a href="{{ url_for('unit_turns') }}" class="tab-nav-item">Unit Turns</a>
-<a href="{{ url_for('projects') }}" class="tab-nav-item active">Projects</a>
-<a href="{{ url_for('purchase_orders') }}" class="tab-nav-item">Purchase Orders</a>
-<a href="{{ url_for('inventory') }}" class="tab-nav-item">Inventory</a>
-<a href="{{ url_for('fixed_assets') }}" class="tab-nav-item">Fixed Assets</a>
-<a href="{{ url_for('smart_maintenance') }}" class="tab-nav-item">Smart Maintenance</a>
-{% endblock %}
-
 {% block content %}
-<div class="project-header">
-    <h3 style="margin: 0;">Active Projects</h3>
-    <button class="btn btn-success">
-        <i class="fas fa-plus"></i> Add Project
-    </button>
+<div class="content-wrapper">
+    <div class="content-header">
+        <h2>Projects</h2>
+    </div>
+
+    <div class="content-body">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Project</label>
+                    <div class="filter-input-wrapper">
+                        <input type="text" class="filter-input" id="projectFilter" 
+                               placeholder="Search by project" onkeyup="filterProjects()">
+                        <button class="filter-clear" onclick="clearFilter('projectFilter')" style="display:none;">×</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Property</label>
+                    <div class="filter-input-wrapper">
+                        <input type="text" class="filter-input" id="propertyFilter" 
+                               placeholder="Search by Property, Property Group, Portfolio, or Owner" 
+                               onkeyup="filterProjects()">
+                        <button class="filter-clear" onclick="clearFilter('propertyFilter')" style="display:none;">×</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn-more-filters" onclick="toggleMoreFilters()">1 More...</button>
+                <button class="btn-clear-filters" onclick="clearAllFilters()">Clear Filters</button>
+                <button class="btn-new-project" onclick="openNewProjectModal()">
+                    <span>+</span> New Project
+                </button>
+            </div>
+            
+            <!-- More Filters Panel -->
+            <div class="more-filters-panel" id="moreFiltersPanel">
+                <div class="more-filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-input" id="statusFilter" onchange="filterProjects()">
+                            <option value="">All Statuses</option>
+                            <option value="planning">Planning</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="on-hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Budget Range</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" class="filter-input" id="budgetMin" 
+                                   placeholder="Min" onkeyup="filterProjects()">
+                            <input type="number" class="filter-input" id="budgetMax" 
+                                   placeholder="Max" onkeyup="filterProjects()">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="date" class="filter-input" id="dateFrom" onchange="filterProjects()">
+                            <input type="date" class="filter-input" id="dateTo" onchange="filterProjects()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">Active Projects</div>
+                <div class="summary-value" id="activeProjectsCount">0</div>
+                <div class="summary-subtitle">In Progress</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Budget</div>
+                <div class="summary-value" id="totalBudget">$0</div>
+                <div class="summary-subtitle">All Projects</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Spent</div>
+                <div class="summary-value" id="totalSpent">$0</div>
+                <div class="summary-subtitle">Actual Costs</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Budget Remaining</div>
+                <div class="summary-value" id="budgetRemaining">$0</div>
+                <div class="summary-subtitle">Available</div>
+            </div>
+        </div>
+
+        <!-- Projects Table -->
+        <div class="projects-table-container">
+            <table class="projects-table" id="projectsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('name')">
+                            Name
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('property')">
+                            Property
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('budget')">
+                            Total Budget
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('actuals')">
+                            Actuals
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('start_date')">
+                            Start Date
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('status')">
+                            Status
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="projectsBody">
+                    <!-- Projects will be loaded here -->
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">No projects found</div>
+                <div class="empty-state-text">Start by creating your first project</div>
+                <button class="btn btn-success" onclick="openNewProjectModal()">Create First Project</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="project-stats">
-    <div class="stat-card">
-        <div class="stat-label">Active Projects</div>
-        <div class="stat-value">8</div>
-        <div class="stat-change">3 starting this month</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-label">Total Budget</div>
-        <div class="stat-value">$284,500</div>
-        <div class="stat-change">$42,350 spent</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-label">On Schedule</div>
-        <div class="stat-value">6</div>
-        <div class="stat-change">75% on track</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-label">Completed This Year</div>
-        <div class="stat-value">12</div>
-        <div class="stat-change">+4 from last year</div>
+<!-- New/Edit Project Modal -->
+<div id="projectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">New Project</h2>
+            <button class="modal-close" onclick="closeModal('projectModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="projectForm">
+                <div class="form-group">
+                    <label class="form-label">Project Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="projectName" required 
+                           placeholder="e.g., Roof Replacement - Building A">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Property <span class="required">*</span></label>
+                    <select class="form-control" id="projectProperty" required>
+                        <option value="">Select Property</option>
+                        <option value="west-plaza">West Plaza</option>
+                        <option value="longmeadow">Longmeadow Apartments</option>
+                        <option value="brentwood">Brentwood Park</option>
+                        <option value="rock-ridge">Rock Ridge Ranch Apartments</option>
+                        <option value="blue-ridge">Blue Ridge Manor</option>
+                        <option value="3825-baltimore">3825 Baltimore</option>
+                        <option value="lodge">Lodge Apartments</option>
+                        <option value="summit">Summit Apartments</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Budget ($) <span class="required">*</span></label>
+                        <input type="number" class="form-control" id="projectBudget" required 
+                               min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status <span class="required">*</span></label>
+                        <select class="form-control" id="projectStatus" required>
+                            <option value="planning">Planning</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="on-hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="projectStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="projectEndDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Manager</label>
+                    <select class="form-control" id="projectManager">
+                        <option value="">Select Manager</option>
+                        <option value="john-smith">John Smith</option>
+                        <option value="jane-doe">Jane Doe</option>
+                        <option value="mike-wilson">Mike Wilson</option>
+                        <option value="sarah-johnson">Sarah Johnson</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Primary Vendor</label>
+                    <select class="form-control" id="projectVendor">
+                        <option value="">Select Vendor</option>
+                        <option value="abc-construction">ABC Construction</option>
+                        <option value="xyz-roofing">XYZ Roofing</option>
+                        <option value="quality-painting">Quality Painting</option>
+                        <option value="pro-hvac">Pro HVAC Services</option>
+                        <option value="elite-plumbing">Elite Plumbing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="projectDescription" rows="4" 
+                              placeholder="Describe the project scope, objectives, and deliverables..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-control" id="projectCategory">
+                        <option value="">Select Category</option>
+                        <option value="capital-improvement">Capital Improvement</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="renovation">Renovation</option>
+                        <option value="emergency-repair">Emergency Repair</option>
+                        <option value="compliance">Compliance</option>
+                        <option value="amenity-upgrade">Amenity Upgrade</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-control" id="projectPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+        </div>
     </div>
 </div>
 
-<div class="filter-section">
-    <div class="filter-row">
-        <input type="text" placeholder="Search projects..." style="flex: 1; max-width: 300px;">
-        <select>
-            <option>All Properties</option>
-            <option>Rock Ridge Ranch</option>
-            <option>Brentwood Park</option>
-            <option>Lodge Apartments</option>
-        </select>
-        <select>
-            <option>All Statuses</option>
-            <option>Planning</option>
-            <option>In Progress</option>
-            <option>On Hold</option>
-            <option>Completed</option>
-        </select>
-        <select>
-            <option>All Types</option>
-            <option>Renovation</option>
-            <option>Repair</option>
-            <option>Upgrade</option>
-            <option>Landscaping</option>
-        </select>
-        <button class="btn">Clear Filters</button>
+<!-- View Project Modal -->
+<div id="viewProjectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="viewProjectTitle">Project Details</h2>
+            <button class="modal-close" onclick="closeModal('viewProjectModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Budget Usage</span>
+                    <span id="budgetPercentage">0%</span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="budgetProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="projectDetails">
+                <!-- Project details will be loaded here -->
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Expenses</h3>
+            <table class="projects-table" style="margin-bottom: 15px;">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Vendor</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="expensesBody">
+                    <!-- Expenses will be loaded here -->
+                </tbody>
+            </table>
+
+            <button class="btn btn-secondary" onclick="openAddExpenseModal()">+ Add Expense</button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('viewProjectModal')">Close</button>
+            <button class="btn btn-primary" onclick="editCurrentProject()">Edit Project</button>
+        </div>
     </div>
 </div>
 
-<div class="projects-grid">
-    <div class="project-card">
-        <div class="project-header-card">
-            <div class="project-name">Parking Lot Resurfacing</div>
-            <span class="project-status status-in-progress">In Progress</span>
+<!-- Add Expense Modal -->
+<div id="expenseModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Add Expense</h2>
+            <button class="modal-close" onclick="closeModal('expenseModal')">&times;</button>
         </div>
-        <div class="project-body">
-            <div class="project-details">
-                <div class="detail-item">
-                    <span class="detail-label">Property</span>
-                    <span class="detail-value">Rock Ridge Ranch</span>
+        <div class="modal-body">
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label class="form-label">Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="expenseDate" required>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Start Date</span>
-                    <span class="detail-value">July 15, 2025</span>
+                <div class="form-group">
+                    <label class="form-label">Description <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="expenseDescription" required 
+                           placeholder="e.g., Materials purchase">
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Budget</span>
-                    <span class="detail-value">$45,000 <span class="budget-indicator budget-ok"></span></span>
+                <div class="form-group">
+                    <label class="form-label">Vendor</label>
+                    <input type="text" class="form-control" id="expenseVendor" 
+                           placeholder="Vendor name">
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">End Date</span>
-                    <span class="detail-value">August 30, 2025</span>
+                <div class="form-group">
+                    <label class="form-label">Amount ($) <span class="required">*</span></label>
+                    <input type="number" class="form-control" id="expenseAmount" required 
+                           min="0" step="0.01" placeholder="0.00">
                 </div>
-            </div>
-            
-            <div class="progress-section">
-                <div class="progress-header">
-                    <span>Progress</span>
-                    <span>65%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 65%;"></div>
-                </div>
-            </div>
-            
-            <div class="project-tasks">
-                <div class="tasks-header">Recent Tasks</div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox" checked>
-                    <span class="task-name task-completed">Remove old asphalt</span>
-                    <span class="task-assignee">ABC Paving</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox" checked>
-                    <span class="task-name task-completed">Grade and prepare surface</span>
-                    <span class="task-assignee">ABC Paving</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Apply new asphalt</span>
-                    <span class="task-assignee">ABC Paving</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Paint parking lines</span>
-                    <span class="task-assignee">Pro Striping</span>
-                </div>
-            </div>
+            </form>
         </div>
-        <div class="project-footer">
-            <div>Managed by: John Smith</div>
-            <div class="project-actions">
-                <button class="btn btn-sm">View Details</button>
-                <button class="btn btn-sm">Update</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="project-card">
-        <div class="project-header-card">
-            <div class="project-name">HVAC System Upgrade</div>
-            <span class="project-status status-planning">Planning</span>
-        </div>
-        <div class="project-body">
-            <div class="project-details">
-                <div class="detail-item">
-                    <span class="detail-label">Property</span>
-                    <span class="detail-value">Brentwood Park</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Start Date</span>
-                    <span class="detail-value">September 1, 2025</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Budget</span>
-                    <span class="detail-value">$120,000 <span class="budget-indicator budget-ok"></span></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">End Date</span>
-                    <span class="detail-value">November 15, 2025</span>
-                </div>
-            </div>
-            
-            <div class="progress-section">
-                <div class="progress-header">
-                    <span>Progress</span>
-                    <span>10%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 10%;"></div>
-                </div>
-            </div>
-            
-            <div class="project-tasks">
-                <div class="tasks-header">Recent Tasks</div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox" checked>
-                    <span class="task-name task-completed">Get vendor quotes</span>
-                    <span class="task-assignee">Mike Johnson</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Review specifications</span>
-                    <span class="task-assignee">Engineering Team</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Select contractor</span>
-                    <span class="task-assignee">Management</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Schedule installation</span>
-                    <span class="task-assignee">Mike Johnson</span>
-                </div>
-            </div>
-        </div>
-        <div class="project-footer">
-            <div>Managed by: Mike Johnson</div>
-            <div class="project-actions">
-                <button class="btn btn-sm">View Details</button>
-                <button class="btn btn-sm">Update</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="project-card">
-        <div class="project-header-card">
-            <div class="project-name">Roof Replacement - Building C</div>
-            <span class="project-status status-on-hold">On Hold</span>
-        </div>
-        <div class="project-body">
-            <div class="project-details">
-                <div class="detail-item">
-                    <span class="detail-label">Property</span>
-                    <span class="detail-value">Lodge Apartments</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Start Date</span>
-                    <span class="detail-value">TBD</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Budget</span>
-                    <span class="detail-value">$85,000 <span class="budget-indicator budget-warning"></span></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">End Date</span>
-                    <span class="detail-value">TBD</span>
-                </div>
-            </div>
-            
-            <div class="progress-section">
-                <div class="progress-header">
-                    <span>Progress</span>
-                    <span>25%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 25%;"></div>
-                </div>
-            </div>
-            
-            <div class="project-tasks">
-                <div class="tasks-header">Recent Tasks</div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox" checked>
-                    <span class="task-name task-completed">Initial inspection</span>
-                    <span class="task-assignee">Roofing Experts</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox" checked>
-                    <span class="task-name task-completed">Prepare estimate</span>
-                    <span class="task-assignee">Roofing Experts</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Await budget approval</span>
-                    <span class="task-assignee">Management</span>
-                </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span class="task-name">Schedule work</span>
-                    <span class="task-assignee">Pending</span>
-                </div>
-            </div>
-        </div>
-        <div class="project-footer">
-            <div>Managed by: Sarah Wilson</div>
-            <div class="project-actions">
-                <button class="btn btn-sm">View Details</button>
-                <button class="btn btn-sm">Update</button>
-            </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('expenseModal')">Cancel</button>
+            <button class="btn btn-success" onclick="saveExpense()">Add Expense</button>
         </div>
     </div>
 </div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle task checkboxes
-    document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const taskName = this.parentElement.querySelector('.task-name');
-            if (this.checked) {
-                taskName.classList.add('task-completed');
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Global variables
+    let projects = [];
+    let filteredProjects = [];
+    let currentSort = { column: 'name', order: 'asc' };
+    let editingProjectId = null;
+    let viewingProjectId = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadProjects();
+        await loadProperties();
+        await loadVendors();
+        setupEventListeners();
+        updateSummaryCards();
+    });
+
+    // Load projects from Supabase
+    async function loadProjects() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('projects')
+                .select('*')
+                .order(currentSort.column, { ascending: currentSort.order === 'asc' });
+
+            if (error) {
+                console.error('Error loading projects:', error);
+                // Use mock data if Supabase fails
+                projects = getMockProjectsData();
             } else {
-                taskName.classList.remove('task-completed');
+                projects = data || getMockProjectsData();
+            }
+
+            filteredProjects = [...projects];
+            renderProjectsTable();
+            updateSummaryCards();
+        } catch (error) {
+            console.error('Error:', error);
+            projects = getMockProjectsData();
+            filteredProjects = [...projects];
+            renderProjectsTable();
+            updateSummaryCards();
+        }
+    }
+
+    // Get mock projects data
+    function getMockProjectsData() {
+        return [
+            { 
+                id: 1, 
+                name: 'Roof Replacement - Building A', 
+                property: 'West Plaza', 
+                budget: 45000, 
+                actuals: 32500, 
+                start_date: '2025-01-15', 
+                end_date: '2025-03-15',
+                status: 'in-progress',
+                manager: 'John Smith',
+                vendor: 'XYZ Roofing',
+                description: 'Complete roof replacement for Building A including new shingles and underlayment',
+                category: 'capital-improvement',
+                priority: 'high'
+            },
+            { 
+                id: 2, 
+                name: 'Parking Lot Resurfacing', 
+                property: 'Longmeadow Apartments', 
+                budget: 28000, 
+                actuals: 0, 
+                start_date: '2025-03-01', 
+                end_date: '2025-03-30',
+                status: 'planning',
+                manager: 'Jane Doe',
+                vendor: 'ABC Construction',
+                description: 'Resurface main parking lot and repaint lines',
+                category: 'maintenance',
+                priority: 'medium'
+            },
+            { 
+                id: 3, 
+                name: 'HVAC System Upgrade', 
+                property: 'Brentwood Park', 
+                budget: 65000, 
+                actuals: 61200, 
+                start_date: '2024-11-01', 
+                end_date: '2025-01-31',
+                status: 'completed',
+                manager: 'Mike Wilson',
+                vendor: 'Pro HVAC Services',
+                description: 'Replace all HVAC units in buildings 1-3',
+                category: 'capital-improvement',
+                priority: 'high'
+            },
+            { 
+                id: 4, 
+                name: 'Lobby Renovation', 
+                property: 'Rock Ridge Ranch Apartments', 
+                budget: 15000, 
+                actuals: 8500, 
+                start_date: '2025-02-01', 
+                end_date: '2025-02-28',
+                status: 'in-progress',
+                manager: 'Sarah Johnson',
+                vendor: 'Quality Painting',
+                description: 'Renovate main lobby including new paint, flooring, and furniture',
+                category: 'renovation',
+                priority: 'medium'
+            },
+            { 
+                id: 5, 
+                name: 'Emergency Plumbing Repair', 
+                property: 'Blue Ridge Manor', 
+                budget: 8000, 
+                actuals: 7850, 
+                start_date: '2025-01-10', 
+                end_date: '2025-01-12',
+                status: 'completed',
+                manager: 'John Smith',
+                vendor: 'Elite Plumbing',
+                description: 'Emergency repair of main water line break',
+                category: 'emergency-repair',
+                priority: 'critical'
+            }
+        ];
+    }
+
+    // Render projects table
+    function renderProjectsTable() {
+        const tbody = document.getElementById('projectsBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.getElementById('projectsTable');
+        
+        if (filteredProjects.length === 0) {
+            tbody.innerHTML = '';
+            table.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        table.style.display = 'table';
+        emptyState.style.display = 'none';
+        
+        tbody.innerHTML = filteredProjects.map(project => {
+            const budgetDiff = project.budget - project.actuals;
+            const budgetClass = budgetDiff >= 0 ? 'budget-positive' : 'budget-negative';
+            const statusClass = `status-${project.status.replace(' ', '-')}`;
+            
+            return `
+                <tr data-id="${project.id}">
+                    <td><a href="#" class="project-name" onclick="viewProject(${project.id})">${project.name}</a></td>
+                    <td>${project.property}</td>
+                    <td class="budget-amount">$${project.budget.toLocaleString()}</td>
+                    <td class="budget-amount ${budgetClass}">$${project.actuals.toLocaleString()}</td>
+                    <td>${formatDate(project.start_date)}</td>
+                    <td><span class="status-badge ${statusClass}">${formatStatus(project.status)}</span></td>
+                    <td>
+                        <div class="action-menu">
+                            <button class="action-btn" onclick="toggleActionMenu(${project.id})">⋮</button>
+                            <div class="action-dropdown" id="action-${project.id}">
+                                <div class="action-item" onclick="editProject(${project.id})">Edit</div>
+                                <div class="action-item" onclick="viewProject(${project.id})">View Details</div>
+                                <div class="action-item" onclick="duplicateProject(${project.id})">Duplicate</div>
+                                <div class="action-item danger" onclick="deleteProject(${project.id})">Delete</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Format status
+    function formatStatus(status) {
+        return status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+            
+            // Close action dropdowns
+            if (!event.target.matches('.action-btn')) {
+                document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        };
+
+        // Show/hide clear buttons for filters
+        ['projectFilter', 'propertyFilter'].forEach(id => {
+            const input = document.getElementById(id);
+            const clearBtn = input.nextElementSibling;
+            
+            input.addEventListener('input', function() {
+                clearBtn.style.display = this.value ? 'flex' : 'none';
+            });
+        });
+
+        // Set today's date as default for expense date
+        const today = new Date().toISOString().split('T')[0];
+        const expenseDate = document.getElementById('expenseDate');
+        if (expenseDate) expenseDate.value = today;
+    }
+
+    // Toggle more filters
+    function toggleMoreFilters() {
+        const panel = document.getElementById('moreFiltersPanel');
+        const button = document.querySelector('.btn-more-filters');
+        
+        panel.classList.toggle('show');
+        
+        if (panel.classList.contains('show')) {
+            button.textContent = 'Less Filters';
+        } else {
+            button.textContent = '1 More...';
+        }
+    }
+
+    // Filter projects
+    function filterProjects() {
+        const projectFilter = document.getElementById('projectFilter').value.toLowerCase();
+        const propertyFilter = document.getElementById('propertyFilter').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const budgetMin = parseFloat(document.getElementById('budgetMin')?.value) || 0;
+        const budgetMax = parseFloat(document.getElementById('budgetMax')?.value) || Infinity;
+        const dateFrom = document.getElementById('dateFrom')?.value;
+        const dateTo = document.getElementById('dateTo')?.value;
+        
+        filteredProjects = projects.filter(project => {
+            const projectMatch = project.name.toLowerCase().includes(projectFilter);
+            const propertyMatch = project.property.toLowerCase().includes(propertyFilter);
+            const statusMatch = !statusFilter || project.status === statusFilter;
+            const budgetMatch = project.budget >= budgetMin && project.budget <= budgetMax;
+            
+            let dateMatch = true;
+            if (dateFrom && project.start_date) {
+                dateMatch = project.start_date >= dateFrom;
+            }
+            if (dateTo && project.start_date && dateMatch) {
+                dateMatch = project.start_date <= dateTo;
+            }
+            
+            return projectMatch && propertyMatch && statusMatch && budgetMatch && dateMatch;
+        });
+        
+        renderProjectsTable();
+        updateSummaryCards();
+    }
+
+    // Clear filter
+    function clearFilter(filterId) {
+        const input = document.getElementById(filterId);
+        const clearBtn = input.nextElementSibling;
+        
+        input.value = '';
+        clearBtn.style.display = 'none';
+        filterProjects();
+    }
+
+    // Clear all filters
+    function clearAllFilters() {
+        ['projectFilter', 'propertyFilter', 'statusFilter', 'budgetMin', 
+         'budgetMax', 'dateFrom', 'dateTo'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (element.tagName === 'SELECT') {
+                    element.selectedIndex = 0;
+                } else {
+                    element.value = '';
+                }
             }
         });
-    });
-});
+        
+        document.querySelectorAll('.filter-clear').forEach(btn => {
+            btn.style.display = 'none';
+        });
+        
+        filterProjects();
+        showToast('All filters cleared', 'info');
+    }
+
+    // Sort table
+    function sortTable(column) {
+        if (currentSort.column === column) {
+            currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.order = 'asc';
+        }
+        
+        filteredProjects.sort((a, b) => {
+            let aVal = a[column];
+            let bVal = b[column];
+            
+            if (typeof aVal === 'string') {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+            }
+            
+            if (currentSort.order === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+        
+        renderProjectsTable();
+    }
+
+    // Update summary cards
+    function updateSummaryCards() {
+        const activeProjects = filteredProjects.filter(p => p.status === 'in-progress');
+        const totalBudget = filteredProjects.reduce((sum, p) => sum + p.budget, 0);
+        const totalSpent = filteredProjects.reduce((sum, p) => sum + p.actuals, 0);
+        const budgetRemaining = totalBudget - totalSpent;
+        
+        document.getElementById('activeProjectsCount').textContent = activeProjects.length;
+        document.getElementById('totalBudget').textContent = `$${totalBudget.toLocaleString()}`;
+        document.getElementById('totalSpent').textContent = `$${totalSpent.toLocaleString()}`;
+        document.getElementById('budgetRemaining').textContent = `$${budgetRemaining.toLocaleString()}`;
+        
+        // Color code budget remaining
+        const remainingElement = document.getElementById('budgetRemaining');
+        if (budgetRemaining < 0) {
+            remainingElement.style.color = '#dc3545';
+        } else if (budgetRemaining < totalBudget * 0.1) {
+            remainingElement.style.color = '#ffc107';
+        } else {
+            remainingElement.style.color = '#28a745';
+        }
+    }
+
+    // Open new project modal
+    function openNewProjectModal() {
+        document.getElementById('modalTitle').textContent = 'New Project';
+        document.getElementById('projectForm').reset();
+        document.getElementById('projectStatus').value = 'planning';
+        document.getElementById('projectPriority').value = 'medium';
+        editingProjectId = null;
+        openModal('projectModal');
+    }
+
+    // Edit project
+    function editProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (!project) return;
+        
+        document.getElementById('modalTitle').textContent = 'Edit Project';
+        document.getElementById('projectName').value = project.name;
+        document.getElementById('projectProperty').value = project.property.toLowerCase().replace(' ', '-');
+        document.getElementById('projectBudget').value = project.budget;
+        document.getElementById('projectStatus').value = project.status;
+        document.getElementById('projectStartDate').value = project.start_date;
+        document.getElementById('projectEndDate').value = project.end_date || '';
+        document.getElementById('projectManager').value = project.manager?.toLowerCase().replace(' ', '-') || '';
+        document.getElementById('projectVendor').value = project.vendor?.toLowerCase().replace(' ', '-') || '';
+        document.getElementById('projectDescription').value = project.description || '';
+        document.getElementById('projectCategory').value = project.category || '';
+        document.getElementById('projectPriority').value = project.priority || 'medium';
+        
+        editingProjectId = id;
+        openModal('projectModal');
+        
+        // Close action menu
+        document.getElementById(`action-${id}`).classList.remove('show');
+    }
+
+    // Save project
+    async function saveProject() {
+        const form = document.getElementById('projectForm');
+        if (!form.checkValidity()) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const projectData = {
+            name: document.getElementById('projectName').value,
+            property: document.getElementById('projectProperty').options[document.getElementById('projectProperty').selectedIndex].text,
+            budget: parseFloat(document.getElementById('projectBudget').value),
+            status: document.getElementById('projectStatus').value,
+            start_date: document.getElementById('projectStartDate').value,
+            end_date: document.getElementById('projectEndDate').value || null,
+            manager: document.getElementById('projectManager').options[document.getElementById('projectManager').selectedIndex].text || null,
+            vendor: document.getElementById('projectVendor').options[document.getElementById('projectVendor').selectedIndex].text || null,
+            description: document.getElementById('projectDescription').value || null,
+            category: document.getElementById('projectCategory').value || null,
+            priority: document.getElementById('projectPriority').value,
+            actuals: editingProjectId ? projects.find(p => p.id === editingProjectId).actuals : 0
+        };
+        
+        try {
+            if (editingProjectId) {
+                // Update existing project
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update(projectData)
+                    .eq('id', editingProjectId);
+                
+                if (error) throw error;
+                
+                // Update local data
+                const index = projects.findIndex(p => p.id === editingProjectId);
+                if (index !== -1) {
+                    projects[index] = { ...projects[index], ...projectData };
+                }
+                
+                showToast('Project updated successfully', 'success');
+            } else {
+                // Add new project
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([projectData])
+                    .select();
+                
+                if (error) throw error;
+                
+                // Add to local data
+                const newProject = data ? data[0] : { 
+                    ...projectData, 
+                    id: Math.max(...projects.map(p => p.id), 0) + 1 
+                };
+                projects.push(newProject);
+                
+                showToast('Project created successfully', 'success');
+            }
+            
+            closeModal('projectModal');
+            filterProjects();
+            
+        } catch (error) {
+            console.error('Error saving project:', error);
+            // If Supabase fails, still update local data
+            if (editingProjectId) {
+                const index = projects.findIndex(p => p.id === editingProjectId);
+                if (index !== -1) {
+                    projects[index] = { ...projects[index], ...projectData };
+                }
+            } else {
+                projects.push({ 
+                    ...projectData, 
+                    id: Math.max(...projects.map(p => p.id), 0) + 1 
+                });
+            }
+            
+            closeModal('projectModal');
+            filterProjects();
+            showToast(editingProjectId ? 'Project updated successfully' : 'Project created successfully', 'success');
+        }
+    }
+
+    // View project
+    function viewProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (!project) return;
+        
+        viewingProjectId = id;
+        
+        document.getElementById('viewProjectTitle').textContent = project.name;
+        
+        // Update progress bar
+        const percentage = project.budget > 0 ? (project.actuals / project.budget * 100) : 0;
+        document.getElementById('budgetPercentage').textContent = `${percentage.toFixed(1)}%`;
+        const progressBar = document.getElementById('budgetProgressBar');
+        progressBar.style.width = `${Math.min(percentage, 100)}%`;
+        progressBar.className = percentage > 100 ? 'progress-bar over-budget' : 'progress-bar';
+        
+        // Update project details
+        document.getElementById('projectDetails').innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <strong>Property:</strong> ${project.property}<br>
+                    <strong>Status:</strong> <span class="status-badge status-${project.status}">${formatStatus(project.status)}</span><br>
+                    <strong>Priority:</strong> ${project.priority ? project.priority.charAt(0).toUpperCase() + project.priority.slice(1) : 'Medium'}<br>
+                    <strong>Category:</strong> ${project.category ? formatStatus(project.category) : 'N/A'}
+                </div>
+                <div>
+                    <strong>Budget:</strong> $${project.budget.toLocaleString()}<br>
+                    <strong>Spent:</strong> $${project.actuals.toLocaleString()}<br>
+                    <strong>Remaining:</strong> $${(project.budget - project.actuals).toLocaleString()}<br>
+                    <strong>Manager:</strong> ${project.manager || 'N/A'}
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <strong>Start Date:</strong> ${formatDate(project.start_date)}<br>
+                <strong>End Date:</strong> ${formatDate(project.end_date) || 'N/A'}<br>
+                <strong>Primary Vendor:</strong> ${project.vendor || 'N/A'}
+            </div>
+            ${project.description ? `
+                <div style="margin-top: 20px;">
+                    <strong>Description:</strong><br>
+                    ${project.description}
+                </div>
+            ` : ''}
+        `;
+        
+        // Load expenses (mock data for now)
+        loadProjectExpenses(id);
+        
+        openModal('viewProjectModal');
+        
+        // Close action menu
+        document.getElementById(`action-${id}`)?.classList.remove('show');
+    }
+
+    // Load project expenses
+    async function loadProjectExpenses(projectId) {
+        // Mock expenses data
+        const expenses = [
+            { date: '2025-01-20', description: 'Materials purchase', vendor: 'Home Depot', amount: 5500 },
+            { date: '2025-01-25', description: 'Labor costs', vendor: 'ABC Construction', amount: 12000 },
+            { date: '2025-02-01', description: 'Equipment rental', vendor: 'United Rentals', amount: 3500 }
+        ];
+        
+        const tbody = document.getElementById('expensesBody');
+        
+        if (expenses.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #6c757d;">No expenses recorded</td></tr>';
+        } else {
+            tbody.innerHTML = expenses.map(expense => `
+                <tr>
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description}</td>
+                    <td>${expense.vendor}</td>
+                    <td class="budget-amount">$${expense.amount.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    // Edit current project
+    function editCurrentProject() {
+        if (viewingProjectId) {
+            closeModal('viewProjectModal');
+            editProject(viewingProjectId);
+        }
+    }
+
+    // Open add expense modal
+    function openAddExpenseModal() {
+        openModal('expenseModal');
+    }
+
+    // Save expense
+    async function saveExpense() {
+        const form = document.getElementById('expenseForm');
+        if (!form.checkValidity()) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const expenseData = {
+            project_id: viewingProjectId,
+            date: document.getElementById('expenseDate').value,
+            description: document.getElementById('expenseDescription').value,
+            vendor: document.getElementById('expenseVendor').value || null,
+            amount: parseFloat(document.getElementById('expenseAmount').value)
+        };
+        
+        try {
+            // Save to Supabase
+            const { error } = await supabaseClient
+                .from('project_expenses')
+                .insert([expenseData]);
+            
+            if (error) throw error;
+            
+            // Update project actuals
+            const project = projects.find(p => p.id === viewingProjectId);
+            if (project) {
+                project.actuals += expenseData.amount;
+                
+                await supabaseClient
+                    .from('projects')
+                    .update({ actuals: project.actuals })
+                    .eq('id', viewingProjectId);
+            }
+            
+        } catch (error) {
+            console.error('Error saving expense:', error);
+            // If Supabase fails, still update local data
+            const project = projects.find(p => p.id === viewingProjectId);
+            if (project) {
+                project.actuals += expenseData.amount;
+            }
+        }
+        
+        closeModal('expenseModal');
+        loadProjectExpenses(viewingProjectId);
+        filterProjects(); // Refresh table
+        showToast('Expense added successfully', 'success');
+        
+        // Refresh the view modal
+        viewProject(viewingProjectId);
+    }
+
+    // Delete project
+    async function deleteProject(id) {
+        if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
+        
+        try {
+            const { error } = await supabaseClient
+                .from('projects')
+                .delete()
+                .eq('id', id);
+            
+            if (error) throw error;
+            
+            projects = projects.filter(p => p.id !== id);
+            filterProjects();
+            showToast('Project deleted successfully', 'success');
+            
+        } catch (error) {
+            console.error('Error deleting project:', error);
+            // If Supabase fails, still remove from local data
+            projects = projects.filter(p => p.id !== id);
+            filterProjects();
+            showToast('Project deleted successfully', 'success');
+        }
+        
+        // Close action menu
+        document.getElementById(`action-${id}`).classList.remove('show');
+    }
+
+    // Duplicate project
+    function duplicateProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (!project) return;
+        
+        const duplicatedProject = {
+            ...project,
+            id: Math.max(...projects.map(p => p.id), 0) + 1,
+            name: `${project.name} (Copy)`,
+            actuals: 0,
+            status: 'planning'
+        };
+        
+        projects.push(duplicatedProject);
+        filterProjects();
+        showToast('Project duplicated successfully', 'success');
+        
+        // Close action menu
+        document.getElementById(`action-${id}`).classList.remove('show');
+    }
+
+    // Toggle action menu
+    function toggleActionMenu(id) {
+        const menu = document.getElementById(`action-${id}`);
+        
+        // Close all other menus
+        document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+            if (dropdown.id !== `action-${id}`) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
+        menu.classList.toggle('show');
+    }
+
+    // Load properties from Supabase
+    async function loadProperties() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update property dropdown
+                const select = document.getElementById('projectProperty');
+                if (select && data.length > 0) {
+                    // Keep first option and replace others
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    data.forEach(property => {
+                        const option = document.createElement('option');
+                        option.value = property.id;
+                        option.textContent = property.name;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+
+    // Load vendors from Supabase
+    async function loadVendors() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('vendors')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update vendor dropdown
+                const select = document.getElementById('projectVendor');
+                if (select && data.length > 0) {
+                    // Keep first option and replace others
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    data.forEach(vendor => {
+                        const option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.name;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading vendors:', error);
+        }
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 </script>
 {% endblock %}
