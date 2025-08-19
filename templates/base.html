@@ -289,11 +289,15 @@
             color: var(--text-secondary);
             cursor: pointer;
             transition: color 0.2s;
+            text-decoration: none;
+            display: block;
         }
         
         .right-sidebar-context .menu-item:hover,
-        .right-sidebar-tasks .task-item:hover {
+        .right-sidebar-tasks .task-item:hover,
+        .right-sidebar-tasks a.task-item:hover {
             color: var(--primary-blue);
+            text-decoration: none;
         }
         
         .right-sidebar-tasks .task-section {
@@ -725,50 +729,50 @@
                 
                 <div class="task-section">
                     <div class="task-section-title">Calendar</div>
-                    <div class="task-item">View Calendar</div>
+                    <a href="{{ url_for('calendar') }}" class="task-item">View Calendar</a>
                 </div>
                 
                 <div class="task-section">
                     <div class="task-section-title">Property</div>
-                    <div class="task-item">New Property</div>
+                    <a href="{{ url_for('properties') }}" class="task-item">New Property</a>
                 </div>
                 
                 <div class="task-section">
                     <div class="task-section-title">People</div>
-                    <div class="task-item">Move In Tenant</div>
-                    <div class="task-item">Tenant Receipt</div>
-                    <div class="task-item">Homeowner Receipt</div>
-                    <div class="task-item">Enter Bill</div>
-                    <div class="task-item">New Owner</div>
-                    <div class="task-item">New Vendor</div>
-                    <div class="task-item">Rent Increase</div>
-                    <div class="task-item">Enter Utility Bill (RUBS)</div>
+                    <a href="{{ url_for('tenants') }}" class="task-item">Move In Tenant</a>
+                    <a href="{{ url_for('receivables') }}" class="task-item">Tenant Receipt</a>
+                    <a href="{{ url_for('receivables') }}" class="task-item">Homeowner Receipt</a>
+                    <a href="{{ url_for('payables') }}" class="task-item">Enter Bill</a>
+                    <a href="{{ url_for('owners') }}" class="task-item">New Owner</a>
+                    <a href="{{ url_for('vendors') }}" class="task-item">New Vendor</a>
+                    <a href="{{ url_for('leases') }}" class="task-item">Rent Increase</a>
+                    <a href="{{ url_for('payables') }}" class="task-item">Enter Utility Bill (RUBS)</a>
                 </div>
                 
                 <div class="task-section">
                     <div class="task-section-title">Reports</div>
-                    <div class="task-item">Delinquency</div>
-                    <div class="task-item">Tenant Ledger</div>
-                    <div class="task-item">Income Statement</div>
-                    <div class="task-item">Unit Vacancy Detail</div>
-                    <div class="task-item">Rent Roll</div>
-                    <div class="task-item">Cash Flow</div>
-                    <div class="task-item">Lease Expiration Detail By Month</div>
-                    <div class="task-item">Balance Sheet</div>
-                    <div class="task-item">Business Metrics</div>
+                    <a href="{{ url_for('reports') }}" class="task-item">Delinquency</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Tenant Ledger</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Income Statement</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Unit Vacancy Detail</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Rent Roll</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Cash Flow</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Lease Expiration Detail By Month</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Balance Sheet</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Business Metrics</a>
                 </div>
                 
                 <div class="task-section">
                     <div class="task-section-title">Letters</div>
-                    <div class="task-item">3-Day Notices</div>
+                    <a href="{{ url_for('letters') }}" class="task-item">3-Day Notices</a>
                     <div class="task-item">Tenant Unpaid Charges</div>
                     <div class="task-item">Owner Portal Activation</div>
                 </div>
                 
                 <div class="task-section">
                     <div class="task-section-title">Account</div>
-                    <div class="task-item">Property Groups</div>
-                    <div class="task-item">New User</div>
+                    <a href="{{ url_for('properties') }}" class="task-item">Property Groups</a>
+                    <a href="{{ url_for('dashboard') }}" class="task-item">New User</a>
                 </div>
                 
                 <div class="support-section">

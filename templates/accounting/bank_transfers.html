@@ -1,126 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Bank Transfers - Property Management{% endblock %}
+{% block title %}Journal Entries - Property Management{% endblock %}
 
 {% block content %}
-<style>
-    .page-header {
-        background: white;
-        padding: 20px;
-        border-bottom: 1px solid #dee2e6;
-        margin-bottom: 20px;
-    }
-    
-    .page-header h1 {
-        font-size: 24px;
-        margin: 0;
-    }
-    
-    .action-bar {
-        background: white;
-        padding: 15px 20px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-radius: 4px;
-    }
-    
-    .btn-primary {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    
-    .filter-section {
-        background: white;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 4px;
-    }
-    
-    .filter-row {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 15px;
-        align-items: center;
-    }
-    
-    .filter-row label {
-        min-width: 120px;
-        font-size: 14px;
-        color: #495057;
-    }
-    
-    .filter-row input,
-    .filter-row select {
-        flex: 1;
-        max-width: 300px;
-        padding: 8px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-    }
-    
-    .data-table {
-        background: white;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    
-    .data-table table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .data-table th {
-        background: #f8f9fa;
-        padding: 12px;
-        text-align: left;
-        font-size: 13px;
-        font-weight: 600;
-        color: #495057;
-        border-bottom: 2px solid #dee2e6;
-    }
-    
-    .data-table td {
-        padding: 12px;
-        font-size: 13px;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #6c757d;
-    }
-    
-    .empty-state-icon {
-        font-size: 48px;
-        margin-bottom: 20px;
-        color: #dee2e6;
-    }
-    
-    .empty-state h3 {
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-    
-    .empty-state p {
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
-</style>
-
 <div class="content-header">
-    <h2>Bank Transfers</h2>
+    <h2>Journal Entries</h2>
 </div>
 
 <div class="content-body">
-    <!-- Sub-navigation tabs for Accounting section -->
+    <!-- Sub-navigation tabs for Journal Entries -->
     <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
         <li class="nav-item">
             <a class="nav-link" href="{{ url_for('receivables') }}">Receivables</a>
@@ -132,10 +20,10 @@
             <a class="nav-link" href="{{ url_for('bank_accounts') }}">Bank Accounts</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('journal_entries') }}">Journal Entries</a>
+            <a class="nav-link active" href="{{ url_for('journal_entries') }}">Journal Entries</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{{ url_for('bank_transfers') }}">Bank Transfers</a>
+            <a class="nav-link" href="{{ url_for('bank_transfers') }}">Bank Transfers</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ url_for('gl_accounts') }}">GL Accounts</a>
@@ -145,103 +33,233 @@
         </li>
     </ul>
 
-    <div class="action-bar">
-        <div>
-            <button class="btn-primary" onclick="newTransfer()">+ New Transfer</button>
-            <button class="btn-primary" style="background: #6c757d; margin-left: 10px;">Import Transfers</button>
-        </div>
-        <div>
-            <button class="btn-primary" style="background: #28a745;">Export to Excel</button>
+    <!-- Secondary tabs for Journal Entries -->
+    <ul class="nav nav-tabs nav-secondary mb-3">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Journal Entry History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Recurring Journal Entries</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Journal Entry Batches</a>
+        </li>
+    </ul>
+
+    <!-- Search Box -->
+    <div class="search-section">
+        <div class="search-box-container">
+            <div class="search-box">
+                <span class="search-text">Click here to search</span>
+                <div class="search-arrow"></div>
+            </div>
         </div>
     </div>
 
-    <div class="filter-section">
-        <h3 style="font-size: 16px; margin-bottom: 15px;">Filter Transfers</h3>
-        <div class="filter-row">
-            <label>Date Range:</label>
-            <input type="date" id="startDate">
-            <span>to</span>
-            <input type="date" id="endDate">
-        </div>
-        <div class="filter-row">
-            <label>From Account:</label>
-            <select>
-                <option value="">All Accounts</option>
-                <option>Operating Account</option>
-                <option>Security Deposits</option>
-                <option>Reserve Account</option>
-            </select>
-        </div>
-        <div class="filter-row">
-            <label>To Account:</label>
-            <select>
-                <option value="">All Accounts</option>
-                <option>Operating Account</option>
-                <option>Security Deposits</option>
-                <option>Reserve Account</option>
-            </select>
-        </div>
-        <div class="filter-row">
-            <button class="btn-primary">Apply Filters</button>
-            <button style="background: white; border: 1px solid #ced4da; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Clear</button>
-        </div>
-    </div>
-
-    <div class="data-table">
-        <table>
+    <!-- Journal Entries Table -->
+    <div class="table-responsive">
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Transfer Date ↕</th>
-                    <th>Reference # ↕</th>
-                    <th>From Account ↕</th>
-                    <th>To Account ↕</th>
-                    <th>Amount ↕</th>
-                    <th>Description</th>
-                    <th>Status ↕</th>
-                    <th>Actions</th>
+                    <th>Entry Date <span class="sort-arrow">↓</span></th>
+                    <th>Reference Number <span class="sort-arrow">↑</span></th>
+                    <th>Property <span class="sort-arrow">↓</span></th>
+                    <th>Remarks</th>
+                    <th>Account</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
                 </tr>
             </thead>
             <tbody>
-                {% if transfers %}
-                    {% for transfer in transfers %}
-                    <tr>
-                        <td>{{ transfer.date }}</td>
-                        <td>{{ transfer.reference }}</td>
-                        <td>{{ transfer.from_account }}</td>
-                        <td>{{ transfer.to_account }}</td>
-                        <td style="text-align: right; font-weight: 600;">${{ transfer.amount }}</td>
-                        <td>{{ transfer.description }}</td>
-                        <td>
-                            <span style="color: #28a745; font-weight: 600;">{{ transfer.status }}</span>
-                        </td>
-                        <td>
-                            <button style="font-size: 12px; padding: 4px 8px;">View</button>
-                            <button style="font-size: 12px; padding: 4px 8px;">Edit</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
+                {% for entry in journal_entries %}
                 <tr>
-                    <td colspan="8">
-                        <div class="empty-state">
-                            <div class="empty-state-icon">💸</div>
-                            <h3>No Bank Transfers Found</h3>
-                            <p>You haven't recorded any bank transfers yet.<br>
-                            Click "New Transfer" to record your first transfer between accounts.</p>
-                            <button class="btn-primary" onclick="newTransfer()">Create Your First Transfer</button>
-                        </div>
-                    </td>
+                    <td>{{ entry.entry_date }}</td>
+                    <td>{{ entry.reference_number }}</td>
+                    <td>{{ entry.property }}</td>
+                    <td rowspan="2">{{ entry.remarks }}</td>
+                    <td>{{ entry.account1 }}</td>
+                    <td>{{ entry.debit1 }}</td>
+                    <td></td>
                 </tr>
-                {% endif %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ entry.account2 }}</td>
+                    <td></td>
+                    <td>{{ entry.credit2 }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 
-<script>
-function newTransfer() {
-    // Open new transfer modal
-    alert('New Transfer feature coming soon!');
+<!-- Tasks Panel -->
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h5>Tasks</h5>
+        <button class="btn btn-sm">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-item">
+            <a href="#">New Journal Entry</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Post GPR</a>
+        </div>
+        <div class="task-item">
+            <a href="#">New Recurring Journal Entry</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Upload Journal Entry Batch</a>
+        </div>
+        <div class="task-item">
+            <a href="#">View Journal Entry Batches</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Manually Post Journal Entries</a>
+        </div>
+        
+        <div class="tasks-subheader">Reports</div>
+        <div class="task-item">
+            <a href="#">General Ledger</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Gross Potential Rent</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Journal Entry Register</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.nav-secondary {
+    background: #f8f9fa;
+    padding: 5px 10px 0;
+    margin-top: -1px;
 }
-</script>
+
+.nav-secondary .nav-link {
+    color: #666;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.nav-secondary .nav-link.active {
+    background: white;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.search-section {
+    margin-bottom: 20px;
+}
+
+.search-box-container {
+    width: 100%;
+}
+
+.search-box {
+    background: white;
+    border: 2px solid #0066cc;
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.search-box:hover {
+    background: #f0f7ff;
+}
+
+.search-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.search-arrow {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #0066cc;
+}
+
+.search-arrow::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.sort-arrow {
+    color: #999;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.tasks-panel {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tasks-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.tasks-content {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.task-item {
+    padding: 5px 0;
+}
+
+.task-item a {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.task-item a:hover {
+    text-decoration: underline;
+}
+
+.tasks-subheader {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+</style>
 {% endblock %}

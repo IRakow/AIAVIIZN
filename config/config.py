@@ -10,6 +10,7 @@ class Config:
     SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
     
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+
         'postgresql://localhost/aiviizn'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
