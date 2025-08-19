@@ -1,29 +1,1747 @@
 {% extends "base.html" %}
-{% block title %}Recurring Work Orders{% endblock %}
+
+{% block title %}Recurring Work Orders - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Recurring Work Orders Specific Styles */
+    
+    /* Page Header */
+    .page-header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 400;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .customize-link {
+        color: #007bff;
+        text-decoration: none;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .customize-link:hover {
+        text-decoration: underline;
+    }
+
+    .btn-new-template {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-new-template:hover {
+        background: #0056b3;
+    }
+
+    .btn-actions {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        position: relative;
+    }
+
+    /* Dashboard Metrics */
+    .dashboard-metrics {
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .metric-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 15px;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.2s;
+        cursor: pointer;
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .metric-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .metric-value {
+        font-size: 32px;
+        font-weight: 300;
+        color: #333;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .filter-input, .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-filter {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #495057;
+    }
+
+    .btn-filter:hover {
+        background: #f8f9fa;
+    }
+
+    /* List Controls */
+    .list-controls {
+        padding: 15px 20px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+
+    .select-all {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        position: relative;
+    }
+
+    .btn-bulk:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .sort-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sort-select {
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-sort-direction {
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Recurring Template Cards */
+    .templates-list {
+        padding: 0;
+    }
+
+    .template-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        transition: background 0.2s;
+    }
+
+    .template-card:hover {
+        background: #f8f9fa;
+    }
+
+    .template-main {
+        padding: 15px 20px;
+        display: grid;
+        grid-template-columns: 40px 1fr 1fr 1fr auto;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .template-checkbox {
+        padding-top: 5px;
+    }
+
+    .template-header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .template-name {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .template-name:hover {
+        text-decoration: underline;
+    }
+
+    .template-badges {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-paused {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .badge-frequency {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .template-properties {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .property-count {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .property-list {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .template-schedule {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .schedule-label {
+        font-size: 11px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .next-generation {
+        color: #495057;
+        font-size: 13px;
+    }
+
+    .last-generated {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .template-metadata {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .btn-actions-small {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .template-description {
+        padding: 0 20px 15px 60px;
+        color: #495057;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-divider {
+        height: 0;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Property Selection */
+    .property-selection {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .property-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 0;
+        font-size: 14px;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #bd2130;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+        border-color: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+        border-color: #d39e00;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    /* Pagination */
+    .pagination {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .page-btn:hover {
+        background: #f8f9fa;
+    }
+
+    .page-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Recurring Work Orders</h2>
-<div class="data-table">
-    <table>
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th>Frequency</th>
-                <th>Properties</th>
-                <th>Next Due</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in recurring_orders %}
-            <tr>
-                <td>{{ order.description }}</td>
-                <td>{{ order.frequency }}</td>
-                <td>{{ order.properties }}</td>
-                <td>{{ order.next_due }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4" style="text-align: center;">No recurring work orders found</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Recurring Work Orders</h1>
+        <div class="page-actions">
+            <a href="#" class="customize-link">Customize</a>
+            <button class="btn-new-template" id="newTemplateBtn">
+                <span>+</span>
+                New Template
+            </button>
+            <div class="dropdown">
+                <button class="btn-actions" id="actionsDropdown">
+                    Actions
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu" id="actionsMenu">
+                    <div class="dropdown-item" onclick="generateNow()">Generate Work Orders Now</div>
+                    <div class="dropdown-item" onclick="exportTemplates('csv')">Export Templates to CSV</div>
+                    <div class="dropdown-item" onclick="exportTemplates('pdf')">Export Templates to PDF</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="pauseSelected()">Pause Selected Templates</div>
+                    <div class="dropdown-item" onclick="resumeSelected()">Resume Selected Templates</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="importTemplates()">Import Templates</div>
+                    <div class="dropdown-item" onclick="backupTemplates()">Backup Templates</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Metrics -->
+    <div class="dashboard-metrics">
+        <div class="metric-card" onclick="filterByMetric('active-templates')">
+            <div class="metric-label">Active Templates</div>
+            <div class="metric-value">12</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('this-month-generated')">
+            <div class="metric-label">Generated This Month</div>
+            <div class="metric-value">387</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('overdue-generations')">
+            <div class="metric-label">Overdue Generations</div>
+            <div class="metric-value">3</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('paused-templates')">
+            <div class="metric-label">Paused Templates</div>
+            <div class="metric-value">2</div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Template Name</label>
+                <input type="text" class="filter-input" id="templateFilter" 
+                       placeholder="Search templates..."
+                       onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Frequency</label>
+                <select class="filter-select" id="frequencyFilter" onchange="applyFilters()">
+                    <option value="">All Frequencies</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="annually">Annually</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                    <option value="draft">Draft</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Category</label>
+                <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+                    <option value="">All Categories</option>
+                    <option value="preventive">Preventive</option>
+                    <option value="inspection">Inspection</option>
+                    <option value="landscaping">Landscaping</option>
+                    <option value="hvac">HVAC</option>
+                    <option value="cleaning">Cleaning</option>
+                    <option value="security">Security</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
+            <div style="margin-left: auto;">
+                <label class="filter-label" style="display: inline-block; margin-right: 8px;">Quick Filters</label>
+                <select class="filter-select" style="width: 200px;" onchange="applyQuickFilter(this.value)">
+                    <option value="">Select...</option>
+                    <option value="due-today">Due Today</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="high-frequency">High Frequency</option>
+                    <option value="never-generated">Never Generated</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Controls -->
+    <div class="list-controls">
+        <div class="bulk-actions">
+            <div class="select-all">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll">Select all</label>
+            </div>
+            <div class="dropdown">
+                <button class="btn-bulk" id="bulkActionsBtn" disabled>Bulk Actions</button>
+                <div class="dropdown-menu" id="bulkActionsMenu">
+                    <div class="dropdown-item" onclick="bulkGenerate()">Generate Work Orders</div>
+                    <div class="dropdown-item" onclick="bulkPause()">Pause Templates</div>
+                    <div class="dropdown-item" onclick="bulkResume()">Resume Templates</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkEdit()">Edit Templates</div>
+                    <div class="dropdown-item" onclick="bulkAssign()">Assign Vendor</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkExport()">Export Selected</div>
+                    <div class="dropdown-item" onclick="bulkDelete()" style="color: #dc3545;">Delete Selected</div>
+                </div>
+            </div>
+            <span style="color: #666; font-size: 13px;" id="selectedCount">0 Selected</span>
+        </div>
+        <div class="sort-controls">
+            <span style="color: #666; font-size: 13px;">Sort by</span>
+            <select class="sort-select" id="sortBy" onchange="sortTemplates()">
+                <option value="name">Template Name</option>
+                <option value="frequency">Frequency</option>
+                <option value="next-due">Next Due</option>
+                <option value="last-generated">Last Generated</option>
+                <option value="property-count">Property Count</option>
+            </select>
+            <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                <span>▼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Templates List -->
+    <div class="templates-list" id="templatesList">
+        <!-- Templates will be dynamically inserted here -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>←</button>
+        <span id="pageNumbers"></span>
+        <button class="page-btn" onclick="changePage('next')" id="nextPage">→</button>
+    </div>
 </div>
+
+<!-- New Template Modal -->
+<div id="newTemplateModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Create Recurring Work Order Template</h2>
+            <button class="modal-close" onclick="closeModal('newTemplateModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="newTemplateForm">
+                <div class="form-group">
+                    <label class="form-label">Template Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" required placeholder="e.g., Monthly HVAC Filter Change">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Frequency <span class="required">*</span></label>
+                        <select class="form-control" required id="frequencySelect" onchange="updateScheduleOptions()">
+                            <option value="">Select Frequency</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="annually">Annually</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Interval</label>
+                        <input type="number" class="form-control" min="1" value="1" placeholder="Every X period(s)">
+                    </div>
+                </div>
+
+                <div class="form-group" id="scheduleOptions">
+                    <!-- Dynamic schedule options will appear here -->
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category <span class="required">*</span></label>
+                    <select class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="preventive">Preventive Maintenance</option>
+                        <option value="inspection">Inspection</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="security">Security</option>
+                        <option value="painting">Painting</option>
+                        <option value="pest-control">Pest Control</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-control">
+                        <option>Low</option>
+                        <option selected>Medium</option>
+                        <option>High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Work Order Description <span class="required">*</span></label>
+                    <textarea class="form-control" required placeholder="Describe the recurring maintenance task..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Properties <span class="required">*</span></label>
+                    <div class="property-selection">
+                        <div class="property-item">
+                            <input type="checkbox" id="prop1" value="west-plaza">
+                            <label for="prop1">West Plaza (45 units)</label>
+                        </div>
+                        <div class="property-item">
+                            <input type="checkbox" id="prop2" value="longmeadow">
+                            <label for="prop2">Longmeadow Apartments (32 units)</label>
+                        </div>
+                        <div class="property-item">
+                            <input type="checkbox" id="prop3" value="norclay">
+                            <label for="prop3">Norclay Apartments (28 units)</label>
+                        </div>
+                        <div class="property-item">
+                            <input type="checkbox" id="prop4" value="brentwood">
+                            <label for="prop4">Brentwood Park (67 units)</label>
+                        </div>
+                        <div class="property-item">
+                            <input type="checkbox" id="prop5" value="randall">
+                            <label for="prop5">Randall Court Ventures (22 units)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Default Vendor</label>
+                        <select class="form-control">
+                            <option value="">Unassigned</option>
+                            <option>ABC Maintenance</option>
+                            <option>John Smith - In-house</option>
+                            <option>HVAC Pros</option>
+                            <option>Quality Landscaping</option>
+                            <option>Elite Cleaning Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Special Instructions</label>
+                    <textarea class="form-control" placeholder="Any special instructions for the work order..."></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="autoAssign">
+                    <label for="autoAssign">Auto-assign to default vendor when generated</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="notifyTenants">
+                    <label for="notifyTenants">Notify tenants before work begins</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="requireEntry">
+                    <label for="requireEntry">Require permission to enter units</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('newTemplateModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveTemplate()">Create Template</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Recurring templates data will be loaded from Supabase
+    let recurringTemplates = [];
+    let totalTemplates = 0;
+    
+    // Sample fallback data
+    let sampleTemplates = [
+        {
+            id: 'RT-001',
+            name: 'Monthly HVAC Filter Replacement',
+            frequency: 'monthly',
+            status: 'active',
+            category: 'hvac',
+            properties: ['West Plaza', 'Longmeadow Apartments'],
+            propertyCount: 2,
+            nextDue: 'Aug 15, 2025',
+            lastGenerated: 'Jul 15, 2025',
+            description: 'Replace HVAC filters in all units to maintain air quality and system efficiency.',
+            vendor: 'HVAC Pros',
+            generatedCount: 156
+        },
+        {
+            id: 'RT-002',
+            name: 'Quarterly Fire Safety Inspection',
+            frequency: 'quarterly',
+            status: 'active',
+            category: 'inspection',
+            properties: ['All Properties'],
+            propertyCount: 5,
+            nextDue: 'Sep 1, 2025',
+            lastGenerated: 'Jun 1, 2025',
+            description: 'Inspect fire extinguishers, smoke detectors, and emergency exits.',
+            vendor: 'John Smith - In-house',
+            generatedCount: 48
+        },
+        {
+            id: 'RT-003',
+            name: 'Weekly Landscaping Maintenance',
+            frequency: 'weekly',
+            status: 'active',
+            category: 'landscaping',
+            properties: ['Brentwood Park', 'Randall Court'],
+            propertyCount: 2,
+            nextDue: 'Aug 12, 2025',
+            lastGenerated: 'Aug 5, 2025',
+            description: 'Lawn mowing, hedge trimming, and general landscaping upkeep.',
+            vendor: 'Quality Landscaping',
+            generatedCount: 312
+        },
+        {
+            id: 'RT-004',
+            name: 'Annual Elevator Inspection',
+            frequency: 'annually',
+            status: 'active',
+            category: 'inspection',
+            properties: ['West Plaza'],
+            propertyCount: 1,
+            nextDue: 'Dec 15, 2025',
+            lastGenerated: 'Dec 15, 2024',
+            description: 'Comprehensive elevator safety and maintenance inspection.',
+            vendor: 'Elevator Tech Services',
+            generatedCount: 4
+        },
+        {
+            id: 'RT-005',
+            name: 'Bi-weekly Common Area Cleaning',
+            frequency: 'weekly',
+            status: 'paused',
+            category: 'cleaning',
+            properties: ['Longmeadow Apartments', 'Norclay Apartments'],
+            propertyCount: 2,
+            nextDue: 'On Hold',
+            lastGenerated: 'Jul 28, 2025',
+            description: 'Deep cleaning of lobbies, hallways, and common areas.',
+            vendor: 'Elite Cleaning Service',
+            generatedCount: 89
+        }
+    ];
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let sortOrder = 'desc';
+    let currentSort = 'name';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadTemplates();
+        await loadProperties();
+        await loadVendors();
+        initializeEventListeners();
+    });
+    
+    // Load templates from Supabase
+    async function loadTemplates() {
+        try {
+            const filters = getCurrentFilters();
+            const { data, error } = await SupabaseUtils.getRecurringTemplates(currentPage, itemsPerPage, filters);
+            
+            if (error) {
+                console.error('Error loading templates:', error);
+                // Fall back to sample data
+                recurringTemplates = sampleTemplates;
+                totalTemplates = sampleTemplates.length;
+            } else {
+                // Transform Supabase data to match expected format
+                recurringTemplates = data.map(template => ({
+                    id: template.id,
+                    name: template.template_name,
+                    frequency: template.frequency,
+                    status: template.status,
+                    category: template.category,
+                    properties: template.property_names || [],
+                    propertyCount: template.property_count || 0,
+                    nextDue: template.next_generation_date || 'TBD',
+                    lastGenerated: template.last_generated_date || 'Never',
+                    description: template.description,
+                    vendor: template.vendor_name || 'Unassigned',
+                    generatedCount: template.generation_count || 0
+                }));
+                totalTemplates = recurringTemplates.length;
+            }
+            
+            renderTemplates();
+            renderPagination();
+            
+        } catch (error) {
+            console.error('Error loading templates:', error);
+            // Fall back to sample data
+            recurringTemplates = sampleTemplates;
+            totalTemplates = sampleTemplates.length;
+            renderTemplates();
+            renderPagination();
+        }
+    }
+    
+    // Load properties for template creation
+    async function loadProperties() {
+        try {
+            const { data, error } = await SupabaseUtils.getProperties();
+            // Update property checkboxes in the modal
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+    
+    // Load vendors for template creation
+    async function loadVendors() {
+        try {
+            const { data, error } = await SupabaseUtils.getVendors();
+            // Update vendor dropdowns
+        } catch (error) {
+            console.error('Error loading vendors:', error);
+        }
+    }
+    
+    // Get current filter values
+    function getCurrentFilters() {
+        return {
+            name: document.getElementById('templateFilter')?.value || '',
+            frequency: document.getElementById('frequencyFilter')?.value || '',
+            status: document.getElementById('statusFilter')?.value || '',
+            category: document.getElementById('categoryFilter')?.value || ''
+        };
+    }
+
+    // Render templates
+    function renderTemplates() {
+        const list = document.getElementById('templatesList');
+        list.innerHTML = '';
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageTemplates = recurringTemplates.slice(start, end);
+
+        pageTemplates.forEach(template => {
+            const card = createTemplateCard(template);
+            list.appendChild(card);
+        });
+
+        // Re-initialize description toggles
+        document.querySelectorAll('.template-description').forEach(desc => {
+            desc.style.display = 'none';
+        });
+    }
+
+    // Create template card HTML
+    function createTemplateCard(template) {
+        const card = document.createElement('div');
+        card.className = 'template-card';
+        card.dataset.id = template.id;
+        
+        // Determine badges
+        let badges = `<span class="badge badge-${template.status}">${template.status.toUpperCase()}</span>`;
+        badges += ` <span class="badge badge-frequency">${template.frequency.toUpperCase()}</span>`;
+
+        const propertyDisplay = template.properties.length > 2 ? 
+            `${template.properties.slice(0, 2).join(', ')} +${template.properties.length - 2} more` :
+            template.properties.join(', ');
+
+        card.innerHTML = `
+            <div class="template-main">
+                <div class="template-checkbox">
+                    <input type="checkbox" onchange="updateSelectedCount()">
+                </div>
+                <div class="template-header">
+                    <a href="#" class="template-name" onclick="editTemplate('${template.id}')">${template.name}</a>
+                    <div class="template-badges">${badges}</div>
+                </div>
+                <div class="template-properties">
+                    <div class="property-count">${template.propertyCount} Properties</div>
+                    <div class="property-list">${propertyDisplay}</div>
+                </div>
+                <div class="template-schedule">
+                    <div>
+                        <div class="schedule-label">Next Generation</div>
+                        <div class="next-generation">${template.nextDue}</div>
+                    </div>
+                    <div>
+                        <div class="schedule-label">Last Generated</div>
+                        <div class="last-generated">${template.lastGenerated}</div>
+                    </div>
+                </div>
+                <div class="template-metadata">
+                    <div class="dropdown">
+                        <button class="btn-actions-small" onclick="toggleTemplateActions('${template.id}')">
+                            Actions ▼
+                        </button>
+                        <div class="dropdown-menu" id="actions-${template.id}">
+                            <div class="dropdown-item" onclick="generateNowSingle('${template.id}')">Generate Now</div>
+                            <div class="dropdown-item" onclick="editTemplate('${template.id}')">Edit Template</div>
+                            <div class="dropdown-item" onclick="duplicateTemplate('${template.id}')">Duplicate</div>
+                            <div class="dropdown-divider"></div>
+                            ${template.status === 'active' ? 
+                                '<div class="dropdown-item" onclick="pauseTemplate(\'' + template.id + '\')">Pause</div>' :
+                                '<div class="dropdown-item" onclick="resumeTemplate(\'' + template.id + '\')">Resume</div>'
+                            }
+                            <div class="dropdown-item" onclick="viewHistory('${template.id}')">View History</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="deleteTemplate('${template.id}')" style="color: #dc3545;">Delete</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: #666;">
+                        ${template.generatedCount} generated
+                    </div>
+                </div>
+            </div>
+            <div class="template-description">${template.description}</div>
+        `;
+
+        return card;
+    }
+
+    // Render pagination
+    function renderPagination() {
+        const totalPages = Math.ceil(recurringTemplates.length / itemsPerPage);
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(btn);
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                pageNumbers.appendChild(span);
+            }
+        }
+
+        // Update prev/next buttons
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+        // Select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.template-card input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateSelectedCount();
+        });
+
+        // Actions dropdown
+        document.getElementById('actionsDropdown').addEventListener('click', function() {
+            document.getElementById('actionsMenu').classList.toggle('show');
+        });
+
+        // Bulk actions dropdown
+        document.getElementById('bulkActionsBtn').addEventListener('click', function() {
+            if (!this.disabled) {
+                document.getElementById('bulkActionsMenu').classList.toggle('show');
+            }
+        });
+
+        // New template button
+        document.getElementById('newTemplateBtn').addEventListener('click', function() {
+            openModal('newTemplateModal');
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('.btn-actions') && !e.target.matches('.btn-bulk') && !e.target.matches('.btn-actions-small')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    }
+
+    // Update schedule options based on frequency
+    function updateScheduleOptions() {
+        const frequency = document.getElementById('frequencySelect').value;
+        const scheduleOptions = document.getElementById('scheduleOptions');
+        
+        let optionsHTML = '';
+        
+        switch(frequency) {
+            case 'weekly':
+                optionsHTML = `
+                    <label class="form-label">Day of Week</label>
+                    <select class="form-control">
+                        <option>Monday</option>
+                        <option>Tuesday</option>
+                        <option>Wednesday</option>
+                        <option>Thursday</option>
+                        <option>Friday</option>
+                        <option>Saturday</option>
+                        <option>Sunday</option>
+                    </select>
+                `;
+                break;
+            case 'monthly':
+                optionsHTML = `
+                    <label class="form-label">Day of Month</label>
+                    <select class="form-control">
+                        <option>1st</option>
+                        <option>15th</option>
+                        <option>Last Day</option>
+                        <option>Custom...</option>
+                    </select>
+                `;
+                break;
+            case 'quarterly':
+                optionsHTML = `
+                    <label class="form-label">Quarter Schedule</label>
+                    <select class="form-control">
+                        <option>First month of quarter</option>
+                        <option>Second month of quarter</option>
+                        <option>Third month of quarter</option>
+                    </select>
+                `;
+                break;
+            case 'annually':
+                optionsHTML = `
+                    <label class="form-label">Month</label>
+                    <select class="form-control">
+                        <option>January</option>
+                        <option>February</option>
+                        <option>March</option>
+                        <option>April</option>
+                        <option>May</option>
+                        <option>June</option>
+                        <option>July</option>
+                        <option>August</option>
+                        <option>September</option>
+                        <option>October</option>
+                        <option>November</option>
+                        <option>December</option>
+                    </select>
+                `;
+                break;
+        }
+        
+        scheduleOptions.innerHTML = optionsHTML;
+    }
+
+    // Template actions
+    function toggleTemplateActions(templateId) {
+        const menu = document.getElementById(`actions-${templateId}`);
+        
+        // Close all other action menus
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            if (m.id !== `actions-${templateId}`) {
+                m.classList.remove('show');
+            }
+        });
+        
+        menu.classList.toggle('show');
+    }
+
+    function generateNowSingle(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        showToast(`Generating work orders for "${template.name}"...`, 'info');
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    function editTemplate(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        showToast(`Opening template editor for "${template.name}"`, 'info');
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+
+    function duplicateTemplate(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        showToast(`Duplicating template "${template.name}"...`, 'info');
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    function pauseTemplate(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        template.status = 'paused';
+        template.nextDue = 'Paused';
+        renderTemplates();
+        showToast(`Template "${template.name}" paused`, 'info');
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    function resumeTemplate(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        template.status = 'active';
+        template.nextDue = 'Aug 20, 2025'; // Would calculate actual next due date
+        renderTemplates();
+        showToast(`Template "${template.name}" resumed`, 'success');
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    function viewHistory(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        showToast(`Opening history for "${template.name}"`, 'info');
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    function deleteTemplate(templateId) {
+        const template = recurringTemplates.find(t => t.id === templateId);
+        if (confirm(`Are you sure you want to delete the template "${template.name}"?`)) {
+            const index = recurringTemplates.findIndex(t => t.id === templateId);
+            recurringTemplates.splice(index, 1);
+            renderTemplates();
+            renderPagination();
+            showToast(`Template "${template.name}" deleted`, 'info');
+        }
+        document.getElementById(`actions-${templateId}`).classList.remove('show');
+    }
+
+    // Update selected count
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.template-card input[type="checkbox"]:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = `${count} Selected`;
+        document.getElementById('bulkActionsBtn').disabled = count === 0;
+        
+        // Update select all checkbox
+        const allCheckboxes = document.querySelectorAll('.template-card input[type="checkbox"]');
+        document.getElementById('selectAll').checked = count === allCheckboxes.length && count > 0;
+    }
+
+    // Pagination functions
+    function goToPage(page) {
+        currentPage = page;
+        renderTemplates();
+        renderPagination();
+    }
+
+    function changePage(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            goToPage(currentPage - 1);
+        } else if (direction === 'next') {
+            const totalPages = Math.ceil(recurringTemplates.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+    }
+
+    // Sort functions
+    function sortTemplates() {
+        const sortBy = document.getElementById('sortBy').value;
+        currentSort = sortBy;
+        
+        recurringTemplates.sort((a, b) => {
+            let compareValue = 0;
+            
+            switch(sortBy) {
+                case 'name':
+                    compareValue = a.name.localeCompare(b.name);
+                    break;
+                case 'frequency':
+                    const freqOrder = { 'daily': 1, 'weekly': 2, 'monthly': 3, 'quarterly': 4, 'annually': 5 };
+                    compareValue = freqOrder[a.frequency] - freqOrder[b.frequency];
+                    break;
+                case 'next-due':
+                    compareValue = new Date(a.nextDue) - new Date(b.nextDue);
+                    break;
+                case 'property-count':
+                    compareValue = a.propertyCount - b.propertyCount;
+                    break;
+                default:
+                    compareValue = a.name.localeCompare(b.name);
+            }
+            
+            return sortOrder === 'asc' ? compareValue : -compareValue;
+        });
+        
+        renderTemplates();
+    }
+
+    function toggleSortDirection() {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        const icon = document.querySelector('#sortDirection span');
+        icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+        sortTemplates();
+    }
+
+    // Filter functions
+    function applyFilters() {
+        const templateFilter = document.getElementById('templateFilter').value.toLowerCase();
+        const frequencyFilter = document.getElementById('frequencyFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        
+        document.querySelectorAll('.template-card').forEach(card => {
+            const name = card.querySelector('.template-name').textContent.toLowerCase();
+            const frequency = card.querySelector('.badge-frequency').textContent.toLowerCase();
+            const status = card.querySelector('.badge-active, .badge-paused').textContent.toLowerCase();
+            
+            let show = true;
+            
+            if (templateFilter && !name.includes(templateFilter)) show = false;
+            if (frequencyFilter && !frequency.includes(frequencyFilter)) show = false;
+            if (statusFilter && !status.includes(statusFilter)) show = false;
+            // Category filtering would need template data structure update
+            
+            card.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.querySelectorAll('.filter-input, .filter-select').forEach(input => {
+            if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0;
+            } else {
+                input.value = '';
+            }
+        });
+        applyFilters();
+        showToast('Filters cleared', 'info');
+    }
+
+    function applyQuickFilter(filterName) {
+        if (!filterName) return;
+        
+        resetFilters();
+        
+        switch(filterName) {
+            case 'due-today':
+                // Would filter templates due today
+                break;
+            case 'overdue':
+                // Would filter overdue templates
+                break;
+            case 'high-frequency':
+                document.getElementById('frequencyFilter').value = 'daily';
+                break;
+            case 'never-generated':
+                // Would filter templates that haven't generated work orders
+                break;
+        }
+        
+        applyFilters();
+        showToast(`Applied filter: ${filterName}`, 'info');
+    }
+
+    function filterByMetric(metric) {
+        resetFilters();
+        
+        switch(metric) {
+            case 'active-templates':
+                document.getElementById('statusFilter').value = 'active';
+                break;
+            case 'paused-templates':
+                document.getElementById('statusFilter').value = 'paused';
+                break;
+            case 'overdue-generations':
+                // Would filter overdue generations
+                break;
+        }
+        
+        applyFilters();
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    function saveTemplate() {
+        const form = document.getElementById('newTemplateForm');
+        if (form.checkValidity()) {
+            showToast('Recurring template created successfully', 'success');
+            closeModal('newTemplateModal');
+            
+            // Add new template to list
+            const newTemplate = {
+                id: `RT-${String(recurringTemplates.length + 1).padStart(3, '0')}`,
+                name: form.querySelector('input[type="text"]').value,
+                frequency: form.querySelector('#frequencySelect').value,
+                status: 'active',
+                category: form.querySelector('select').value,
+                properties: ['New Property'],
+                propertyCount: 1,
+                nextDue: 'Aug 20, 2025',
+                lastGenerated: 'Never',
+                description: form.querySelector('textarea').value,
+                vendor: 'Unassigned',
+                generatedCount: 0
+            };
+            
+            recurringTemplates.unshift(newTemplate);
+            renderTemplates();
+            renderPagination();
+        } else {
+            showToast('Please fill in all required fields', 'error');
+        }
+    }
+
+    // Bulk action functions
+    function bulkGenerate() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Generating work orders for ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkPause() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Pausing ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkResume() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Resuming ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkEdit() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Opening bulk editor for ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkAssign() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Assigning vendor to ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkExport() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        showToast(`Exporting ${selected} templates...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkDelete() {
+        const selected = document.querySelectorAll('.template-card input[type="checkbox"]:checked').length;
+        if (confirm(`Are you sure you want to delete ${selected} templates?`)) {
+            showToast(`Deleted ${selected} templates`, 'info');
+            document.getElementById('bulkActionsMenu').classList.remove('show');
+            
+            // Remove selected cards
+            document.querySelectorAll('.template-card input[type="checkbox"]:checked').forEach(cb => {
+                cb.closest('.template-card').remove();
+            });
+            updateSelectedCount();
+        }
+    }
+
+    // Action functions
+    function generateNow() {
+        showToast('Generating work orders for all active templates...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function exportTemplates(format) {
+        showToast(`Exporting templates as ${format.toUpperCase()}...`, 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function pauseSelected() {
+        showToast('Pausing selected templates...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function resumeSelected() {
+        showToast('Resuming selected templates...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function importTemplates() {
+        showToast('Opening template import dialog...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function backupTemplates() {
+        showToast('Creating template backup...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('show');
+        }
+    }
+</script>
 {% endblock %}

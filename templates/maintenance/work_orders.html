@@ -6,53 +6,14 @@
 <style>
     /* Work Orders Specific Styles */
     
-    /* Sub Navigation Tabs */
-    .sub-nav-tabs {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 0 20px;
-        margin: -20px -20px 20px -20px; /* Negative margins to extend full width */
-    }
-
-    .sub-nav-tabs ul {
-        list-style: none;
-        display: flex;
-        margin: 0;
-        padding: 0;
-    }
-
-    .sub-nav-tabs li {
-        margin-right: 2px;
-    }
-
-    .sub-nav-tabs a {
-        display: block;
-        padding: 12px 16px;
-        color: #495057;
-        text-decoration: none;
-        background: transparent;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-
-    .sub-nav-tabs a:hover {
-        color: #007bff;
-        background: white;
-    }
-
-    .sub-nav-tabs a.active {
-        background: white;
-        color: #007bff;
-        border-bottom: 3px solid #007bff;
-    }
-
     /* Page Header */
     .page-header {
         padding: 20px 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
     }
 
     .page-title {
@@ -163,6 +124,7 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
+        margin-bottom: 20px;
     }
 
     .metric-card {
@@ -262,25 +224,6 @@
         background: #f8f9fa;
     }
 
-    /* Advanced Filters Panel */
-    .advanced-filters {
-        display: none;
-        padding: 20px;
-        background: #f0f0f0;
-        border-top: 1px solid #dee2e6;
-        margin-top: 15px;
-    }
-
-    .advanced-filters.show {
-        display: block;
-    }
-
-    .advanced-filter-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-    }
-
     /* List Controls */
     .list-controls {
         padding: 15px 20px;
@@ -357,10 +300,6 @@
 
     .work-order-card:hover {
         background: #f8f9fa;
-    }
-
-    .work-order-card.filtered-out {
-        display: none;
     }
 
     .work-order-main {
@@ -635,11 +574,6 @@
         gap: 10px;
     }
 
-    /* Large Modal for Work Order Details */
-    .modal-content.modal-large {
-        max-width: 900px;
-    }
-
     /* Form Styles */
     .form-group {
         margin-bottom: 20px;
@@ -689,6 +623,77 @@
         color: #dc3545;
     }
 
+    /* Photo Upload */
+    .photo-upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .photo-upload-area:hover {
+        border-color: #007bff;
+        background: #e3f2fd;
+    }
+
+    .photo-upload-area.dragover {
+        border-color: #007bff;
+        background: #e3f2fd;
+    }
+
+    .upload-icon {
+        font-size: 24px;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .upload-text {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .photo-preview {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .photo-item {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+    }
+
+    .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .photo-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     /* Button Styles */
     .btn {
         padding: 8px 16px;
@@ -709,15 +714,15 @@
         background: #f8f9fa;
     }
 
-    .btn-success {
-        background: #28a745;
+    .btn-primary {
+        background: #007bff;
         color: white;
-        border-color: #28a745;
+        border-color: #007bff;
     }
 
-    .btn-success:hover {
-        background: #218838;
-        border-color: #218838;
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
     }
 
     .btn-danger {
@@ -731,77 +736,10 @@
         border-color: #bd2130;
     }
 
-    .btn-sm {
-        padding: 5px 10px;
-        font-size: 13px;
-    }
-
-    /* Tab Content */
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    /* Empty State */
-    .empty-state {
-        padding: 60px 20px;
-        text-align: center;
-        color: #6c757d;
-    }
-
-    .empty-state-icon {
-        font-size: 48px;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
-
-    .empty-state-text {
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-
-    .empty-state-subtext {
-        font-size: 14px;
-        color: #999;
-    }
-
-    /* Priority Indicator */
-    .priority-indicator {
-        width: 4px;
-        height: 40px;
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .priority-high {
-        background: #dc3545;
-    }
-
-    .priority-medium {
-        background: #ffc107;
-    }
-
-    .priority-low {
-        background: #28a745;
-    }
-
-    /* Icons */
-    .icon-plus::before { content: "+"; font-weight: bold; }
-    .icon-down::after { content: "▼"; font-size: 10px; margin-left: 5px; }
-    .icon-up::after { content: "▲"; font-size: 10px; margin-left: 5px; }
-    .icon-expand::after { content: "▼"; font-size: 10px; }
-    .icon-user::before { content: "👤"; font-size: 12px; }
-    .icon-filter::before { content: "🔽"; font-size: 12px; margin-right: 5px; }
-
     /* Toast Notifications */
     .toast-container {
         position: fixed;
-        top: 60px; /* Adjusted for top navbar */
+        top: 60px;
         right: 20px;
         z-index: 10000;
     }
@@ -841,310 +779,166 @@
     .toast.info {
         border-left: 4px solid #17a2b8;
     }
+
+    /* Hide file input */
+    .file-input-hidden {
+        display: none;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="content-body">
-    <!-- Sub Navigation -->
-    <nav class="sub-nav-tabs">
-        <ul>
-            <li><a href="#work-orders" class="active" data-tab="work-orders">Work Orders</a></li>
-            <li><a href="#recurring" data-tab="recurring">Recurring Work Orders</a></li>
-            <li><a href="#inspections" data-tab="inspections">Inspections</a></li>
-            <li><a href="#unit-turns" data-tab="unit-turns">Unit Turns</a></li>
-            <li><a href="#projects" data-tab="projects">Projects</a></li>
-            <li><a href="#purchase-orders" data-tab="purchase-orders">Purchase Orders</a></li>
-            <li><a href="#inventory" data-tab="inventory">Inventory</a></li>
-            <li><a href="#fixed-assets" data-tab="fixed-assets">Fixed Assets</a></li>
-            <li><a href="#smart-maintenance" data-tab="smart-maintenance">Smart Maintenance</a></li>
-        </ul>
-    </nav>
-
-    <!-- Work Orders Tab Content -->
-    <div id="work-orders" class="tab-content active">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Work Orders</h1>
-            <div class="page-actions">
-                <a href="#" class="customize-link">Customize</a>
-                <button class="btn-new-request" id="newServiceRequest">
-                    <span class="icon-plus"></span>
-                    New Service Request
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Work Orders</h1>
+        <div class="page-actions">
+            <a href="#" class="customize-link">Customize</a>
+            <button class="btn-new-request" id="newServiceRequest">
+                <span>+</span>
+                New Service Request
+            </button>
+            <div class="dropdown">
+                <button class="btn-actions" id="actionsDropdown">
+                    Actions
+                    <span>▼</span>
                 </button>
-                <div class="dropdown">
-                    <button class="btn-actions" id="actionsDropdown">
-                        Actions
-                        <span class="icon-down"></span>
-                    </button>
-                    <div class="dropdown-menu" id="actionsMenu">
-                        <div class="dropdown-item" onclick="exportData('csv')">Export to CSV</div>
-                        <div class="dropdown-item" onclick="exportData('pdf')">Export to PDF</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="printWorkOrders()">Print Work Orders</div>
-                        <div class="dropdown-item" onclick="emailReport()">Email Report</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="importWorkOrders()">Import Work Orders</div>
-                        <div class="dropdown-item" onclick="archiveCompleted()">Archive Completed</div>
-                    </div>
+                <div class="dropdown-menu" id="actionsMenu">
+                    <div class="dropdown-item" onclick="exportData('csv')">Export to CSV</div>
+                    <div class="dropdown-item" onclick="exportData('pdf')">Export to PDF</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="printWorkOrders()">Print Work Orders</div>
+                    <div class="dropdown-item" onclick="emailReport()">Email Report</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="importWorkOrders()">Import Work Orders</div>
+                    <div class="dropdown-item" onclick="archiveCompleted()">Archive Completed</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Dashboard Metrics -->
-        <div class="dashboard-metrics">
-            <div class="metric-card" onclick="filterByMetric('unassigned-resident')">
-                <div class="metric-label">Unassigned Resident Requested</div>
-                <div class="metric-value">162</div>
-            </div>
-            <div class="metric-card" onclick="filterByMetric('unassigned-internal')">
-                <div class="metric-label">Unassigned Internal</div>
-                <div class="metric-value">66</div>
-            </div>
-            <div class="metric-card add-metric" onclick="openAddMetricModal()">
-                <div>
-                    <div style="font-size: 24px; margin-bottom: 5px;">--</div>
-                    <div>Add a Dashboard Metric</div>
-                </div>
-            </div>
-            <div class="metric-card" onclick="filterByMetric('ready-to-bill')">
-                <div class="metric-label">Ready to Bill</div>
-                <div class="metric-value">0</div>
+    <!-- Dashboard Metrics -->
+    <div class="dashboard-metrics">
+        <div class="metric-card" onclick="filterByMetric('unassigned-resident')">
+            <div class="metric-label">Unassigned Resident Requested</div>
+            <div class="metric-value">162</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('unassigned-internal')">
+            <div class="metric-label">Unassigned Internal</div>
+            <div class="metric-value">66</div>
+        </div>
+        <div class="metric-card add-metric" onclick="openAddMetricModal()">
+            <div>
+                <div style="font-size: 24px; margin-bottom: 5px;">--</div>
+                <div>Add a Dashboard Metric</div>
             </div>
         </div>
-
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label class="filter-label">Properties or Units</label>
-                    <input type="text" class="filter-input" id="propertyFilter" 
-                           placeholder="Search by Unit, Property or Property Group"
-                           onkeyup="applyFilters()">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Status</label>
-                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
-                        <option value="">All Statuses</option>
-                        <option value="new">New</option>
-                        <option value="assigned">Assigned</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="work-done">Work Done</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Assigned To</label>
-                    <input type="text" class="filter-input" id="assigneeFilter" 
-                           placeholder="Search..." onkeyup="applyFilters()">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Vendor</label>
-                    <input type="text" class="filter-input" id="vendorFilter" 
-                           placeholder="Search by vendor or management company"
-                           onkeyup="applyFilters()">
-                </div>
-            </div>
-            <div class="filter-actions">
-                <button class="btn-filter" onclick="toggleAdvancedFilters()">
-                    <span id="advancedFilterText">Show Advanced Filters</span>
-                </button>
-                <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
-                <div style="margin-left: auto;">
-                    <label class="filter-label" style="display: inline-block; margin-right: 8px;">Saved Filters</label>
-                    <select class="filter-select" style="width: 200px;" onchange="applySavedFilter(this.value)">
-                        <option value="">Select...</option>
-                        <option value="urgent">Urgent Work Orders</option>
-                        <option value="overdue">Overdue Work Orders</option>
-                        <option value="today">Created Today</option>
-                        <option value="this-week">This Week</option>
-                        <option value="high-priority">High Priority</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Advanced Filters Panel -->
-            <div class="advanced-filters" id="advancedFilters">
-                <div class="advanced-filter-grid">
-                    <div class="filter-group">
-                        <label class="filter-label">Priority</label>
-                        <select class="filter-select" id="priorityFilter" onchange="applyFilters()">
-                            <option value="">All Priorities</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Category</label>
-                        <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
-                            <option value="">All Categories</option>
-                            <option value="plumbing">Plumbing</option>
-                            <option value="electrical">Electrical</option>
-                            <option value="hvac">HVAC</option>
-                            <option value="appliance">Appliance</option>
-                            <option value="general">General Maintenance</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Date Range</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()">
-                            <input type="date" class="form-control" id="dateTo" onchange="applyFilters()">
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Work Order Type</label>
-                        <select class="filter-select" id="typeFilter" onchange="applyFilters()">
-                            <option value="">All Types</option>
-                            <option value="resident">Resident Request</option>
-                            <option value="internal">Internal</option>
-                            <option value="unit-turn">Unit Turn</option>
-                            <option value="preventive">Preventive</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Cost Range</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" class="form-control" placeholder="Min $" id="costMin" onchange="applyFilters()">
-                            <input type="number" class="form-control" placeholder="Max $" id="costMax" onchange="applyFilters()">
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Tags</label>
-                        <input type="text" class="filter-input" id="tagsFilter" 
-                               placeholder="Enter tags separated by commas" onkeyup="applyFilters()">
-                    </div>
-                </div>
-            </div>
+        <div class="metric-card" onclick="filterByMetric('ready-to-bill')">
+            <div class="metric-label">Ready to Bill</div>
+            <div class="metric-value">0</div>
         </div>
+    </div>
 
-        <!-- List Controls -->
-        <div class="list-controls">
-            <div class="bulk-actions">
-                <div class="select-all">
-                    <input type="checkbox" id="selectAll">
-                    <label for="selectAll">Select all</label>
-                </div>
-                <div class="dropdown">
-                    <button class="btn-bulk" id="bulkActionsBtn" disabled>Bulk Actions</button>
-                    <div class="dropdown-menu" id="bulkActionsMenu">
-                        <div class="dropdown-item" onclick="bulkAssign()">Assign to Vendor/Staff</div>
-                        <div class="dropdown-item" onclick="bulkUpdateStatus()">Update Status</div>
-                        <div class="dropdown-item" onclick="bulkSetPriority()">Set Priority</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="bulkAddTags()">Add Tags</div>
-                        <div class="dropdown-item" onclick="bulkSchedule()">Schedule Work</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="bulkPrint()">Print Selected</div>
-                        <div class="dropdown-item" onclick="bulkExport()">Export Selected</div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="bulkDelete()" style="color: #dc3545;">Delete Selected</div>
-                    </div>
-                </div>
-                <span style="color: #666; font-size: 13px;" id="selectedCount">0 Selected</span>
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Properties or Units</label>
+                <input type="text" class="filter-input" id="propertyFilter" 
+                       placeholder="Search by Unit, Property or Property Group"
+                       onkeyup="applyFilters()">
             </div>
-            <div class="sort-controls">
-                <span style="color: #666; font-size: 13px;">Sort by</span>
-                <select class="sort-select" id="sortBy" onchange="sortWorkOrders()">
-                    <option value="created">Created At</option>
-                    <option value="number">Number</option>
-                    <option value="status">Status</option>
-                    <option value="vendor">Vendor Name</option>
-                    <option value="property">Property</option>
-                    <option value="scheduled">Scheduled Start</option>
-                    <option value="priority">Priority</option>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="new">New</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="work-done">Work Done</option>
+                    <option value="closed">Closed</option>
                 </select>
-                <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
-                    <span class="icon-expand"></span>
-                </button>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Assigned To</label>
+                <input type="text" class="filter-input" id="assigneeFilter" 
+                       placeholder="Search..." onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Vendor</label>
+                <input type="text" class="filter-input" id="vendorFilter" 
+                       placeholder="Search by vendor or management company"
+                       onkeyup="applyFilters()">
             </div>
         </div>
-
-        <!-- Work Orders List -->
-        <div class="work-orders-list" id="workOrdersList">
-            <!-- Work orders will be dynamically inserted here -->
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-            <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>←</button>
-            <span id="pageNumbers"></span>
-            <button class="page-btn" onclick="changePage('next')" id="nextPage">→</button>
-        </div>
-    </div>
-
-    <!-- Other Tab Contents (Empty States) -->
-    <div id="recurring" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">🔄</div>
-            <div class="empty-state-text">No Recurring Work Orders</div>
-            <div class="empty-state-subtext">Set up recurring maintenance tasks to automate your workflow</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Create Recurring Work Order</button>
+        <div class="filter-actions">
+            <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
+            <div style="margin-left: auto;">
+                <label class="filter-label" style="display: inline-block; margin-right: 8px;">Saved Filters</label>
+                <select class="filter-select" style="width: 200px;" onchange="applySavedFilter(this.value)">
+                    <option value="">Select...</option>
+                    <option value="urgent">Urgent Work Orders</option>
+                    <option value="overdue">Overdue Work Orders</option>
+                    <option value="today">Created Today</option>
+                    <option value="this-week">This Week</option>
+                    <option value="high-priority">High Priority</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div id="inspections" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">🔍</div>
-            <div class="empty-state-text">No Inspections Scheduled</div>
-            <div class="empty-state-subtext">Schedule property inspections to maintain quality standards</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Schedule Inspection</button>
+    <!-- List Controls -->
+    <div class="list-controls">
+        <div class="bulk-actions">
+            <div class="select-all">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll">Select all</label>
+            </div>
+            <div class="dropdown">
+                <button class="btn-bulk" id="bulkActionsBtn" disabled>Bulk Actions</button>
+                <div class="dropdown-menu" id="bulkActionsMenu">
+                    <div class="dropdown-item" onclick="bulkAssign()">Assign to Vendor/Staff</div>
+                    <div class="dropdown-item" onclick="bulkUpdateStatus()">Update Status</div>
+                    <div class="dropdown-item" onclick="bulkSetPriority()">Set Priority</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkAddTags()">Add Tags</div>
+                    <div class="dropdown-item" onclick="bulkSchedule()">Schedule Work</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkPrint()">Print Selected</div>
+                    <div class="dropdown-item" onclick="bulkExport()">Export Selected</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkDelete()" style="color: #dc3545;">Delete Selected</div>
+                </div>
+            </div>
+            <span style="color: #666; font-size: 13px;" id="selectedCount">0 Selected</span>
+        </div>
+        <div class="sort-controls">
+            <span style="color: #666; font-size: 13px;">Sort by</span>
+            <select class="sort-select" id="sortBy" onchange="sortWorkOrders()">
+                <option value="created">Created At</option>
+                <option value="number">Number</option>
+                <option value="status">Status</option>
+                <option value="vendor">Vendor Name</option>
+                <option value="property">Property</option>
+                <option value="scheduled">Scheduled Start</option>
+                <option value="priority">Priority</option>
+            </select>
+            <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                <span>▼</span>
+            </button>
         </div>
     </div>
 
-    <div id="unit-turns" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">🏠</div>
-            <div class="empty-state-text">No Active Unit Turns</div>
-            <div class="empty-state-subtext">Manage unit turnover efficiently with our tracking system</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Start Unit Turn</button>
-        </div>
+    <!-- Work Orders List -->
+    <div class="work-orders-list" id="workOrdersList">
+        <!-- Work orders will be dynamically inserted here -->
     </div>
 
-    <div id="projects" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">📊</div>
-            <div class="empty-state-text">No Active Projects</div>
-            <div class="empty-state-subtext">Manage large-scale property improvements and renovations</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Create Project</button>
-        </div>
-    </div>
-
-    <div id="purchase-orders" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">📝</div>
-            <div class="empty-state-text">No Purchase Orders</div>
-            <div class="empty-state-subtext">Track materials and supplies for your maintenance operations</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Create Purchase Order</button>
-        </div>
-    </div>
-
-    <div id="inventory" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">📦</div>
-            <div class="empty-state-text">No Inventory Items</div>
-            <div class="empty-state-subtext">Track your maintenance supplies and equipment</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Add Inventory Item</button>
-        </div>
-    </div>
-
-    <div id="fixed-assets" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">🏗️</div>
-            <div class="empty-state-text">No Fixed Assets</div>
-            <div class="empty-state-subtext">Manage property equipment and capital improvements</div>
-            <button class="btn btn-primary" style="margin-top: 20px;">Add Fixed Asset</button>
-        </div>
-    </div>
-
-    <div id="smart-maintenance" class="tab-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">🤖</div>
-            <div class="empty-state-text">Smart Maintenance Dashboard</div>
-            <div class="empty-state-subtext">AI-powered insights and predictive maintenance coming soon</div>
-            <button class="btn btn-primary" style="margin-top: 20px;" disabled>Coming Soon</button>
-        </div>
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>←</button>
+        <span id="pageNumbers"></span>
+        <button class="page-btn" onclick="changePage('next')" id="nextPage">→</button>
     </div>
 </div>
 
@@ -1199,6 +993,9 @@
                         <option>Landscaping</option>
                         <option>Painting</option>
                         <option>Flooring</option>
+                        <option>Pest Control</option>
+                        <option>Security</option>
+                        <option>Cleaning</option>
                     </select>
                 </div>
 
@@ -1217,6 +1014,16 @@
                     <textarea class="form-control" required placeholder="Describe the issue in detail..."></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Photos</label>
+                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Click to upload photos or drag and drop</div>
+                        <input type="file" id="photoInput" class="file-input-hidden" multiple accept="image/*" onchange="handlePhotoUpload(event)">
+                    </div>
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Assign To</label>
@@ -1225,6 +1032,8 @@
                             <option>John Smith - Maintenance</option>
                             <option>ABC Plumbing</option>
                             <option>XYZ Electric</option>
+                            <option>HVAC Pros</option>
+                            <option>Quality Painting</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1247,196 +1056,16 @@
                     <input type="checkbox" id="requirePermission">
                     <label for="requirePermission">Require permission to enter</label>
                 </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="allowKeyAccess">
+                    <label for="allowKeyAccess">Property manager may use key for access</label>
+                </div>
             </form>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal('newRequestModal')">Cancel</button>
             <button class="btn btn-primary" onclick="saveNewRequest()">Create Work Order</button>
-        </div>
-    </div>
-</div>
-
-<!-- Work Order Details Modal -->
-<div id="workOrderModal" class="modal">
-    <div class="modal-content modal-large">
-        <div class="modal-header">
-            <h2 class="modal-title" id="woModalTitle">Work Order #113231-1</h2>
-            <button class="modal-close" onclick="closeModal('workOrderModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
-                <div>
-                    <h3 style="margin-bottom: 15px; color: #333;">Work Order Details</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Status</label>
-                        <select class="form-control" id="woStatus">
-                            <option>New</option>
-                            <option>Assigned</option>
-                            <option>In Progress</option>
-                            <option>Work Done</option>
-                            <option>Closed</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Property</label>
-                            <input type="text" class="form-control" id="woProperty" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Unit</label>
-                            <input type="text" class="form-control" id="woUnit" readonly>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" id="woDescription" rows="4"></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Vendor</label>
-                            <select class="form-control" id="woVendor">
-                                <option value="">Unassigned</option>
-                                <option>ABC Plumbing</option>
-                                <option>XYZ Electric</option>
-                                <option>HVAC Pros</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Assignee</label>
-                            <select class="form-control" id="woAssignee">
-                                <option value="">Unassigned</option>
-                                <option>John Smith</option>
-                                <option>Jane Doe</option>
-                                <option>Mike Johnson</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Priority</label>
-                            <select class="form-control" id="woPriority">
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
-                                <option>Emergency</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Category</label>
-                            <select class="form-control" id="woCategory">
-                                <option>Plumbing</option>
-                                <option>Electrical</option>
-                                <option>HVAC</option>
-                                <option>Appliance</option>
-                                <option>General</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Internal Notes</label>
-                        <textarea class="form-control" placeholder="Add internal notes..." rows="3"></textarea>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 style="margin-bottom: 15px; color: #333;">Activity Log</h3>
-                    <div style="border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; max-height: 400px; overflow-y: auto;">
-                        <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
-                            <div style="font-weight: 500; margin-bottom: 5px;">Work Order Created</div>
-                            <div style="color: #666; font-size: 12px;">Aug 7, 2025 at 10:30 AM by System</div>
-                        </div>
-                        <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
-                            <div style="font-weight: 500; margin-bottom: 5px;">Status Changed to Assigned</div>
-                            <div style="color: #666; font-size: 12px;">Aug 7, 2025 at 2:15 PM by John Admin</div>
-                        </div>
-                        <div style="margin-bottom: 15px;">
-                            <div style="font-weight: 500; margin-bottom: 5px;">Vendor Assigned: ABC Plumbing</div>
-                            <div style="color: #666; font-size: 12px;">Aug 7, 2025 at 2:16 PM by John Admin</div>
-                        </div>
-                    </div>
-
-                    <h3 style="margin: 20px 0 15px; color: #333;">Cost Tracking</h3>
-                    <div style="border: 1px solid #dee2e6; border-radius: 4px; padding: 15px;">
-                        <div class="form-group">
-                            <label class="form-label">Labor Cost</label>
-                            <input type="number" class="form-control" placeholder="$0.00">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Materials Cost</label>
-                            <input type="number" class="form-control" placeholder="$0.00">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Total Cost</label>
-                            <input type="number" class="form-control" placeholder="$0.00" readonly>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-danger" style="margin-right: auto;">Delete Work Order</button>
-            <button class="btn btn-secondary" onclick="closeModal('workOrderModal')">Cancel</button>
-            <button class="btn btn-primary" onclick="saveWorkOrder()">Save Changes</button>
-        </div>
-    </div>
-</div>
-
-<!-- Add Dashboard Metric Modal -->
-<div id="addMetricModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Add Dashboard Metric</h2>
-            <button class="modal-close" onclick="closeModal('addMetricModal')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label class="form-label">Metric Type</label>
-                <select class="form-control">
-                    <option>Work Orders by Status</option>
-                    <option>Work Orders by Priority</option>
-                    <option>Work Orders by Category</option>
-                    <option>Overdue Work Orders</option>
-                    <option>Average Resolution Time</option>
-                    <option>Cost This Month</option>
-                    <option>Vendor Performance</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Filter By</label>
-                <select class="form-control">
-                    <option>All Properties</option>
-                    <option>West Plaza</option>
-                    <option>Longmeadow Apartments</option>
-                    <option>Norclay Apartments</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Time Period</label>
-                <select class="form-control">
-                    <option>This Week</option>
-                    <option>This Month</option>
-                    <option>This Quarter</option>
-                    <option>This Year</option>
-                    <option>All Time</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Display Name</label>
-                <input type="text" class="form-control" placeholder="Custom metric name (optional)">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('addMetricModal')">Cancel</button>
-            <button class="btn btn-primary" onclick="addMetric()">Add Metric</button>
         </div>
     </div>
 </div>
@@ -1447,119 +1076,202 @@
 
 {% block scripts %}
 <script>
-    // Sample work orders data
-    let workOrders = [
-        {
-            id: '113231-1',
-            status: 'new',
-            type: 'internal',
-            property: 'West Plaza',
-            unit: '1705/1707',
-            tenant: 'Yarn Social, LLC',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'Water leaking down wall from hvac. She will be in here space at 9am',
-            priority: 'high',
-            category: 'hvac'
-        },
-        {
-            id: '113230-1',
-            status: 'new',
-            type: 'resident',
-            property: 'Longmeadow Apartments',
-            unit: '#19A',
-            tenant: 'Larry Davis',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'I have water leaking from my AC unit, and it is causing mold in closet, this needs to be addressed...',
-            priority: 'high',
-            category: 'hvac'
-        },
-        {
-            id: '113229-1',
-            status: 'new',
-            type: 'resident',
-            property: 'Norclay Apartments',
-            unit: '4655-1',
-            tenant: 'Amy L. Lutgen',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'Kitchen faucet leaking under the sink when water turned on',
-            priority: 'medium',
-            category: 'plumbing'
-        },
-        {
-            id: '113228-1',
-            status: 'new',
-            type: 'unit-turn',
-            property: 'Brentwood Park / Brentwood Park Ventures LLC',
-            unit: '3617 #01',
-            tenant: 'Vacant',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'Inspection Areas: Living Room - Paint Make Ready for paint Bedroom 1 - Paint Make ready for...',
-            priority: 'low',
-            category: 'general'
-        },
-        {
-            id: '113227-1',
-            status: 'new',
-            type: 'unit-turn',
-            property: 'Brentwood Park / Brentwood Park Ventures LLC',
-            unit: '3605 #04',
-            tenant: 'Vacant',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'Inspection Areas: Kitchen - Refrigerator Check fridge damage and missing shelves Kitchen - Kitchen...',
-            priority: 'low',
-            category: 'general'
-        },
-        {
-            id: '113226-1',
-            status: 'new',
-            type: 'resident',
-            property: 'Randall Court Ventures',
-            unit: '6724-9',
-            tenant: 'Kayeson O. Slayden',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'The toilet moves when you sit on it. It\'s always down this since I\'ve lived here but someone told me it...',
-            priority: 'low',
-            category: 'plumbing'
-        },
-        {
-            id: '113225-1',
-            status: 'new',
-            type: 'resident',
-            property: 'Randall Court Ventures',
-            unit: '6724-9',
-            tenant: 'Kayeson O. Slayden',
-            vendor: '',
-            assignee: '',
-            created: 'Aug 7, 2025',
-            description: 'Kitchen light out',
-            priority: 'low',
-            category: 'electrical'
-        }
-    ];
+    // Work orders data will be loaded from Supabase
+    let workOrders = [];
+    let totalWorkOrders = 0;
 
     let currentPage = 1;
     const itemsPerPage = 10;
     let sortOrder = 'desc';
     let currentSort = 'created';
+    let uploadedPhotos = [];
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        renderWorkOrders();
-        renderPagination();
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadWorkOrders();
+        await loadProperties();
+        await loadVendors();
         initializeEventListeners();
+        setupDragAndDrop();
     });
+    
+    // Load work orders from Supabase
+    async function loadWorkOrders() {
+        try {
+            const filters = getCurrentFilters();
+            const { data, count, error } = await SupabaseUtils.getWorkOrders(currentPage, itemsPerPage, filters);
+            
+            if (error) {
+                console.error('Error loading work orders:', error);
+                showToast('Error loading work orders', 'error');
+                return;
+            }
+            
+            // Transform Supabase data to match expected format
+            workOrders = data.map(wo => ({
+                id: wo.work_order_number,
+                status: wo.status,
+                type: wo.request_type,
+                property: wo.property_name,
+                unit: wo.unit_number || '',
+                tenant: wo.tenant_name || '',
+                vendor: wo.vendor_name || '',
+                assignee: wo.assigned_to || '',
+                created: new Date(wo.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                description: wo.description,
+                priority: wo.priority,
+                category: wo.category,
+                dbId: wo.id // Keep database ID for updates
+            }));
+            
+            totalWorkOrders = count;
+            renderWorkOrders();
+            renderPagination();
+            
+        } catch (error) {
+            console.error('Error loading work orders:', error);
+            showToast('Error loading work orders', 'error');
+        }
+    }
+    
+    // Load properties for dropdowns
+    async function loadProperties() {
+        try {
+            const { data, error } = await SupabaseUtils.getProperties();
+            
+            if (error) {
+                console.error('Error loading properties:', error);
+                return;
+            }
+            
+            // Update property dropdowns in the modal form
+            const modalPropertySelect = document.querySelector('#newRequestModal select');
+            if (modalPropertySelect) {
+                // Clear existing options except the first
+                while (modalPropertySelect.children.length > 1) {
+                    modalPropertySelect.removeChild(modalPropertySelect.lastChild);
+                }
+                
+                // Add properties
+                data.forEach(property => {
+                    const option = document.createElement('option');
+                    option.value = property.name;
+                    option.textContent = property.name;
+                    modalPropertySelect.appendChild(option);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+    
+    // Load vendors for dropdowns
+    async function loadVendors() {
+        try {
+            const { data, error } = await SupabaseUtils.getVendors();
+            
+            if (error) {
+                console.error('Error loading vendors:', error);
+                return;
+            }
+            
+            // Update vendor dropdowns in the modal form
+            const modalVendorSelects = document.querySelectorAll('#newRequestModal select');
+            const assignToSelect = modalVendorSelects[5]; // The "Assign To" dropdown
+            if (assignToSelect) {
+                // Clear existing options except the first
+                while (assignToSelect.children.length > 1) {
+                    assignToSelect.removeChild(assignToSelect.lastChild);
+                }
+                
+                // Add vendors
+                data.forEach(vendor => {
+                    const option = document.createElement('option');
+                    option.value = vendor.name;
+                    option.textContent = `${vendor.name}${vendor.type === 'staff' ? ' - ' + vendor.specialty : ''}`;
+                    assignToSelect.appendChild(option);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading vendors:', error);
+        }
+    }
+    
+    // Get current filter values
+    function getCurrentFilters() {
+        return {
+            property: document.getElementById('propertyFilter')?.value || '',
+            status: document.getElementById('statusFilter')?.value || '',
+            assignee: document.getElementById('assigneeFilter')?.value || '',
+            vendor: document.getElementById('vendorFilter')?.value || ''
+        };
+    }
+
+    // Setup drag and drop for photo upload
+    function setupDragAndDrop() {
+        const uploadArea = document.querySelector('.photo-upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handlePhotoFiles(files);
+        });
+    }
+
+    // Handle photo upload
+    function handlePhotoUpload(event) {
+        const files = event.target.files;
+        handlePhotoFiles(files);
+    }
+
+    function handlePhotoFiles(files) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotos.push({
+                        file: file,
+                        url: e.target.result
+                    });
+                    renderPhotoPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function renderPhotoPreview() {
+        const preview = document.getElementById('photoPreview');
+        preview.innerHTML = '';
+        
+        uploadedPhotos.forEach((photo, index) => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.innerHTML = `
+                <img src="${photo.url}" alt="Upload ${index + 1}">
+                <button type="button" class="photo-remove" onclick="removePhoto(${index})">&times;</button>
+            `;
+            preview.appendChild(photoItem);
+        });
+    }
+
+    function removePhoto(index) {
+        uploadedPhotos.splice(index, 1);
+        renderPhotoPreview();
+    }
 
     // Render work orders
     function renderWorkOrders() {
@@ -1628,7 +1340,7 @@
                 <div class="wo-metadata">
                     <button class="btn-expand" onclick="toggleDescription(this)">
                         <span>Expand</span>
-                        <span class="icon-expand"></span>
+                        <span>▼</span>
                     </button>
                 </div>
             </div>
@@ -1640,7 +1352,7 @@
 
     // Render pagination
     function renderPagination() {
-        const totalPages = Math.ceil(workOrders.length / itemsPerPage);
+        const totalPages = Math.ceil(totalWorkOrders / itemsPerPage);
         const pageNumbers = document.getElementById('pageNumbers');
         pageNumbers.innerHTML = '';
 
@@ -1665,14 +1377,6 @@
 
     // Initialize event listeners
     function initializeEventListeners() {
-        // Tab navigation
-        document.querySelectorAll('.sub-nav-tabs a').forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                switchTab(this.dataset.tab);
-            });
-        });
-
         // Select all checkbox
         document.getElementById('selectAll').addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('.work-order-card input[type="checkbox"]');
@@ -1707,26 +1411,6 @@
         });
     }
 
-    // Tab switching
-    function switchTab(tabName) {
-        // Update active tab
-        document.querySelectorAll('.sub-nav-tabs a').forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.dataset.tab === tabName) {
-                tab.classList.add('active');
-            }
-        });
-
-        // Show corresponding content
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        const tabContent = document.getElementById(tabName);
-        if (tabContent) {
-            tabContent.classList.add('active');
-        }
-    }
-
     // Toggle description
     function toggleDescription(button) {
         const card = button.closest('.work-order-card');
@@ -1754,87 +1438,45 @@
     }
 
     // Pagination functions
-    function goToPage(page) {
+    async function goToPage(page) {
         currentPage = page;
-        renderWorkOrders();
-        renderPagination();
+        await loadWorkOrders();
     }
 
-    function changePage(direction) {
+    async function changePage(direction) {
         if (direction === 'prev' && currentPage > 1) {
-            goToPage(currentPage - 1);
+            await goToPage(currentPage - 1);
         } else if (direction === 'next') {
-            const totalPages = Math.ceil(workOrders.length / itemsPerPage);
+            const totalPages = Math.ceil(totalWorkOrders / itemsPerPage);
             if (currentPage < totalPages) {
-                goToPage(currentPage + 1);
+                await goToPage(currentPage + 1);
             }
         }
     }
 
     // Sort functions
-    function sortWorkOrders() {
+    async function sortWorkOrders() {
         const sortBy = document.getElementById('sortBy').value;
         currentSort = sortBy;
         
-        workOrders.sort((a, b) => {
-            let compareValue = 0;
-            
-            switch(sortBy) {
-                case 'number':
-                    compareValue = a.id.localeCompare(b.id);
-                    break;
-                case 'status':
-                    compareValue = a.status.localeCompare(b.status);
-                    break;
-                case 'property':
-                    compareValue = a.property.localeCompare(b.property);
-                    break;
-                case 'priority':
-                    const priorityOrder = { 'emergency': 0, 'high': 1, 'medium': 2, 'low': 3 };
-                    compareValue = priorityOrder[a.priority] - priorityOrder[b.priority];
-                    break;
-                default:
-                    compareValue = new Date(b.created) - new Date(a.created);
-            }
-            
-            return sortOrder === 'asc' ? compareValue : -compareValue;
-        });
-        
-        renderWorkOrders();
+        // Reload data with new sort order - Supabase handles sorting
+        await loadWorkOrders();
     }
 
-    function toggleSortDirection() {
+    async function toggleSortDirection() {
         sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
         const icon = document.querySelector('#sortDirection span');
-        icon.className = sortOrder === 'asc' ? 'icon-up' : 'icon-expand';
-        sortWorkOrders();
+        icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+        await sortWorkOrders();
     }
 
     // Filter functions
-    function applyFilters() {
-        const propertyFilter = document.getElementById('propertyFilter').value.toLowerCase();
-        const statusFilter = document.getElementById('statusFilter').value;
-        const assigneeFilter = document.getElementById('assigneeFilter').value.toLowerCase();
-        const vendorFilter = document.getElementById('vendorFilter').value.toLowerCase();
-        
-        document.querySelectorAll('.work-order-card').forEach(card => {
-            const property = card.querySelector('.property-name').textContent.toLowerCase();
-            const status = card.querySelector('.badge').textContent.toLowerCase();
-            const assignee = card.querySelector('.assignee-info span:last-child').textContent.toLowerCase();
-            const vendor = card.querySelector('.vendor-info').textContent.toLowerCase();
-            
-            let show = true;
-            
-            if (propertyFilter && !property.includes(propertyFilter)) show = false;
-            if (statusFilter && !status.includes(statusFilter)) show = false;
-            if (assigneeFilter && !assignee.includes(assigneeFilter)) show = false;
-            if (vendorFilter && !vendor.includes(vendorFilter)) show = false;
-            
-            card.style.display = show ? '' : 'none';
-        });
+    async function applyFilters() {
+        currentPage = 1; // Reset to first page when filtering
+        await loadWorkOrders();
     }
 
-    function resetFilters() {
+    async function resetFilters() {
         document.querySelectorAll('.filter-input, .filter-select').forEach(input => {
             if (input.tagName === 'SELECT') {
                 input.selectedIndex = 0;
@@ -1842,33 +1484,18 @@
                 input.value = '';
             }
         });
-        applyFilters();
+        await applyFilters();
         showToast('Filters cleared', 'info');
-    }
-
-    function toggleAdvancedFilters() {
-        const panel = document.getElementById('advancedFilters');
-        const text = document.getElementById('advancedFilterText');
-        
-        if (panel.classList.contains('show')) {
-            panel.classList.remove('show');
-            text.textContent = 'Show Advanced Filters';
-        } else {
-            panel.classList.add('show');
-            text.textContent = 'Hide Advanced Filters';
-        }
     }
 
     function applySavedFilter(filterName) {
         if (!filterName) return;
         
-        // Reset all filters first
         resetFilters();
         
-        // Apply preset filter
         switch(filterName) {
             case 'urgent':
-                document.getElementById('priorityFilter').value = 'high';
+                document.getElementById('statusFilter').value = 'high';
                 break;
             case 'overdue':
                 // Would filter by date in real implementation
@@ -1880,7 +1507,7 @@
                 // Would filter by this week
                 break;
             case 'high-priority':
-                document.getElementById('priorityFilter').value = 'high';
+                // Would filter by high priority
                 break;
         }
         
@@ -1893,12 +1520,10 @@
         
         switch(metric) {
             case 'unassigned-resident':
-                document.getElementById('typeFilter').value = 'resident';
-                document.getElementById('assigneeFilter').value = '';
+                // Would filter unassigned resident requests
                 break;
             case 'unassigned-internal':
-                document.getElementById('typeFilter').value = 'internal';
-                document.getElementById('assigneeFilter').value = '';
+                // Would filter unassigned internal requests
                 break;
             case 'ready-to-bill':
                 document.getElementById('statusFilter').value = 'work-done';
@@ -1911,6 +1536,11 @@
     // Modal functions
     function openModal(modalId) {
         document.getElementById(modalId).classList.add('show');
+        // Reset form if it's the new request modal
+        if (modalId === 'newRequestModal') {
+            uploadedPhotos = [];
+            renderPhotoPreview();
+        }
     }
 
     function closeModal(modalId) {
@@ -1918,75 +1548,54 @@
     }
 
     function openWorkOrder(orderId) {
-        const order = workOrders.find(o => o.id === orderId);
-        if (order) {
-            document.getElementById('woModalTitle').textContent = `Work Order #${order.id}`;
-            document.getElementById('woProperty').value = order.property;
-            document.getElementById('woUnit').value = order.unit;
-            document.getElementById('woDescription').value = order.description;
-            document.getElementById('woStatus').value = order.status;
-            document.getElementById('woPriority').value = order.priority;
-            document.getElementById('woCategory').value = order.category;
-            
-            openModal('workOrderModal');
-        }
+        // This would open a detailed view modal
+        showToast(`Opening work order ${orderId}`, 'info');
     }
 
-    function saveWorkOrder() {
-        showToast('Work order saved successfully', 'success');
-        closeModal('workOrderModal');
-    }
-
-    function saveNewRequest() {
+    async function saveNewRequest() {
         const form = document.getElementById('newRequestForm');
         if (form.checkValidity()) {
-            showToast('New work order created successfully', 'success');
-            closeModal('newRequestModal');
-            
-            // Add new work order to list (in real app, this would save to database)
-            const newId = `113232-${workOrders.length + 1}`;
-            workOrders.unshift({
-                id: newId,
-                status: 'new',
-                type: 'resident',
-                property: form.querySelector('select').value,
-                unit: form.querySelector('input[type="text"]').value,
-                tenant: 'New Tenant',
-                vendor: '',
-                assignee: '',
-                created: 'Aug 8, 2025',
-                description: form.querySelector('textarea').value,
-                priority: 'medium',
-                category: 'general'
-            });
-            
-            renderWorkOrders();
-            renderPagination();
+            try {
+                const formData = new FormData(form);
+                const formElements = form.elements;
+                
+                const workOrderData = {
+                    property: formElements[0].value, // First select is property
+                    unit: formElements[1].value, // First input is unit
+                    requestType: formElements[2].value, // Request type select
+                    category: formElements[3].value, // Category select
+                    priority: formElements[4].value, // Priority select
+                    title: `${formElements[3].value} - ${formElements[2].value}`,
+                    description: formElements[5].value, // Textarea
+                    assignedTo: formElements[6].value, // Assign to select
+                    scheduledDate: formElements[7].value, // Scheduled date
+                    entryInstructions: formElements[8].value, // Entry instructions textarea
+                    notifyTenant: document.getElementById('notifyTenant').checked,
+                    entryPermission: document.getElementById('requirePermission').checked,
+                    allowKeyAccess: document.getElementById('allowKeyAccess').checked
+                };
+                
+                const { data, error } = await SupabaseUtils.createWorkOrder(workOrderData);
+                
+                if (error) {
+                    console.error('Error creating work order:', error);
+                    showToast('Error creating work order', 'error');
+                    return;
+                }
+                
+                showToast('New work order created successfully', 'success');
+                closeModal('newRequestModal');
+                
+                // Reload work orders to show the new one
+                await loadWorkOrders();
+                
+            } catch (error) {
+                console.error('Error creating work order:', error);
+                showToast('Error creating work order', 'error');
+            }
         } else {
             showToast('Please fill in all required fields', 'error');
         }
-    }
-
-    function openAddMetricModal() {
-        openModal('addMetricModal');
-    }
-
-    function addMetric() {
-        showToast('Dashboard metric added successfully', 'success');
-        closeModal('addMetricModal');
-        
-        // Replace the "Add Metric" card with a new metric
-        const metricsContainer = document.querySelector('.dashboard-metrics');
-        const addCard = document.querySelector('.metric-card.add-metric');
-        
-        const newMetric = document.createElement('div');
-        newMetric.className = 'metric-card';
-        newMetric.innerHTML = `
-            <div class="metric-label">Custom Metric</div>
-            <div class="metric-value">42</div>
-        `;
-        
-        metricsContainer.insertBefore(newMetric, addCard);
     }
 
     // Bulk action functions
