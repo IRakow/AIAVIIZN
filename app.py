@@ -4,10 +4,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from functools import wraps
 from datetime import datetime, timedelta
 import secrets
-from supabase import create_client, Client
+# from supabase import create_client, Client
 import random
 from decimal import Decimal
-from calendar_api import calendar_api
+# from calendar_api import calendar_api
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 # Use a fixed secret key so sessions persist across deployments
@@ -16,14 +16,14 @@ app.secret_key = 'aiviizn-secret-key-2025-keep-this-private-and-change-in-produc
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Register the calendar API blueprint
-app.register_blueprint(calendar_api)
+# app.register_blueprint(calendar_api)
 
 # Supabase Configuration
 SUPABASE_URL = "https://sejebqdhcilwcpjpznep.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ"
 
 # Initialize Supabase client
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 # Authentication decorator
 def login_required(f):
@@ -53,32 +53,16 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        try:
-            response = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-            
-            if response.user:
-                session.permanent = True  # Make session last for PERMANENT_SESSION_LIFETIME
-                session['user_id'] = response.user.id
-                session['email'] = response.user.email
-                session['company'] = 'Your Company Name'
-                
-                flash('Welcome back!', 'success')
-                return redirect(url_for('dashboard'))
-                
-        except Exception as e:
-            # For testing - allow demo login
-            if email == "admin@aiviizn.com" and password == "demo123":
-                session.permanent = True  # Make session last for PERMANENT_SESSION_LIFETIME
-                session['user_id'] = 'demo-user-id'
-                session['email'] = email
-                session['company'] = 'Test Company'
-                flash('Welcome to AIVIIZN!', 'success')
-                return redirect(url_for('dashboard'))
-            else:
-                flash('Invalid email or password.', 'danger')
+        # For testing - allow demo login
+        if email == "admin@aiviizn.com" and password == "demo123":
+            session.permanent = True  # Make session last for PERMANENT_SESSION_LIFETIME
+            session['user_id'] = 'demo-user-id'
+            session['email'] = email
+            session['company'] = 'Test Company'
+            flash('Welcome to AIVIIZN!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password. Use admin@aiviizn.com / demo123', 'danger')
     
     return render_template('auth/login.html')
 
