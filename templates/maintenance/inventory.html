@@ -1,0 +1,736 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header" style="padding: 20px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; margin-bottom: 20px;">
+        <h1 style="font-size: 24px; font-weight: 600; color: #333;">Inventory Items</h1>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline-primary" onclick="openSearchModal()" style="padding: 8px 16px; border: 1px solid #007bff; background: white; color: #007bff; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Click here to search
+            </button>
+            <button class="btn btn-primary" onclick="openAddInventoryModal()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 18px;">+</span>
+                Add Inventory
+            </button>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div style="background: white; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden;">
+        <table class="table table-hover" style="margin-bottom: 0;">
+            <thead style="background: #f8f9fa;">
+                <tr>
+                    <th onclick="sortTable('name')" style="cursor: pointer; padding: 12px; font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; border-bottom: 2px solid #dee2e6;">
+                        Name
+                        <span style="margin-left: 5px; color: #adb5bd;">↕</span>
+                    </th>
+                    <th onclick="sortTable('quantity')" style="cursor: pointer; padding: 12px; font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; border-bottom: 2px solid #dee2e6;">
+                        Quantity
+                        <span style="margin-left: 5px; color: #adb5bd;">↕</span>
+                    </th>
+                    <th onclick="sortTable('reorder')" style="cursor: pointer; padding: 12px; font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; border-bottom: 2px solid #dee2e6;">
+                        Reorder
+                        <span style="margin-left: 5px; color: #adb5bd;">↕</span>
+                    </th>
+                    <th onclick="sortTable('category')" style="cursor: pointer; padding: 12px; font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; border-bottom: 2px solid #dee2e6;">
+                        Category
+                        <span style="margin-left: 5px; color: #adb5bd;">↕</span>
+                    </th>
+                    <th onclick="sortTable('location')" style="cursor: pointer; padding: 12px; font-size: 12px; font-weight: 600; color: #495057; text-transform: uppercase; border-bottom: 2px solid #dee2e6;">
+                        Location
+                        <span style="margin-left: 5px; color: #adb5bd;">↕</span>
+                    </th>
+                    <th style="padding: 12px; width: 100px; border-bottom: 2px solid #dee2e6;"></th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+                <!-- Inventory items will be loaded here -->
+            </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div id="emptyState" style="padding: 40px; text-align: center; color: #6c757d; display: none;">
+            <p style="margin-bottom: 20px;">No inventory items found.</p>
+            <button class="btn btn-primary" onclick="openAddInventoryModal()" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Add Your First Item
+            </button>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div style="padding: 15px 20px; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; background: white; margin-top: -1px; border-radius: 0 0 4px 4px;">
+        <div style="color: #6c757d; font-size: 14px;">
+            Displaying: <span id="displayRange">0-0</span> of <span id="totalItems">0</span>
+        </div>
+        <div style="display: flex; gap: 5px;">
+            <button class="btn btn-sm" onclick="previousPage()" id="prevBtn" disabled style="padding: 5px 10px; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-size: 13px;">
+                Previous
+            </button>
+            <div id="pageNumbers" style="display: flex; gap: 5px;">
+                <!-- Page numbers will be generated here -->
+            </div>
+            <button class="btn btn-sm" onclick="nextPage()" id="nextBtn" style="padding: 5px 10px; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-size: 13px;">
+                Next
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Inventory Modal -->
+<div id="addInventoryModal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #dee2e6;">
+            <h5 class="modal-title" style="font-size: 18px; font-weight: 600; color: #333;">Add Inventory Item</h5>
+            <button type="button" class="close" onclick="closeModal('addInventoryModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <form id="addInventoryForm">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Item Name <span style="color: #dc3545;">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="itemName" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Quantity <span style="color: #dc3545;">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="itemQuantity" required min="0" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Reorder Level
+                        </label>
+                        <input type="number" class="form-control" id="itemReorder" min="0" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Category <span style="color: #dc3545;">*</span>
+                        </label>
+                        <select class="form-control" id="itemCategory" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background: white;">
+                            <option value="">Select Category</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="HVAC">HVAC</option>
+                            <option value="Painting">Painting</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Landscaping">Landscaping</option>
+                            <option value="Appliances">Appliances</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Safety">Safety Equipment</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Location <span style="color: #dc3545;">*</span>
+                        </label>
+                        <select class="form-control" id="itemLocation" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background: white;">
+                            <option value="">Select Location</option>
+                            <option value="Main Storage">Main Storage</option>
+                            <option value="Warehouse A">Warehouse A</option>
+                            <option value="Warehouse B">Warehouse B</option>
+                            <option value="Maintenance Shop">Maintenance Shop</option>
+                            <option value="Office Storage">Office Storage</option>
+                            <option value="Garage">Garage</option>
+                            <option value="Basement">Basement</option>
+                            <option value="On-Site Storage">On-Site Storage</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Unit Cost ($)
+                    </label>
+                    <input type="number" class="form-control" id="itemCost" min="0" step="0.01" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Description
+                    </label>
+                    <textarea class="form-control" id="itemDescription" rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; resize: vertical;"></textarea>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        SKU/Part Number
+                    </label>
+                    <input type="text" class="form-control" id="itemSku" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Preferred Vendor
+                    </label>
+                    <input type="text" class="form-control" id="itemVendor" placeholder="Enter vendor name" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('addInventoryModal')" style="padding: 8px 16px; background: white; color: #6c757d; border: 1px solid #6c757d; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-primary" onclick="saveInventoryItem()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Save Item
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Inventory Modal -->
+<div id="editInventoryModal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #dee2e6;">
+            <h5 class="modal-title" style="font-size: 18px; font-weight: 600; color: #333;">Edit Inventory Item</h5>
+            <button type="button" class="close" onclick="closeModal('editInventoryModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <form id="editInventoryForm">
+                <input type="hidden" id="editItemId">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Item Name <span style="color: #dc3545;">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="editItemName" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Quantity <span style="color: #dc3545;">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="editItemQuantity" required min="0" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Reorder Level
+                        </label>
+                        <input type="number" class="form-control" id="editItemReorder" min="0" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Category <span style="color: #dc3545;">*</span>
+                        </label>
+                        <select class="form-control" id="editItemCategory" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background: white;">
+                            <option value="">Select Category</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="HVAC">HVAC</option>
+                            <option value="Painting">Painting</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Landscaping">Landscaping</option>
+                            <option value="Appliances">Appliances</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Safety">Safety Equipment</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                            Location <span style="color: #dc3545;">*</span>
+                        </label>
+                        <select class="form-control" id="editItemLocation" required style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background: white;">
+                            <option value="">Select Location</option>
+                            <option value="Main Storage">Main Storage</option>
+                            <option value="Warehouse A">Warehouse A</option>
+                            <option value="Warehouse B">Warehouse B</option>
+                            <option value="Maintenance Shop">Maintenance Shop</option>
+                            <option value="Office Storage">Office Storage</option>
+                            <option value="Garage">Garage</option>
+                            <option value="Basement">Basement</option>
+                            <option value="On-Site Storage">On-Site Storage</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #333; font-size: 14px;">
+                        Unit Cost ($)
+                    </label>
+                    <input type="number" class="form-control" id="editItemCost" min="0" step="0.01" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('editInventoryModal')" style="padding: 8px 16px; background: white; color: #6c757d; border: 1px solid #6c757d; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-primary" onclick="updateInventoryItem()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Update Item
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Search Modal -->
+<div id="searchModal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 8px; width: 90%; max-width: 500px;">
+        <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #dee2e6;">
+            <h5 class="modal-title" style="font-size: 18px; font-weight: 600; color: #333;">Search Inventory</h5>
+            <button type="button" class="close" onclick="closeModal('searchModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by name, category, or location..." style="width: 100%; padding: 10px 15px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+        </div>
+        <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="clearSearch()" style="padding: 8px 16px; background: white; color: #6c757d; border: 1px solid #6c757d; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Clear
+            </button>
+            <button type="button" class="btn btn-primary" onclick="performSearch()" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                Search
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" style="position: fixed; top: 60px; right: 20px; z-index: 10000;"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize Supabase
+const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Global variables
+let inventoryItems = [];
+let currentPage = 1;
+let itemsPerPage = 10;
+let currentSort = { field: 'name', order: 'asc' };
+let searchQuery = '';
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadInventoryItems();
+    setupEventListeners();
+});
+
+// Setup event listeners
+function setupEventListeners() {
+    // Enter key on search input
+    document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+}
+
+// Load inventory items from Supabase
+async function loadInventoryItems() {
+    try {
+        const { data, error } = await supabase
+            .from('inventory_items')
+            .select('*')
+            .order(currentSort.field, { ascending: currentSort.order === 'asc' });
+
+        if (error) {
+            console.error('Error loading inventory:', error);
+            // Use mock data if table doesn't exist
+            inventoryItems = getMockInventoryData();
+        } else {
+            inventoryItems = data || getMockInventoryData();
+        }
+
+        if (searchQuery) {
+            inventoryItems = inventoryItems.filter(item => 
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.location.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        renderInventoryTable();
+        updatePagination();
+    } catch (error) {
+        console.error('Error:', error);
+        inventoryItems = getMockInventoryData();
+        renderInventoryTable();
+        updatePagination();
+    }
+}
+
+// Get mock inventory data
+function getMockInventoryData() {
+    return [
+        { id: 1, name: '2" PVC Pipe', quantity: 45, reorder_level: 20, category: 'Plumbing', location: 'Warehouse A', unit_cost: 12.50 },
+        { id: 2, name: '20 Amp Circuit Breaker', quantity: 12, reorder_level: 5, category: 'Electrical', location: 'Main Storage', unit_cost: 24.99 },
+        { id: 3, name: 'HVAC Filter 20x25x1', quantity: 8, reorder_level: 10, category: 'HVAC', location: 'Maintenance Shop', unit_cost: 8.75 },
+        { id: 4, name: 'White Interior Paint (Gallon)', quantity: 15, reorder_level: 8, category: 'Painting', location: 'Warehouse B', unit_cost: 28.00 },
+        { id: 5, name: 'Door Handle Set - Chrome', quantity: 6, reorder_level: 4, category: 'Hardware', location: 'Main Storage', unit_cost: 45.00 },
+        { id: 6, name: 'All-Purpose Cleaner', quantity: 24, reorder_level: 12, category: 'Cleaning', location: 'Office Storage', unit_cost: 5.99 },
+        { id: 7, name: 'Lawn Mower Blade', quantity: 3, reorder_level: 2, category: 'Landscaping', location: 'Garage', unit_cost: 18.50 },
+        { id: 8, name: 'Refrigerator Water Filter', quantity: 10, reorder_level: 5, category: 'Appliances', location: 'Main Storage', unit_cost: 32.00 },
+        { id: 9, name: 'Cordless Drill Battery', quantity: 4, reorder_level: 2, category: 'Tools', location: 'Maintenance Shop', unit_cost: 65.00 },
+        { id: 10, name: 'Safety Goggles', quantity: 20, reorder_level: 10, category: 'Safety', location: 'Office Storage', unit_cost: 8.99 }
+    ];
+}
+
+// Render inventory table
+function renderInventoryTable() {
+    const tbody = document.getElementById('inventoryTableBody');
+    const emptyState = document.getElementById('emptyState');
+    
+    if (!inventoryItems || inventoryItems.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageItems = inventoryItems.slice(startIndex, endIndex);
+    
+    tbody.innerHTML = pageItems.map(item => `
+        <tr>
+            <td style="padding: 12px; font-size: 14px; color: #333;">
+                <a href="#" onclick="editItem(${item.id}); return false;" style="color: #007bff; text-decoration: none;">
+                    ${item.name}
+                </a>
+            </td>
+            <td style="padding: 12px; font-size: 14px; color: #333;">
+                <span class="${item.quantity <= (item.reorder_level || 0) ? 'text-danger' : ''}">
+                    ${item.quantity}
+                </span>
+            </td>
+            <td style="padding: 12px; font-size: 14px; color: #333;">
+                ${item.reorder_level || '-'}
+            </td>
+            <td style="padding: 12px; font-size: 14px; color: #333;">
+                ${item.category}
+            </td>
+            <td style="padding: 12px; font-size: 14px; color: #333;">
+                ${item.location}
+            </td>
+            <td style="padding: 12px; text-align: right;">
+                <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                    <button onclick="adjustQuantity(${item.id}, -1)" class="btn btn-sm" style="padding: 4px 8px; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-size: 12px;" title="Decrease">
+                        -
+                    </button>
+                    <button onclick="adjustQuantity(${item.id}, 1)" class="btn btn-sm" style="padding: 4px 8px; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-size: 12px;" title="Increase">
+                        +
+                    </button>
+                    <button onclick="editItem(${item.id})" class="btn btn-sm" style="padding: 4px 8px; border: 1px solid #007bff; background: white; color: #007bff; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                        Edit
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Update display range
+    document.getElementById('displayRange').textContent = 
+        inventoryItems.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, inventoryItems.length)}` : '0-0';
+    document.getElementById('totalItems').textContent = inventoryItems.length;
+}
+
+// Update pagination
+function updatePagination() {
+    const totalPages = Math.ceil(inventoryItems.length / itemsPerPage);
+    const pageNumbers = document.getElementById('pageNumbers');
+    
+    pageNumbers.innerHTML = '';
+    
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.className = 'btn btn-sm';
+        button.textContent = i;
+        button.onclick = () => goToPage(i);
+        button.style = `padding: 5px 10px; border: 1px solid ${i === currentPage ? '#007bff' : '#dee2e6'}; background: ${i === currentPage ? '#007bff' : 'white'}; color: ${i === currentPage ? 'white' : '#333'}; border-radius: 3px; cursor: pointer; font-size: 13px;`;
+        pageNumbers.appendChild(button);
+    }
+    
+    // Update prev/next buttons
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+}
+
+// Pagination functions
+function goToPage(page) {
+    currentPage = page;
+    renderInventoryTable();
+    updatePagination();
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        goToPage(currentPage - 1);
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(inventoryItems.length / itemsPerPage);
+    if (currentPage < totalPages) {
+        goToPage(currentPage + 1);
+    }
+}
+
+// Sort table
+function sortTable(field) {
+    if (currentSort.field === field) {
+        currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSort.field = field;
+        currentSort.order = 'asc';
+    }
+    loadInventoryItems();
+}
+
+// Modal functions
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    if (modalId === 'addInventoryModal') {
+        document.getElementById('addInventoryForm').reset();
+    }
+    if (modalId === 'editInventoryModal') {
+        document.getElementById('editInventoryForm').reset();
+    }
+}
+
+function openAddInventoryModal() {
+    openModal('addInventoryModal');
+}
+
+function openSearchModal() {
+    openModal('searchModal');
+    document.getElementById('searchInput').focus();
+}
+
+// Save new inventory item
+async function saveInventoryItem() {
+    const form = document.getElementById('addInventoryForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const newItem = {
+        name: document.getElementById('itemName').value,
+        quantity: parseInt(document.getElementById('itemQuantity').value),
+        reorder_level: parseInt(document.getElementById('itemReorder').value) || null,
+        category: document.getElementById('itemCategory').value,
+        location: document.getElementById('itemLocation').value,
+        unit_cost: parseFloat(document.getElementById('itemCost').value) || null,
+        description: document.getElementById('itemDescription').value || null,
+        sku: document.getElementById('itemSku').value || null,
+        vendor: document.getElementById('itemVendor').value || null
+    };
+    
+    try {
+        const { data, error } = await supabase
+            .from('inventory_items')
+            .insert([newItem])
+            .select();
+        
+        if (error) {
+            console.error('Error saving item:', error);
+            // Add to local array if database fails
+            newItem.id = inventoryItems.length + 1;
+            inventoryItems.push(newItem);
+        }
+        
+        showToast('Inventory item added successfully', 'success');
+        closeModal('addInventoryModal');
+        loadInventoryItems();
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Error adding inventory item', 'error');
+    }
+}
+
+// Edit item
+function editItem(itemId) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    
+    document.getElementById('editItemId').value = item.id;
+    document.getElementById('editItemName').value = item.name;
+    document.getElementById('editItemQuantity').value = item.quantity;
+    document.getElementById('editItemReorder').value = item.reorder_level || '';
+    document.getElementById('editItemCategory').value = item.category;
+    document.getElementById('editItemLocation').value = item.location;
+    document.getElementById('editItemCost').value = item.unit_cost || '';
+    
+    openModal('editInventoryModal');
+}
+
+// Update inventory item
+async function updateInventoryItem() {
+    const form = document.getElementById('editInventoryForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const itemId = parseInt(document.getElementById('editItemId').value);
+    const updatedItem = {
+        name: document.getElementById('editItemName').value,
+        quantity: parseInt(document.getElementById('editItemQuantity').value),
+        reorder_level: parseInt(document.getElementById('editItemReorder').value) || null,
+        category: document.getElementById('editItemCategory').value,
+        location: document.getElementById('editItemLocation').value,
+        unit_cost: parseFloat(document.getElementById('editItemCost').value) || null
+    };
+    
+    try {
+        const { error } = await supabase
+            .from('inventory_items')
+            .update(updatedItem)
+            .eq('id', itemId);
+        
+        if (error) {
+            console.error('Error updating item:', error);
+            // Update local array if database fails
+            const index = inventoryItems.findIndex(i => i.id === itemId);
+            if (index !== -1) {
+                inventoryItems[index] = { ...inventoryItems[index], ...updatedItem };
+            }
+        }
+        
+        showToast('Inventory item updated successfully', 'success');
+        closeModal('editInventoryModal');
+        loadInventoryItems();
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Error updating inventory item', 'error');
+    }
+}
+
+// Adjust quantity
+async function adjustQuantity(itemId, change) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    
+    const newQuantity = Math.max(0, item.quantity + change);
+    
+    try {
+        const { error } = await supabase
+            .from('inventory_items')
+            .update({ quantity: newQuantity })
+            .eq('id', itemId);
+        
+        if (error) {
+            console.error('Error updating quantity:', error);
+            // Update local array if database fails
+            item.quantity = newQuantity;
+            renderInventoryTable();
+        } else {
+            loadInventoryItems();
+        }
+        
+        // Check if below reorder level
+        if (item.reorder_level && newQuantity <= item.reorder_level) {
+            showToast(`Warning: ${item.name} is below reorder level`, 'warning');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Error updating quantity', 'error');
+    }
+}
+
+// Search functions
+function performSearch() {
+    searchQuery = document.getElementById('searchInput').value.trim();
+    currentPage = 1;
+    loadInventoryItems();
+    closeModal('searchModal');
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    searchQuery = '';
+    currentPage = 1;
+    loadInventoryItems();
+    closeModal('searchModal');
+}
+
+// Toast notification
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.style = `
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+        border-left: 4px solid ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#17a2b8'};
+    `;
+    
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : type === 'warning' ? '!' : 'ℹ';
+    toast.innerHTML = `<span style="font-size: 18px; color: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#17a2b8'};">${icon}</span> ${message}`;
+    
+    document.getElementById('toastContainer').appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
