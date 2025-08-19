@@ -21,6 +21,9 @@
     <!-- Dashboard Extended CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-extended.css') }}">
     
+    <!-- Page Specific Styles Block -->
+    {% block styles %}{% endblock %}
+    
     <!-- Custom CSS -->
     <style>
         :root {
@@ -874,6 +877,7 @@
         // Initialize on page load - check current page and expand appropriate menu
         document.addEventListener('DOMContentLoaded', function() {
             const currentPath = window.location.pathname;
+            console.log('AIVIIZN: Current path detected:', currentPath);
             
             // Auto-expand the relevant menu based on current page
             if (currentPath.includes('/leasing/') || 
@@ -890,43 +894,46 @@
             }
             
             if (currentPath.includes('/tenants') || currentPath.includes('/owners') || 
-                currentPath.includes('/vendors')) {
+                currentPath.includes('/vendors') || currentPath.includes('/people/')) {
                 const peopleMenu = document.getElementById('people-menu');
                 const peopleLink = peopleMenu.previousElementSibling;
                 peopleMenu.classList.add('show');
                 peopleLink.classList.add('expanded');
             }
             
-            if (currentPath.includes('/receivables') || currentPath.includes('/payables') || 
-                currentPath.includes('/bank_accounts') || currentPath.includes('/journal_entries') ||
-                currentPath.includes('/bank_transfers') || currentPath.includes('/gl_accounts') ||
-                currentPath.includes('/diagnostics')) {
+            if (currentPath.includes('/accounting/receivables') || currentPath.includes('/accounting/payables') || 
+                currentPath.includes('/accounting/bank-accounts') || currentPath.includes('/accounting/journal-entries') ||
+                currentPath.includes('/accounting/bank-transfers') || currentPath.includes('/accounting/gl-accounts') ||
+                currentPath.includes('/accounting/diagnostics')) {
                 const accountingMenu = document.getElementById('accounting-menu');
                 const accountingLink = accountingMenu.previousElementSibling;
                 accountingMenu.classList.add('show');
                 accountingLink.classList.add('expanded');
             }
             
-            if (currentPath.includes('/work_orders') || currentPath.includes('/recurring_work_orders') ||
-                currentPath.includes('/inspections') || currentPath.includes('/unit_turns') ||
-                currentPath.includes('/projects') || currentPath.includes('/purchase_orders') ||
-                currentPath.includes('/inventory') || currentPath.includes('/fixed_assets') ||
-                currentPath.includes('/smart_maintenance')) {
+            if (currentPath.includes('/maintenance/work-orders') || currentPath.includes('/maintenance/recurring-work-orders') ||
+                currentPath.includes('/maintenance/inspections') || currentPath.includes('/maintenance/unit-turns') ||
+                currentPath.includes('/maintenance/projects') || currentPath.includes('/maintenance/purchase-orders') ||
+                currentPath.includes('/maintenance/inventory') || currentPath.includes('/maintenance/fixed-assets') ||
+                currentPath.includes('/maintenance/smart-maintenance')) {
                 const maintenanceMenu = document.getElementById('maintenance-menu');
-                const maintenanceLink = maintenanceMenu.previousElementSibling;
-                maintenanceMenu.classList.add('show');
-                maintenanceLink.classList.add('expanded');
+                if (maintenanceMenu) {
+                    const maintenanceLink = maintenanceMenu.previousElementSibling;
+                    maintenanceMenu.classList.add('show');
+                    if (maintenanceLink) maintenanceLink.classList.add('expanded');
+                    console.log('AIVIIZN: Maintenance menu expanded for path:', currentPath);
+                }
             }
             
-            if (currentPath.includes('/reports') || currentPath.includes('/scheduled_reports') ||
-                currentPath.includes('/metrics') || currentPath.includes('/surveys')) {
+            if (currentPath.includes('/reporting/reports') || currentPath.includes('/reporting/scheduled-reports') ||
+                currentPath.includes('/reporting/metrics') || currentPath.includes('/reporting/surveys')) {
                 const reportingMenu = document.getElementById('reporting-menu');
                 const reportingLink = reportingMenu.previousElementSibling;
                 reportingMenu.classList.add('show');
                 reportingLink.classList.add('expanded');
             }
             
-            if (currentPath.includes('/letters') || currentPath.includes('/forms') || 
+            if (currentPath.includes('/communication/letters') || currentPath.includes('/communication/forms') || 
                 currentPath.includes('/inbox')) {
                 const communicationMenu = document.getElementById('communication-menu');
                 const communicationLink = communicationMenu.previousElementSibling;
