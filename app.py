@@ -440,6 +440,22 @@ def leasing_metrics():
 def signals():
     return render_template('leasing/signals.html')
 
+# Lease Documents Routes
+@app.route('/leasing/lease_documents')
+@login_required
+def lease_documents():
+    return render_template('leasing/lease_documents.html')
+
+@app.route('/leasing/lease_documents/out_for_signing')
+@login_required
+def lease_documents_out_for_signing():
+    return render_template('leasing/lease_documents_out_for_signing.html')
+
+@app.route('/leasing/lease_documents/printed')
+@login_required
+def lease_documents_printed():
+    return render_template('leasing/lease_documents_printed.html')
+
 # Maintenance Routes
 @app.route('/maintenance/work-orders')
 @login_required

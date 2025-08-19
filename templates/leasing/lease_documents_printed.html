@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}Lease Documents - Printed - AIVIIZN Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Lease Documents</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="lease-documents-container">
+        <h3 class="page-title">Leases</h3>
+
+        <!-- Status Filter Tabs -->
+        <div class="status-tabs">
+            <button class="status-tab" onclick="window.location.href='{{ url_for('lease_documents') }}'">All</button>
+            <button class="status-tab" onclick="window.location.href='{{ url_for('lease_documents') }}'">Ready to Countersign</button>
+            <button class="status-tab" onclick="window.location.href='{{ url_for('lease_documents_out_for_signing') }}'">Out for Signing</button>
+            <button class="status-tab active" disabled>Printed</button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tenants</th>
+                        <th>Unit Name</th>
+                        <th>Lease Generation Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Carlos R. Johnson</td>
+                        <td>Blue Ridge Manor - 3811 2</td>
+                        <td>09/10/2021 11:21 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Carlos R. Johnson')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Charles B. King</td>
+                        <td>Villas of Mur-Len / TSI Villas of Mur-Len - 414 U</td>
+                        <td>06/06/2025 10:32 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Charles B. King')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Jennifer L. Martinez</td>
+                        <td>Sunset Villa Apartments - Unit 2A</td>
+                        <td>05/15/2025 02:30 PM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Jennifer L. Martinez')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Robert K. Thompson<br>Maria E. Thompson</td>
+                        <td>Oakwood Estates - Building C, Unit 12</td>
+                        <td>04/22/2025 11:45 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Robert K. Thompson')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>David A. Wilson</td>
+                        <td>Riverside Commons - Tower 1, Unit 305</td>
+                        <td>03/18/2025 09:15 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('David A. Wilson')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sarah J. Davis<br>Michael R. Davis</td>
+                        <td>Park View Heights - Building B, Unit 8B</td>
+                        <td>02/28/2025 03:20 PM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Sarah J. Davis')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Lisa M. Anderson</td>
+                        <td>Garden Terrace Apartments - Unit 15C</td>
+                        <td>01/12/2025 10:00 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Lisa M. Anderson')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>James P. Rodriguez</td>
+                        <td>Metropolitan Plaza - Suite 407</td>
+                        <td>12/08/2024 04:30 PM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('James P. Rodriguez')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Amanda K. Brown<br>Steven T. Brown</td>
+                        <td>Westside Manor - Building A, Unit 6A</td>
+                        <td>11/25/2024 01:45 PM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Amanda K. Brown')">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Kevin L. Taylor</td>
+                        <td>Hillside Condominiums - Unit 22B</td>
+                        <td>10/15/2024 08:30 AM</td>
+                        <td><span class="status-badge status-printed">Printed</span></td>
+                        <td>
+                            <button class="btn-view" onclick="viewLease('Kevin L. Taylor')">View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <span class="divider">|</span>
+            <a href="#">Help & Training</a>
+            <span class="divider">|</span>
+            <a href="#">Make a Suggestion »</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .lease-documents-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 20px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Status Filter Tabs */
+    .status-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .status-tab {
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        font-size: 13px;
+        color: #6c757d;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .status-tab:hover {
+        color: #495057;
+        background-color: #f8f9fa;
+    }
+
+    .status-tab.active {
+        color: #0B5394;
+        border-bottom-color: #0B5394;
+        font-weight: 500;
+    }
+
+    .status-tab:disabled {
+        color: #0B5394;
+        border-bottom-color: #0B5394;
+        font-weight: 500;
+        cursor: default;
+        background-color: transparent;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+
+    /* Data Table */
+    .data-table {
+        margin-top: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .data-table table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .data-table th {
+        background-color: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .data-table td {
+        padding: 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #f0f0f0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .data-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .status-printed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    /* Action Buttons */
+    .btn-view {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+    }
+
+    .btn-view:hover {
+        background-color: #5a6268;
+    }
+
+    /* Footer Links */
+    .footer-links {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .footer-links a {
+        color: #0B5394;
+        text-decoration: none;
+        margin: 0 5px;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-links .divider {
+        color: #6c757d;
+        margin: 0 5px;
+    }
+</style>
+
+<script>
+function viewLease(tenantName) {
+    console.log('Viewing lease for:', tenantName);
+    // In production, this would open the lease document viewer
+    alert('Opening lease document for ' + tenantName);
+}
+</script>
+{% endblock %}
