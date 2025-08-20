@@ -1,0 +1,125 @@
+# Clean working app.py for AIVIIZN
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from functools import wraps
+
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+app.secret_key = 'aiviizn-secret-key-2025-test'
+
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/')
+def index():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Simple demo login
+        if email == "admin@aiviizn.com" and password == "demo123":
+            session['user_id'] = 'demo-user-id'
+            session['email'] = email
+            session['company'] = 'AIVIIZN Test'
+            flash('Welcome to AIVIIZN!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid credentials. Use admin@aiviizn.com / demo123', 'danger')
+    
+    return render_template('auth/login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    stats = {
+        'maintenance': {
+            'work_orders': {
+                'new': 220,
+                'assigned': 122,
+                'completed': 1066
+            }
+        }
+    }
+    return render_template('dashboard.html', stats=stats, recent_moveins=[])
+
+# Basic routes for navigation
+@app.route('/inbox')
+@login_required
+def inbox():
+    return render_template('inbox.html')
+
+@app.route('/tenants')
+@login_required
+def tenants():
+    return render_template('people/tenants.html', tenants=[])
+
+@app.route('/properties')
+@login_required
+def properties():
+    return render_template('properties/properties.html', properties=[])
+
+# MAINTENANCE ROUTES - These are the ones we want to test
+@app.route('/maintenance/work-orders')
+@login_required
+def work_orders():
+    return render_template('maintenance/work_orders.html')
+
+@app.route('/maintenance/recurring-work-orders')
+@login_required
+def recurring_work_orders():
+    return render_template('maintenance/recurring_work_orders.html')
+
+@app.route('/maintenance/inspections')
+@login_required
+def inspections():
+    return render_template('maintenance/inspections.html')
+
+@app.route('/maintenance/unit-turns')
+@login_required
+def unit_turns():
+    return render_template('maintenance/unit_turns.html')
+
+@app.route('/maintenance/projects')
+@login_required
+def projects():
+    return render_template('maintenance/projects.html')
+
+@app.route('/maintenance/purchase-orders')
+@login_required
+def purchase_orders():
+    return render_template('maintenance/purchase_orders.html')
+
+@app.route('/maintenance/inventory')
+@login_required
+def inventory():
+    return render_template('maintenance/inventory.html')
+
+@app.route('/maintenance/fixed-assets')
+@login_required
+def fixed_assets():
+    return render_template('maintenance/fixed_assets.html')
+
+@app.route('/maintenance/smart-maintenance')
+@login_required
+def smart_maintenance():
+    return render_template('maintenance/smart_maintenance.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8082)

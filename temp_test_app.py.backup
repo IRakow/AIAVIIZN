@@ -1,0 +1,94 @@
+# Simple test app for maintenance pages
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from functools import wraps
+
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+app.secret_key = 'test-secret-key-2025'
+
+# Simple authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/')
+def index():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':\n        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Simple demo login
+        if email == \"admin@aiviizn.com\" and password == \"demo123\":
+            session['user_id'] = 'demo-user-id'
+            session['email'] = email
+            session['company'] = 'AIVIIZN Test'
+            flash('Welcome to AIVIIZN!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid credentials. Use admin@aiviizn.com / demo123', 'danger')
+    
+    return render_template('auth/login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    stats = {
+        'maintenance': {
+            'work_orders': {
+                'new': 220,
+                'assigned': 122,
+                'completed': 1066
+            }
+        }
+    }
+    return render_template('dashboard.html', stats=stats, recent_moveins=[])
+
+# Maintenance Routes - These are the ones we want to test
+@app.route('/maintenance/work-orders')
+@login_required
+def work_orders():
+    return render_template('maintenance/work_orders.html')
+
+@app.route('/maintenance/recurring-work-orders')
+@login_required
+def recurring_work_orders():
+    return render_template('maintenance/recurring_work_orders.html')
+
+@app.route('/maintenance/inspections')
+@login_required
+def inspections():
+    return render_template('maintenance/inspections.html')
+
+# Other basic routes for navigation
+@app.route('/properties')
+@login_required
+def properties():
+    return render_template('properties/properties.html', properties=[])
+
+@app.route('/tenants')
+@login_required
+def tenants():
+    return render_template('people/tenants.html', tenants=[])
+
+@app.route('/inbox')
+@login_required
+def inbox():
+    return render_template('inbox.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8080)
