@@ -495,7 +495,59 @@ def inspections():
 @app.route('/maintenance/unit-turns')
 @login_required
 def unit_turns():
-    unit_turns_data = [
+    # Unit turns data will be loaded from Supabase in production
+    # This route renders the new unit turns page that matches AppFolio functionality
+    return render_template('maintenance/unit_turns.html')
+
+@app.route('/maintenance/projects')
+@login_required
+def projects():
+    # Projects data will be loaded from Supabase in production
+    # This route renders the new projects page that matches AppFolio functionality
+    return render_template('maintenance/projects.html')
+
+@app.route('/maintenance/purchase-orders')
+@login_required
+def purchase_orders():
+    purchase_orders_data = [
+        {'number': 'PO-2025-001', 'vendor': 'ABC Construction', 'property': 'West Plaza', 'amount': 2500.00, 'status': 'Pending', 'date': '08/01/2025'},
+        {'number': 'PO-2025-002', 'vendor': 'Elite Plumbing', 'property': 'Rock Ridge Ranch', 'amount': 850.00, 'status': 'Approved', 'date': '08/03/2025'},
+        {'number': 'PO-2025-003', 'vendor': 'Quality Painting', 'property': 'Brentwood Park', 'amount': 1200.00, 'status': 'Completed', 'date': '08/05/2025'}
+    ]
+    
+    return render_template('maintenance/purchase_orders.html', purchase_orders=purchase_orders_data)
+
+@app.route('/maintenance/inventory')
+@login_required
+def inventory():
+    inventory_data = [
+        {'item': 'HVAC Filters', 'category': 'HVAC', 'quantity': 24, 'unit_cost': 12.50, 'location': 'Storage Room A'},
+        {'item': 'Paint - White Interior', 'category': 'Paint', 'quantity': 8, 'unit_cost': 35.00, 'location': 'Storage Room B'},
+        {'item': 'Toilet Parts Kit', 'category': 'Plumbing', 'quantity': 12, 'unit_cost': 25.00, 'location': 'Storage Room A'}
+    ]
+    
+    return render_template('maintenance/inventory.html', inventory=inventory_data)
+
+@app.route('/maintenance/fixed-assets')
+@login_required  
+def fixed_assets():
+    assets_data = [
+        {'asset': 'Boiler - Building A', 'property': 'West Plaza', 'value': 15000.00, 'purchase_date': '2020-03-15', 'warranty': '2025-03-15'},
+        {'asset': 'Commercial Washer Unit 1', 'property': 'Rock Ridge Ranch', 'value': 8500.00, 'purchase_date': '2021-06-20', 'warranty': '2024-06-20'},
+        {'asset': 'Security Camera System', 'property': 'Brentwood Park', 'value': 3200.00, 'purchase_date': '2022-01-10', 'warranty': '2027-01-10'}
+    ]
+    
+    return render_template('maintenance/fixed_assets.html', assets=assets_data)
+
+@app.route('/maintenance/smart-maintenance')
+@login_required
+def smart_maintenance():
+    return render_template('maintenance/smart_maintenance.html')
+
+# Removed duplicate - using the earlier unit_turns route that renders the new template
+
+# Keeping this data for reference but the route above handles the new unit turns page
+# unit_turns_data = [
         {
             'property': 'Flats at Walnut / Flats at Walnut LLC - 4231 C - DOWN',
             'move_out': '5/31/2021',
@@ -551,10 +603,7 @@ def unit_turns():
             'other': '--',
             'housekeeping': '--',
             'keys': '--'
-        }
-    ]
-    
-    return render_template('maintenance/unit_turns.html', unit_turns=unit_turns_data)
+        # Removed old unit_turns data - using new template structure
 
 @app.route('/maintenance/projects')
 @login_required
