@@ -1,0 +1,15 @@
+# AI clients (since MCP handles Playwright and Supabase)
+openai>=1.8.0
+anthropic>=0.12.0
+google-generativeai>=0.4.0
+
+# Web processing helpers
+beautifulsoup4>=4.12.2
+requests>=2.32.0
+
+# Environment and utilities
+python-dotenv>=1.0.1
+structlog>=23.0.0
+
+# JSON and data handling
+pandas>=2.1.0

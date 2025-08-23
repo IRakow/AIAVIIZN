@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Journal Entries - Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Journal Entries</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs for Journal Entries -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('receivables') }}">Receivables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('payables') }}">Payables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bank_accounts') }}">Bank Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('journal_entries') }}">Journal Entries</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bank_transfers') }}">Bank Transfers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('gl_accounts') }}">GL Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('diagnostics') }}">Diagnostics</a>
+        </li>
+    </ul>
+
+    <!-- Secondary tabs for Journal Entries -->
+    <ul class="nav nav-tabs nav-secondary mb-3">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Journal Entry History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Recurring Journal Entries</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Journal Entry Batches</a>
+        </li>
+    </ul>
+
+    <!-- Search Box -->
+    <div class="search-section">
+        <div class="search-box-container">
+            <div class="search-box">
+                <span class="search-text">Click here to search</span>
+                <div class="search-arrow"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Entries Table -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Entry Date <span class="sort-arrow">↓</span></th>
+                    <th>Reference Number <span class="sort-arrow">↑</span></th>
+                    <th>Property <span class="sort-arrow">↓</span></th>
+                    <th>Remarks</th>
+                    <th>Account</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in journal_entries %}
+                <tr>
+                    <td>{{ entry.entry_date }}</td>
+                    <td>{{ entry.reference_number }}</td>
+                    <td>{{ entry.property }}</td>
+                    <td rowspan="2">{{ entry.remarks }}</td>
+                    <td>{{ entry.account1 }}</td>
+                    <td>{{ entry.debit1 }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ entry.account2 }}</td>
+                    <td></td>
+                    <td>{{ entry.credit2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tasks Panel -->
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h5>Tasks</h5>
+        <button class="btn btn-sm">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-item">
+            <a href="#">New Journal Entry</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Post GPR</a>
+        </div>
+        <div class="task-item">
+            <a href="#">New Recurring Journal Entry</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Upload Journal Entry Batch</a>
+        </div>
+        <div class="task-item">
+            <a href="#">View Journal Entry Batches</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Manually Post Journal Entries</a>
+        </div>
+        
+        <div class="tasks-subheader">Reports</div>
+        <div class="task-item">
+            <a href="#">General Ledger</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Gross Potential Rent</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Journal Entry Register</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.nav-secondary {
+    background: #f8f9fa;
+    padding: 5px 10px 0;
+    margin-top: -1px;
+}
+
+.nav-secondary .nav-link {
+    color: #666;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.nav-secondary .nav-link.active {
+    background: white;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.search-section {
+    margin-bottom: 20px;
+}
+
+.search-box-container {
+    width: 100%;
+}
+
+.search-box {
+    background: white;
+    border: 2px solid #0066cc;
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.search-box:hover {
+    background: #f0f7ff;
+}
+
+.search-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.search-arrow {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #0066cc;
+}
+
+.search-arrow::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.sort-arrow {
+    color: #999;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.tasks-panel {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tasks-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.tasks-content {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.task-item {
+    padding: 5px 0;
+}
+
+.task-item a {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.task-item a:hover {
+    text-decoration: underline;
+}
+
+.tasks-subheader {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

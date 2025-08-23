@@ -1,0 +1,5 @@
+playwright
+aiohttp
+requests
+beautifulsoup4
+python-dotenv

@@ -1,0 +1,1187 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Vacancies - Property Manager{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --aiviizn-primary: #2563eb;
+  --aiviizn-secondary: #64748b;
+  --aiviizn-success: #059669;
+  --aiviizn-warning: #d97706;
+  --aiviizn-danger: #dc2626;
+  --aiviizn-light: #f8fafc;
+  --aiviizn-dark: #0f172a;
+  --aiviizn-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.content-wrapper {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-title {
+  background: var(--aiviizn-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  animation: slideInDown 0.8s ease-out;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.subnav-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.subnav-tabs li {
+  flex: 1;
+  min-width: 120px;
+}
+
+.subnav-tabs a {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: var(--aiviizn-secondary);
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.subnav-tabs a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--aiviizn-gradient);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.subnav-tabs a:hover::before,
+.subnav-tabs .is-selected a::before {
+  left: 0;
+}
+
+.subnav-tabs a:hover,
+.subnav-tabs .is-selected a {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.filter-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+.filter-box__unhide-instructions {
+  background: var(--aiviizn-gradient);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.filter-box__unhide-instructions:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  color: white;
+}
+
+.form__row {
+  margin-bottom: 1.5rem;
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+.form__row:nth-child(even) {
+  animation: fadeInRight 0.6s ease-out;
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.form__row__label {
+  font-weight: 600;
+  color: var(--aiviizn-dark);
+  margin-bottom: 0.5rem;
+  display: block;
+  position: relative;
+}
+
+.ai-enhanced .form__row__label::after {
+  content: '✨ AI';
+  background: var(--aiviizn-gradient);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.form-control, .form-select, input[type="text"], select {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus, .form-select:focus, input[type="text"]:focus, select:focus {
+  border-color: var(--aiviizn-primary);
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+  outline: none;
+  background: white;
+}
+
+.ai-enhanced .form-control {
+  border-color: #a855f7;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+}
+
+.btn-primary {
+  background: var(--aiviizn-gradient);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.btn-primary:hover::before {
+  left: 0;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  animation: scaleIn 0.6s ease-out;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.unit-property-card__image_div {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 1rem;
+  border: 3px solid rgba(37, 99, 235, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover .unit-property-card__image_div {
+  transform: scale(1.05);
+  border-color: var(--aiviizn-primary);
+}
+
+.unit-property-card__table {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.unit-property-card__table td {
+  padding: 8px 12px;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.unit-property-card__tiny-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--aiviizn-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-table__vacancy-type {
+  background: var(--aiviizn-gradient);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  animation: bounceIn 0.8s ease-out;
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.options-dropdown__toggle {
+  background: var(--aiviizn-light);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.options-dropdown__toggle:hover {
+  background: #e2e8f0;
+  border-color: var(--aiviizn-primary);
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin: 4px 8px;
+}
+
+.dropdown-item:hover {
+  background: var(--aiviizn-gradient);
+  color: white;
+  transform: translateX(4px);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.sort-options select {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 500;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(37, 99, 235, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--aiviizn-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.saffron-spinner {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin: 20px auto;
+}
+
+.saffron-spinner-a,
+.saffron-spinner-b {
+  position: absolute;
+  border: 4px solid var(--aiviizn-primary);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: saffron-spin 2s linear infinite;
+}
+
+.saffron-spinner-b {
+  animation-delay: 1s;
+}
+
+@keyframes saffron-spin {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.input-add-on {
+  position: relative;
+  display: flex;
+}
+
+.input-add-on__prepend,
+.input-add-on__append {
+  background: var(--aiviizn-light);
+  border: 2px solid #e2e8f0;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--aiviizn-secondary);
+}
+
+.input-add-on__prepend {
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+}
+
+.input-add-on__append {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.input-add-on__append:hover {
+  background: var(--aiviizn-primary);
+  color: white;
+}
+
+.input-add-on input {
+  border-radius: 0 8px 8px 0;
+  border-left: none;
+}
+
+.input-add-on__prepend + input {
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .subnav-tabs {
+    flex-direction: column;
+  }
+  
+  .subnav-tabs li {
+    min-width: auto;
+  }
+  
+  .filter-box {
+    padding: 1rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-not-posted {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--aiviizn-danger);
+}
+
+.status-posted {
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--aiviizn-success);
+}
+
+.status-off {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--aiviizn-secondary);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content-wrapper position-fixed bottom-0 overflow-y-auto js-main-page vacancies index">
+    <main class="main-container mx-auto px-3 w-100">
+        <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+            
+            <div id="site-subtabs" class="full-screen-hide">
+                <div class="js-responsive-table-container responsive-table u-medium-down-hidden">
+                    <div class="js-responsive-table-inner responsive-table__inner">
+                        <ul class="is-displayed-in-medium-down subnav-tabs" data-container-classes="u-medium-down-hidden" data-level="0">
+                            <li class="is-selected"><a href="{{ url_for('vacancies') }}">Vacancies</a></li>
+                            <li class=""><a href="{{ url_for('guest_cards') }}">Guest Cards</a></li>
+                            <li class=""><a href="{{ url_for('rental_applications') }}">Rental Applications</a></li>
+                            <li class=""><a href="{{ url_for('lease_documents') }}">Leases</a></li>
+                            <li class=""><a href="{{ url_for('lease_renewals') }}">Renewals</a></li>
+                            <li class=""><a href="{{ url_for('metrics_dashboard') }}">Metrics</a></li>
+                            <li class=""><a href="{{ url_for('leasing_signals') }}">Signals</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="flash_messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <h1 class="page-title js-security-deposit-alternative-banner">Vacancies</h1>
+
+            <section class="js-filterable-collection">
+                <div class="js-filter-box filter-box">
+                    <div class="js-filter-search-box u-hidden">
+                        <p class="filter-box__instructions">Filter your vacancies with the options below:</p>
+                        <div class="js-filter-form">
+                            <form class="form form--full-width" id="new_filters" data-type="json" autocomplete="off" novalidate="novalidate" action="{{ url_for('vacancies') }}" method="get">
+                                
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_properties_ids">Properties</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <input type="text" 
+                                                   name="filters[properties_ids]" 
+                                                   id="filters_properties_ids"
+                                                   class="form-control"
+                                                   placeholder="Search by property, group, owner, or portfolio"
+                                                   data-search-path="{{ url_for('search_properties') }}"
+                                                   autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_bedrooms">Bedrooms</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <select class="form-select" name="filters[bedrooms]" id="filters_bedrooms">
+                                                <option value="">Number of bedrooms</option>
+                                                <option value="0+">0+</option>
+                                                <option value="1+">1+</option>
+                                                <option value="2+">2+</option>
+                                                <option value="3+">3+</option>
+                                                <option value="4+">4+</option>
+                                                <option value="5+">5+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row">
+                                    <label class="form__row__label">Rent Range</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <div class="row g-2">
+                                                <div class="col-md-5">
+                                                    <div class="input-add-on">
+                                                        <span class="input-add-on__prepend">$</span>
+                                                        <input type="text" 
+                                                               class="form-control js-currency-input" 
+                                                               name="filters[min_rent]" 
+                                                               id="filters_min_rent"
+                                                               placeholder="Minimum">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                                    <span class="text-muted">to</span>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="input-add-on">
+                                                        <span class="input-add-on__prepend">$</span>
+                                                        <input type="text" 
+                                                               class="form-control js-currency-input" 
+                                                               name="filters[max_rent]" 
+                                                               id="filters_max_rent"
+                                                               placeholder="Maximum">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label">Available Date Range</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <div class="row g-2">
+                                                <div class="col-md-5">
+                                                    <div class="input-add-on">
+                                                        <input type="date" 
+                                                               class="form-control js-datepicker" 
+                                                               name="filters[available_from]" 
+                                                               id="filters_available_from"
+                                                               placeholder="Start date">
+                                                        <span class="input-add-on__append">
+                                                            <i class="fas fa-calendar"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                                    <span class="text-muted">to</span>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="input-add-on">
+                                                        <input type="date" 
+                                                               class="form-control js-datepicker" 
+                                                               name="filters[available_to]" 
+                                                               id="filters_available_to"
+                                                               placeholder="End date">
+                                                        <span class="input-add-on__append">
+                                                            <i class="fas fa-calendar"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form__row ai-enhanced">
+                                            <label class="form__row__label" for="filters_cats">Cats Allowed</label>
+                                            <div class="form__row__body">
+                                                <select class="form-select" name="filters[cats]" id="filters_cats">
+                                                    <option value="">Any</option>
+                                                    <option value="allowed">Yes</option>
+                                                    <option value="not_allowed">No</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form__row ai-enhanced">
+                                            <label class="form__row__label" for="filters_dogs">Dogs Allowed</label>
+                                            <div class="form__row__body">
+                                                <select class="form-select" name="filters[dogs]" id="filters_dogs">
+                                                    <option value="">Any</option>
+                                                    <option value="allowed">Large</option>
+                                                    <option value="small_only_allowed">Small</option>
+                                                    <option value="not_allowed">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="filters[sort_by]" id="filters_sort_by" value="vacantOn">
+
+                                <div class="form__row text-center">
+                                    <div class="form__row__body">
+                                        <button type="submit" class="btn btn-primary js-filter-submit" id="search_button">
+                                            <i class="fas fa-search me-2"></i>Search Vacancies
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="js-filter-search-again-box text-center" style="min-height:20px;">
+                        <div class="text-center js-filter-search-box-loading" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <a class="js-filter-search-again filter-box__unhide-instructions" href="#" onclick="toggleFilters()">
+                            <i class="fas fa-filter me-2"></i>Click here to search
+                        </a>
+                    </div>
+                </div>
+
+                <div class="js-filter-waiting-message text-center d-none">
+                    <div class="saffron-spinner">
+                        <div class="saffron-spinner-a"></div>
+                        <div class="saffron-spinner-b"></div>
+                    </div>
+                </div>
+
+                <div class="row m-0 mb-3">
+                    <div class="col-md-6">
+                        <div class="vacancy-stats">
+                            <span class="text-muted">Total Vacancies: </span>
+                            <span class="fw-bold text-primary" id="vacancy-count">{{ vacancies|length if vacancies else 0 }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="sort-options text-end">
+                            <label for="sort_by" class="me-2">Sort By:</label>
+                            <select name="sort_by" id="sort_by" class="form-select d-inline-block w-auto js-sort-by-field" onchange="sortVacancies()">
+                                <option value="vacantOn">Days Vacant</option>
+                                <option value="rentlinxPostingVisible">Internet Posting Status</option>
+                                <option value="propertyAndUnitName">Name</option>
+                                <option value="marketRent">Market Rent</option>
+                                <option value="advertisedRent">Advertised Rent</option>
+                                <option value="websitePostingVisible">Website Posting Status</option>
+                                <option value="bedrooms">Bedrooms</option>
+                                <option value="availableOn">Available Date</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="js-filter-no-results text-center d-none">
+                    <i class="fas fa-search text-muted mb-3" style="font-size: 3rem;"></i><br>
+                    <strong>No vacancies found.</strong><br>
+                    <span class="text-muted">Try adjusting your search criteria.</span>
+                </p>
+
+                <div class="js-filter-results js-listable-cards-container">
+                    {% for vacancy in vacancies if vacancies %}
+                    <div class="js-listable-card card mb-3" data-property-id="{{ vacancy.property_id }}">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3 text-center d-none d-lg-block">
+                                    <div class="unit-property-card__image_div" 
+                                         style="background-image: url('{{ vacancy.image_url if vacancy.image_url else '/static/img/property-placeholder.svg' }}')">
+                                    </div>
+                                    <div class="unit-property-card__image-caption text-muted small">
+                                        {{ vacancy.photo_count or 0 }} Photos
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-5">
+                                    <h5 class="card-title mb-2">
+                                        <a href="{{ url_for('property_unit', property_id=vacancy.property_id, unit_id=vacancy.id) }}" 
+                                           class="text-decoration-none">
+                                            {{ vacancy.property_name }} - {{ vacancy.unit_number }}
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted mb-3">{{ vacancy.address }}</p>
+
+                                    <table class="unit-property-card__table">
+                                        <tr>
+                                            <td>
+                                                <span class="unit-property-card__tiny-header">BD/BA</span><br>
+                                                <strong>{{ vacancy.bedrooms }}/{{ vacancy.bathrooms }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="unit-property-card__tiny-header">Sq. Ft.</span><br>
+                                                <strong>{{ vacancy.square_feet or 'N/A' }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="unit-property-card__tiny-header">Rent</span><br>
+                                                <strong>${{ '{:,.0f}'.format(vacancy.rent) if vacancy.rent else 'N/A' }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="unit-property-card__tiny-header">Available</span><br>
+                                                <strong>{{ vacancy.available_date.strftime('%m/%d/%Y') if vacancy.available_date else 'Now' }}</strong>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <span class="action-table__vacancy-type">
+                                            Vacant For: {{ vacancy.days_vacant or 0 }} days
+                                        </span>
+                                    </div>
+
+                                    <div class="dropdown mb-3">
+                                        <button class="options-dropdown__toggle btn btn-light dropdown-toggle w-100" 
+                                                type="button" data-bs-toggle="dropdown">
+                                            Actions <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{{ url_for('marketing_flyer', unit_id=vacancy.id) }}">
+                                                <i class="fas fa-file-pdf me-2"></i>Download Marketing Flyer
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('post_manually', property_id=vacancy.property_id, unit_id=vacancy.id) }}">
+                                                <i class="fas fa-upload me-2"></i>Post Vacancy Manually
+                                            </a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="removeFromVacancies({{ vacancy.id }})">
+                                                <i class="fas fa-trash me-2"></i>Remove from Vacancies List
+                                            </a></li>
+                                        </ul>
+                                    </div>
+
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Website</strong></td>
+                                            <td>
+                                                <span class="status-badge status-{{ 'posted' if vacancy.website_posted else 'not-posted' }}">
+                                                    {{ 'Posted' if vacancy.website_posted else 'Not Posted' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm {{ 'btn-success' if not vacancy.website_posted else 'btn-secondary' }}" 
+                                                        onclick="togglePosting({{ vacancy.id }}, 'website')">
+                                                    {{ 'Post' if not vacancy.website_posted else 'Remove' }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Internet</strong></td>
+                                            <td>
+                                                <span class="status-badge status-{{ 'posted' if vacancy.internet_posted else 'not-posted' }}">
+                                                    {{ 'Posted' if vacancy.internet_posted else 'Not Posted' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm {{ 'btn-success' if not vacancy.internet_posted else 'btn-secondary' }}" 
+                                                        onclick="togglePosting({{ vacancy.id }}, 'internet')">
+                                                    {{ 'Post' if not vacancy.internet_posted else 'Remove' }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Premium</strong></td>
+                                            <td>
+                                                <span class="status-badge status-{{ 'posted' if vacancy.premium_listing else 'off' }}">
+                                                    {{ 'On' if vacancy.premium_listing else 'Off' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm {{ 'btn-warning' if not vacancy.premium_listing else 'btn-secondary' }}" 
+                                                        onclick="togglePremium({{ vacancy.id }})">
+                                                    {{ 'Activate' if not vacancy.premium_listing else 'Turn Off' }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-home text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h3 class="text-muted">No Vacancies Found</h3>
+                        <p class="text-muted">There are currently no vacant units matching your criteria.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </section>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle filter visibility
+function toggleFilters() {
+    const filterBox = document.querySelector('.js-filter-search-box');
+    const toggleLink = document.querySelector('.js-filter-search-again');
+    
+    if (filterBox.classList.contains('u-hidden')) {
+        filterBox.classList.remove('u-hidden');
+        toggleLink.innerHTML = '<i class="fas fa-times me-2"></i>Hide Filters';
+    } else {
+        filterBox.classList.add('u-hidden');
+        toggleLink.innerHTML = '<i class="fas fa-filter me-2"></i>Click here to search';
+    }
+}
+
+// Sort vacancies
+function sortVacancies() {
+    const sortBy = document.getElementById('sort_by').value;
+    const form = document.getElementById('new_filters');
+    document.getElementById('filters_sort_by').value = sortBy;
+    
+    // Show loading
+    showLoading();
+    
+    // Submit form via AJAX or reload page
+    const formData = new FormData(form);
+    formData.set('sort_by', sortBy);
+    
+    fetch(form.action, {
+        method: 'GET',
+        body: new URLSearchParams(formData)
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Update results
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newResults = doc.querySelector('.js-filter-results');
+        if (newResults) {
+            document.querySelector('.js-filter-results').innerHTML = newResults.innerHTML;
+        }
+        hideLoading();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideLoading();
+    });
+}
+
+// Toggle posting status
+function togglePosting(unitId, postingType) {
+    const button = event.target;
+    const originalText = button.textContent;
+    
+    button.disabled = true;
+    button.textContent = 'Wait...';
+    
+    fetch(`/api/units/${unitId}/toggle_posting`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            posting_type: postingType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update status badge and button
+            const statusBadge = button.closest('tr').querySelector('.status-badge');
+            if (data.posted) {
+                statusBadge.textContent = 'Posted';
+                statusBadge.className = 'status-badge status-posted';
+                button.textContent = 'Remove';
+                button.className = 'btn btn-sm btn-secondary';
+            } else {
+                statusBadge.textContent = 'Not Posted';
+                statusBadge.className = 'status-badge status-not-posted';
+                button.textContent = 'Post';
+                button.className = 'btn btn-sm btn-success';
+            }
+            showAlert('success', `${postingType} posting ${data.posted ? 'activated' : 'deactivated'} successfully.`);
+        } else {
+            showAlert('error', data.message || 'An error occurred.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while updating the posting status.');
+    })
+    .finally(() => {
+        button.disabled = false;
+        if (button.textContent === 'Wait...') {
+            button.textContent = originalText;
+        }
+    });
+}
+
+// Toggle premium listing
+function togglePremium(unitId) {
+    const button = event.target;
+    const originalText = button.textContent;
+    
+    button.disabled = true;
+    button.textContent = 'Wait...';
+    
+    fetch(`/api/units/${unitId}/toggle_premium`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const statusBadge = button.closest('tr').querySelector('.status-badge');
+            if (data.premium) {
+                statusBadge.textContent = 'On';
+                statusBadge.className = 'status-badge status-posted';
+                button.textContent = 'Turn Off';
+                button.className = 'btn btn-sm btn-secondary';
+            } else {
+                statusBadge.textContent = 'Off';
+                statusBadge.className = 'status-badge status-off';
+                button.textContent = 'Activate';
+                button.className = 'btn btn-sm btn-warning';
+            }
+            showAlert('success', `Premium listing ${data.premium ? 'activated' : 'deactivated'} successfully.`);
+        } else {
+            showAlert('error', data.message || 'An error occurred.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while updating the premium status.');
+    })
+    .finally(() => {
+        button.disabled = false;
+        if (button.textContent === 'Wait...') {
+            button.textContent = originalText;
+        }
+    });
+}
+
+// Remove from vacancies list
+function removeFromVacancies(unitId) {
+    if (!confirm('Are you sure you want to remove this unit from the vacancies list?')) {
+        return;
+    }
+    
+    fetch(`/api/vacancies/exclude_unit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            unit_id: unitId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const card = document.querySelector(`[data-property-id] .js-listable-card`);
+            if (card) {
+                card.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => card.remove(), 300);
+            }
+            updateVacancyCount(-1);
+            showAlert('success', 'Unit removed from vacancies list.');
+        } else {
+            showAlert('error', data.message || 'An error occurred.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while removing the unit.');
+    });
+}
+
+// Utility functions
+function showLoading() {
+    document.querySelector('.js-filter-waiting-message').classList.remove('d-none');
+}
+
+function hideLoading() {
+    document.querySelector('.js-filter-waiting-message').classList.add('d-none');
+}
+
+function updateVacancyCount(delta) {
+    const countElement = document.getElementById('vacancy-count');
+    const currentCount = parseInt(countElement.textContent);
+    countElement.textContent = Math.max(0, currentCount + delta);
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const flashMessages = document.getElementById('flash_messages');
+    flashMessages.appendChild(alertDiv);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }
+    }, 5000);
+}
+
+// Form validation and submission
+document.getElementById('new_filters').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showLoading();
+    
+    const formData = new FormData(this);
+    
+    fetch(this.action + '?' + new URLSearchParams(formData))
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newResults = doc.querySelector('.js-filter-results');
+        if (newResults) {
+            document.querySelector('.js-filter-results').innerHTML = newResults.innerHTML;
+            const noResults = doc.querySelector('.js-filter-no-results');
+            if (noResults && !noResults.classList.contains('d-none')) {
+                document.querySelector('.js-filter-no-results').classList.remove('d-none');
+            } else {
+                document.querySelector('.js-filter-no-results').classList.add('d-none');
+            }
+        }
+        hideLoading();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'An error occurred while searching.');
+        hideLoading();
+    });
+});
+
+// Initialize property search autocomplete
+document.getElementById('filters_properties_ids').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length < 2) return;
+    
+    fetch(`/api/search/properties?q=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(data => {
+        // Implement autocomplete dropdown
+        showAutocompleteResults(this, data.results);
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+function showAutocompleteResults(input, results) {
+    // Remove existing dropdown
+    const existingDropdown = input.parentNode.querySelector('.autocomplete-dropdown');
+    if (existingDropdown) {
+        existingDropdown.remove();
+    }
+    
+    if (results.length === 0) return;
+    
+    const dropdown = document.createElement('div');
+    dropdown.className = 'autocomplete-dropdown position-absolute w-100 bg-white border rounded shadow-sm';
+    dropdown.style.top = '100%';
+    dropdown.style.zIndex = '1000';
+    dropdown.style.maxHeight = '200px';
+    dropdown.style.overflowY = 'auto';
+    
+    results.forEach(result => {
+        const item = document.createElement('div');
+        item.className = 'p-2 border-bottom cursor-pointer';
+        item.textContent = result.name;
+        item.addEventListener('click', () => {
+            input.value = result.name;
+            input.dataset.value = result.id;
+            dropdown.remove();
+        });
+        item.addEventListener('mouseenter', () => {
+            item.classList.add('bg-light');
+        });
+        item.addEventListener('mouseleave', () => {
+            item.classList.remove('bg-light');
+        });
+        dropdown.appendChild(item);
+    });
+    
+    input.parentNode.style.position = 'relative';
+    input.parentNode.appendChild(dropdown);
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function closeDropdown(e) {
+        if (!input.parentNode.contains(e.target)) {
+            dropdown.remove();
+            document.removeEventListener('click', closeDropdown);
+        }
+    });
+}
+
+// Add fade out animation for cards
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
+}
+`;
+document.head.appendChild(style);
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-hide filters on mobile
+    if (window.innerWidth < 768) {
+        const filterBox = document.querySelector('.js-filter-search-box');
+        if (!filterBox.classList.contains('u-hidden')) {
+            toggleFilters();
+        }
+    }
+});
+</script>
+{% endblock %}

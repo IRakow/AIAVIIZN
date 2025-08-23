@@ -1,0 +1,1390 @@
+{% extends "base.html" %}
+
+{% block title %}Lease Renewals - AIVIIZN Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Lease Renewals</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="renewals-container">
+        <!-- Page Header with Actions -->
+        <div class="page-header">
+            <div class="header-left">
+                <h3 class="page-title">Lease Renewals</h3>
+                <p class="page-subtitle">Manage lease renewals and track expiration dates</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline-primary" onclick="exportRenewals()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn btn-primary" onclick="processSelectedRenewals()">
+                    <i class="fas fa-cog"></i> Process Selected
+                </button>
+                <button class="btn btn-success" onclick="createRenewalBatch()">
+                    <i class="fas fa-plus"></i> Create Renewal Batch
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Filter Panel -->
+        <div class="filter-panel">
+            <div class="filter-header">
+                <h5><i class="fas fa-filter"></i> Filter Options</h5>
+                <button class="btn-clear-filters" onclick="clearAllFilters()">Clear All</button>
+            </div>
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>From Date:</label>
+                    <input type="date" id="fromDate" value="2025-08-19" onchange="applyFilters()">
+                </div>
+                
+                <div class="filter-group">
+                    <label>To Date:</label>
+                    <input type="date" id="toDate" value="2025-11-17" onchange="applyFilters()">
+                </div>
+                
+                <div class="filter-group">
+                    <label>Property/Group:</label>
+                    <select id="propertyFilter" onchange="applyFilters()">
+                        <option value="all">All Properties</option>
+                        <option value="sunset-apts">Sunset Apartments</option>
+                        <option value="oak-grove">Oak Grove Complex</option>
+                        <option value="city-view">City View Towers</option>
+                        <option value="pine-ridge">Pine Ridge Manor</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Renewal Status:</label>
+                    <select id="statusFilter" onchange="applyFilters()" multiple>
+                        <option value="eligible" selected>Eligible</option>
+                        <option value="pending" selected>Pending</option>
+                        <option value="prepared-not-sent" selected>Prepared not Sent</option>
+                        <option value="sent">Sent</option>
+                        <option value="signed">Signed</option>
+                        <option value="declined">Declined</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Pending Statuses:</label>
+                    <select id="pendingFilter" onchange="applyFilters()">
+                        <option value="all">All</option>
+                        <option value="printed" selected>Printed</option>
+                        <option value="emailed">Emailed</option>
+                        <option value="signed">Signed</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Include MTM:</label>
+                    <input type="checkbox" id="includeMTM" checked onchange="applyFilters()">
+                    <span class="checkbox-label">Current Month-to-Month</span>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <button class="btn btn-outline-secondary" onclick="saveFilterSet()">
+                    <i class="fas fa-save"></i> Save Filter Set
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="results-summary">
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalCount">47</span>
+                    <span class="stat-label">Total Renewals</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number eligible" id="eligibleCount">23</span>
+                    <span class="stat-label">Eligible</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number pending" id="pendingCount">15</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number signed" id="signedCount">9</span>
+                    <span class="stat-label">Signed</span>
+                </div>
+            </div>
+            
+            <div class="view-options">
+                <label>Sort by:</label>
+                <select id="sortBy" onchange="applySorting()">
+                    <option value="expiration-asc" selected>Expiration (Earliest First)</option>
+                    <option value="expiration-desc">Expiration (Latest First)</option>
+                    <option value="tenant">Tenant Name</option>
+                    <option value="property">Property</option>
+                    <option value="rent-increase">Rent Increase %</option>
+                    <option value="status">Status</option>
+                </select>
+                
+                <label style="margin-left: 20px;">View:</label>
+                <select id="viewMode" onchange="changeViewMode()">
+                    <option value="standard" selected>Standard View</option>
+                    <option value="detailed">Detailed View</option>
+                    <option value="summary">Summary View</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <div class="table-header">
+                <div class="bulk-actions">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <label for="selectAll">Select All</label>
+                    <span class="selected-count" id="selectedCount">0 selected</span>
+                </div>
+                <div class="table-actions">
+                    <button class="btn-bulk" onclick="bulkSendRenewals()" disabled id="bulkSendBtn">
+                        <i class="fas fa-envelope"></i> Send Selected
+                    </button>
+                    <button class="btn-bulk" onclick="bulkPrintRenewals()" disabled id="bulkPrintBtn">
+                        <i class="fas fa-print"></i> Print Selected
+                    </button>
+                    <button class="btn-bulk" onclick="bulkUpdateStatus()" disabled id="bulkUpdateBtn">
+                        <i class="fas fa-edit"></i> Update Status
+                    </button>
+                </div>
+            </div>
+            
+            <table id="renewalsTable">
+                <thead>
+                    <tr>
+                        <th class="checkbox-col"></th>
+                        <th class="sortable" data-sort="tenant">
+                            Tenant <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="property">
+                            Property <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="unit">
+                            Unit <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="expiration">
+                            Lease Expiration <i class="fas fa-sort-up"></i>
+                        </th>
+                        <th class="sortable" data-sort="current-rent">
+                            Current Rent <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="proposed-rent">
+                            Proposed Rent <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="increase">
+                            Increase <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="status">
+                            Status <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="renewalsTableBody">
+                    <!-- Sample Data Rows -->
+                    <tr class="renewal-row" data-status="eligible">
+                        <td><input type="checkbox" class="row-checkbox" value="1"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Sarah Johnson</strong>
+                                <div class="tenant-details">sarah.johnson@email.com • (555) 123-4567</div>
+                            </div>
+                        </td>
+                        <td>Sunset Apartments</td>
+                        <td><span class="unit-number">A-205</span></td>
+                        <td>
+                            <div class="expiration-date">
+                                <strong>Oct 31, 2025</strong>
+                                <div class="days-until">74 days</div>
+                            </div>
+                        </td>
+                        <td><span class="rent-amount">$1,250</span></td>
+                        <td><span class="rent-amount proposed">$1,288</span></td>
+                        <td>
+                            <div class="rent-increase">
+                                <span class="increase-amount">+$38</span>
+                                <span class="increase-percent">(3.0%)</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-eligible">Eligible</span></td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewRenewal(1)" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-edit" onclick="editRenewal(1)" title="Edit Renewal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action btn-send" onclick="sendRenewal(1)" title="Send Notice">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleActionMenu(1)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="actionMenu1">
+                                        <a href="#" onclick="printRenewal(1)">Print Notice</a>
+                                        <a href="#" onclick="duplicateRenewal(1)">Duplicate</a>
+                                        <a href="#" onclick="deleteRenewal(1)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="renewal-row" data-status="pending">
+                        <td><input type="checkbox" class="row-checkbox" value="2"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Michael Chen</strong>
+                                <div class="tenant-details">m.chen@email.com • (555) 987-6543</div>
+                            </div>
+                        </td>
+                        <td>Oak Grove Complex</td>
+                        <td><span class="unit-number">B-12</span></td>
+                        <td>
+                            <div class="expiration-date">
+                                <strong>Sep 15, 2025</strong>
+                                <div class="days-until urgent">28 days</div>
+                            </div>
+                        </td>
+                        <td><span class="rent-amount">$1,450</span></td>
+                        <td><span class="rent-amount proposed">$1,494</span></td>
+                        <td>
+                            <div class="rent-increase">
+                                <span class="increase-amount">+$44</span>
+                                <span class="increase-percent">(3.0%)</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewRenewal(2)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-edit" onclick="editRenewal(2)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action btn-remind" onclick="sendReminder(2)" title="Send Reminder">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleActionMenu(2)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="actionMenu2">
+                                        <a href="#" onclick="markSigned(2)">Mark as Signed</a>
+                                        <a href="#" onclick="markDeclined(2)">Mark as Declined</a>
+                                        <a href="#" onclick="printRenewal(2)">Print Notice</a>
+                                        <a href="#" onclick="deleteRenewal(2)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="renewal-row" data-status="signed">
+                        <td><input type="checkbox" class="row-checkbox" value="3"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Emily Rodriguez</strong>
+                                <div class="tenant-details">emily.r@email.com • (555) 456-7890</div>
+                            </div>
+                        </td>
+                        <td>City View Towers</td>
+                        <td><span class="unit-number">15C</span></td>
+                        <td>
+                            <div class="expiration-date">
+                                <strong>Nov 30, 2025</strong>
+                                <div class="days-until">104 days</div>
+                            </div>
+                        </td>
+                        <td><span class="rent-amount">$1,800</span></td>
+                        <td><span class="rent-amount proposed">$1,854</span></td>
+                        <td>
+                            <div class="rent-increase">
+                                <span class="increase-amount">+$54</span>
+                                <span class="increase-percent">(3.0%)</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-signed">Signed</span></td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewRenewal(3)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-lease" onclick="generateLease(3)" title="Generate Lease">
+                                    <i class="fas fa-file-contract"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleActionMenu(3)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="actionMenu3">
+                                        <a href="#" onclick="viewSignedDocument(3)">View Signed Document</a>
+                                        <a href="#" onclick="generateLease(3)">Generate New Lease</a>
+                                        <a href="#" onclick="printRenewal(3)">Print</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="renewal-row" data-status="declined">
+                        <td><input type="checkbox" class="row-checkbox" value="4"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>David Thompson</strong>
+                                <div class="tenant-details">d.thompson@email.com • (555) 321-0987</div>
+                            </div>
+                        </td>
+                        <td>Pine Ridge Manor</td>
+                        <td><span class="unit-number">7A</span></td>
+                        <td>
+                            <div class="expiration-date">
+                                <strong>Oct 15, 2025</strong>
+                                <div class="days-until">58 days</div>
+                            </div>
+                        </td>
+                        <td><span class="rent-amount">$1,350</span></td>
+                        <td><span class="rent-amount proposed">$1,391</span></td>
+                        <td>
+                            <div class="rent-increase">
+                                <span class="increase-amount">+$41</span>
+                                <span class="increase-percent">(3.0%)</span>
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-declined">Declined</span></td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewRenewal(4)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-vacancy" onclick="createVacancy(4)" title="Create Vacancy">
+                                    <i class="fas fa-home"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleActionMenu(4)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="actionMenu4">
+                                        <a href="#" onclick="createVacancy(4)">Create Vacancy Listing</a>
+                                        <a href="#" onclick="scheduleUnitTurn(4)">Schedule Unit Turn</a>
+                                        <a href="#" onclick="printRenewal(4)">Print Notice</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing 1-4 of 47 results
+            </div>
+            <div class="pagination-controls">
+                <button class="btn-page" disabled><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page">...</button>
+                <button class="btn-page">12</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .renewals-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .header-left .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #212529;
+        margin: 0 0 5px 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .header-left .page-subtitle {
+        color: #6c757d;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #073763;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #1e7e34;
+    }
+
+    .btn-outline-primary {
+        background-color: transparent;
+        color: #0B5394;
+        border: 1px solid #0B5394;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    /* Filter Panel */
+    .filter-panel {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .filter-header h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .btn-clear-filters {
+        background: none;
+        border: none;
+        color: #0B5394;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+        background-color: white;
+    }
+
+    .filter-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .checkbox-label {
+        font-size: 13px;
+        color: #495057;
+        font-weight: normal;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Results Summary */
+    .results-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+
+    .summary-stats {
+        display: flex;
+        gap: 30px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 20px;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .stat-number.eligible { color: #28a745; }
+    .stat-number.pending { color: #ffc107; }
+    .stat-number.signed { color: #17a2b8; }
+
+    .stat-label {
+        display: block;
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .view-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+    }
+
+    .view-options label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .view-options select {
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    /* Data Table */
+    .data-table {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bulk-actions input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+
+    .bulk-actions label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .selected-count {
+        font-size: 12px;
+        color: #6c757d;
+        margin-left: 10px;
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-bulk:enabled:hover {
+        background-color: #5a6268;
+    }
+
+    .btn-bulk:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Table Styles */
+    #renewalsTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+    }
+
+    #renewalsTable th {
+        background-color: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+
+    #renewalsTable th.sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    #renewalsTable th.sortable:hover {
+        background-color: #e9ecef;
+    }
+
+    #renewalsTable th i {
+        float: right;
+        color: #adb5bd;
+        font-size: 10px;
+        margin-top: 2px;
+    }
+
+    #renewalsTable th.checkbox-col {
+        width: 40px;
+        text-align: center;
+    }
+
+    #renewalsTable td {
+        padding: 15px 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: top;
+    }
+
+    #renewalsTable tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Tenant Info */
+    .tenant-info strong {
+        display: block;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 2px;
+    }
+
+    .tenant-details {
+        font-size: 11px;
+        color: #6c757d;
+    }
+
+    /* Unit Number */
+    .unit-number {
+        background-color: #e9ecef;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    /* Expiration Date */
+    .expiration-date strong {
+        display: block;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .days-until {
+        font-size: 11px;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+
+    .days-until.urgent {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    /* Rent Amounts */
+    .rent-amount {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .rent-amount.proposed {
+        color: #28a745;
+    }
+
+    /* Rent Increase */
+    .rent-increase {
+        text-align: center;
+    }
+
+    .increase-amount {
+        display: block;
+        font-weight: 600;
+        color: #28a745;
+        font-size: 14px;
+    }
+
+    .increase-percent {
+        font-size: 11px;
+        color: #6c757d;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-eligible {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-signed {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-declined {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Action Buttons */
+    .actions-cell {
+        width: 120px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+        position: relative;
+    }
+
+    .btn-action {
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        transition: all 0.2s;
+    }
+
+    .btn-view {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-edit {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-send {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-remind {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-lease {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    .btn-vacancy {
+        background-color: #fd7e14;
+        color: white;
+    }
+
+    .btn-more {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+
+    .btn-action:hover {
+        transform: scale(1.1);
+    }
+
+    /* Action Dropdown */
+    .action-dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        min-width: 150px;
+        z-index: 1000;
+        display: none;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-menu a {
+        display: block;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #495057;
+        text-decoration: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f8f9fa;
+        color: #0B5394;
+    }
+
+    .dropdown-menu a:last-child {
+        border-bottom: none;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-page {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #dee2e6;
+        background: white;
+        color: #495057;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-page:hover:not(:disabled) {
+        background-color: #e9ecef;
+    }
+
+    .btn-page.active {
+        background-color: #0B5394;
+        color: white;
+        border-color: #0B5394;
+    }
+
+    .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+</style>
+
+<script>
+// Global variables
+let selectedRenewals = new Set();
+
+// Toggle select all functionality
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.row-checkbox');
+    const isChecked = selectAll.checked;
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        if (isChecked) {
+            selectedRenewals.add(checkbox.value);
+        } else {
+            selectedRenewals.delete(checkbox.value);
+        }
+    });
+    
+    updateSelectedCount();
+    updateBulkActionButtons();
+}
+
+// Update selected count display
+function updateSelectedCount() {
+    const countElement = document.getElementById('selectedCount');
+    countElement.textContent = `${selectedRenewals.size} selected`;
+}
+
+// Update bulk action button states
+function updateBulkActionButtons() {
+    const hasSelected = selectedRenewals.size > 0;
+    document.getElementById('bulkSendBtn').disabled = !hasSelected;
+    document.getElementById('bulkPrintBtn').disabled = !hasSelected;
+    document.getElementById('bulkUpdateBtn').disabled = !hasSelected;
+}
+
+// Handle individual checkbox changes
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('row-checkbox')) {
+        const value = e.target.value;
+        if (e.target.checked) {
+            selectedRenewals.add(value);
+        } else {
+            selectedRenewals.delete(value);
+        }
+        updateSelectedCount();
+        updateBulkActionButtons();
+        
+        // Update select all checkbox state
+        const allCheckboxes = document.querySelectorAll('.row-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+        const selectAll = document.getElementById('selectAll');
+        selectAll.checked = checkedCheckboxes.length === allCheckboxes.length;
+    }
+});
+
+// Filter Functions
+function applyFilters() {
+    const fromDate = document.getElementById('fromDate').value;
+    const toDate = document.getElementById('toDate').value;
+    const property = document.getElementById('propertyFilter').value;
+    const status = Array.from(document.getElementById('statusFilter').selectedOptions).map(o => o.value);
+    const pending = document.getElementById('pendingFilter').value;
+    const includeMTM = document.getElementById('includeMTM').checked;
+    
+    console.log('Applying filters:', {
+        fromDate, toDate, property, status, pending, includeMTM
+    });
+    
+    // In production, this would make an API call to filter data
+    showNotification('Filters applied successfully');
+}
+
+function clearAllFilters() {
+    document.getElementById('fromDate').value = '';
+    document.getElementById('toDate').value = '';
+    document.getElementById('propertyFilter').value = 'all';
+    document.getElementById('statusFilter').selectedIndex = -1;
+    document.getElementById('pendingFilter').value = 'all';
+    document.getElementById('includeMTM').checked = false;
+    applyFilters();
+}
+
+// Sorting Functions
+function applySorting() {
+    const sortBy = document.getElementById('sortBy').value;
+    console.log('Sorting by:', sortBy);
+    // In production, this would sort the table data
+    showNotification('Table sorted by ' + sortBy);
+}
+
+// View Mode Functions
+function changeViewMode() {
+    const viewMode = document.getElementById('viewMode').value;
+    console.log('Changing view mode to:', viewMode);
+    // In production, this would change the table layout
+    showNotification('View mode changed to ' + viewMode);
+}
+
+// Bulk Action Functions
+function bulkSendRenewals() {
+    if (selectedRenewals.size === 0) return;
+    
+    if (confirm(`Send renewal notices to ${selectedRenewals.size} tenant(s)?`)) {
+        console.log('Sending renewals to:', Array.from(selectedRenewals));
+        showNotification(`Renewal notices sent to ${selectedRenewals.size} tenant(s)`);
+    }
+}
+
+function bulkPrintRenewals() {
+    if (selectedRenewals.size === 0) return;
+    
+    console.log('Printing renewals for:', Array.from(selectedRenewals));
+    showNotification(`Printing ${selectedRenewals.size} renewal notice(s)`);
+}
+
+function bulkUpdateStatus() {
+    if (selectedRenewals.size === 0) return;
+    
+    const newStatus = prompt('Enter new status (eligible, pending, signed, declined):');
+    if (newStatus) {
+        console.log('Updating status to:', newStatus, 'for:', Array.from(selectedRenewals));
+        showNotification(`Status updated for ${selectedRenewals.size} renewal(s)`);
+    }
+}
+
+// Individual Action Functions
+function viewRenewal(id) {
+    console.log('Viewing renewal:', id);
+    window.location.href = `/renewals/view/${id}`;
+}
+
+function editRenewal(id) {
+    console.log('Editing renewal:', id);
+    window.location.href = `/renewals/edit/${id}`;
+}
+
+function sendRenewal(id) {
+    if (confirm('Send renewal notice to tenant?')) {
+        console.log('Sending renewal:', id);
+        showNotification('Renewal notice sent successfully');
+    }
+}
+
+function sendReminder(id) {
+    if (confirm('Send reminder to tenant?')) {
+        console.log('Sending reminder:', id);
+        showNotification('Reminder sent successfully');
+    }
+}
+
+function generateLease(id) {
+    if (confirm('Generate new lease for this renewal?')) {
+        console.log('Generating lease for renewal:', id);
+        window.location.href = `/leases/generate/${id}`;
+    }
+}
+
+function createVacancy(id) {
+    if (confirm('Create vacancy listing for this unit?')) {
+        console.log('Creating vacancy for renewal:', id);
+        window.location.href = `/vacancies/create/${id}`;
+    }
+}
+
+function printRenewal(id) {
+    console.log('Printing renewal:', id);
+    window.print();
+}
+
+function markSigned(id) {
+    if (confirm('Mark this renewal as signed?')) {
+        console.log('Marking signed:', id);
+        showNotification('Renewal marked as signed');
+        location.reload();
+    }
+}
+
+function markDeclined(id) {
+    if (confirm('Mark this renewal as declined?')) {
+        console.log('Marking declined:', id);
+        showNotification('Renewal marked as declined');
+        location.reload();
+    }
+}
+
+// Action Menu Functions
+function toggleActionMenu(id) {
+    // Close all other menus first
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu.id !== `actionMenu${id}`) {
+            menu.classList.remove('show');
+        }
+    });
+    
+    // Toggle current menu
+    const menu = document.getElementById(`actionMenu${id}`);
+    menu.classList.toggle('show');
+}
+
+// Close action menus when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Utility Functions
+function exportRenewals() {
+    console.log('Exporting renewals data');
+    showNotification('Export started - you will receive an email when complete');
+}
+
+function processSelectedRenewals() {
+    if (selectedRenewals.size === 0) {
+        alert('Please select renewals to process');
+        return;
+    }
+    
+    console.log('Processing selected renewals:', Array.from(selectedRenewals));
+    showNotification(`Processing ${selectedRenewals.size} renewal(s)`);
+}
+
+function createRenewalBatch() {
+    console.log('Creating new renewal batch');
+    window.location.href = '/renewals/batch/new';
+}
+
+function saveFilterSet() {
+    const name = prompt('Enter name for this filter set:');
+    if (name) {
+        console.log('Saving filter set:', name);
+        showNotification('Filter set saved successfully');
+    }
+}
+
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    updateSelectedCount();
+    updateBulkActionButtons();
+    
+    // Set up sortable headers
+    document.querySelectorAll('th.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const sortKey = this.dataset.sort;
+            console.log('Sorting by:', sortKey);
+            // Update sort icons and apply sorting
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block contextsidebar %}
+<h5><i class="fas fa-sync-alt"></i> Renewals</h5>
+<div class="menu-item starred-item">Tasks</div>
+<div class="menu-item">Create Renewal Batch</div>
+<div class="menu-item">Bulk Send Notices</div>
+<div class="menu-item">Rent Increase Wizard</div>
+<div class="menu-item">Import Renewal Data</div>
+
+<div class="task-section">
+    <div class="task-section-title">Templates</div>
+    <div class="menu-item">60-Day Notice</div>
+    <div class="menu-item">30-Day Notice</div>
+    <div class="menu-item">Renewal Offer Letter</div>
+    <div class="menu-item">Lease Addendum</div>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Reports</div>
+    <div class="menu-item">Renewal Summary</div>
+    <div class="menu-item">Expiring Leases</div>
+    <div class="menu-item">Rent Increase Analysis</div>
+    <div class="menu-item">Renewal Performance</div>
+</div>
+
+<div class="support-section">
+    <h5><i class="fas fa-question-circle"></i> Help Topics</h5>
+    <div class="menu-item">Renewal Process Guide</div>
+    <div class="menu-item">Rent Increase Laws</div>
+</div>
+{% endblock %}
+
+{% block taskssidebar %}
+<h5><i class="fas fa-tasks"></i> Renewal Actions</h5>
+
+<div class="task-item starred-item">Tasks</div>
+
+<div class="task-section">
+    <div class="task-section-title">Quick Actions</div>
+    <a href="#" onclick="createRenewalBatch()" class="task-item">Create Renewal Batch</a>
+    <a href="#" onclick="bulkSendRenewals()" class="task-item">Send Renewal Notices</a>
+    <a href="#" onclick="exportRenewals()" class="task-item">Export Renewals</a>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Templates</div>
+    <a href="#" class="task-item">60-Day Notice Template</a>
+    <a href="#" class="task-item">30-Day Notice Template</a>
+    <a href="#" class="task-item">Renewal Offer Letter</a>
+    <a href="#" class="task-item">Lease Amendment</a>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Reports</div>
+    <a href="{{ url_for('reports') }}" class="task-item">Renewal Summary Report</a>
+    <a href="{{ url_for('reports') }}" class="task-item">Expiring Leases Report</a>
+    <a href="{{ url_for('reports') }}" class="task-item">Rent Increase Analysis</a>
+</div>
+
+<div class="support-section">
+    <h5><i class="fas fa-life-ring"></i> Support</h5>
+    <div class="task-item">Renewal Process Guide</div>
+    <div class="task-item">Contact Support</div>
+</div>
+{% endblock %}

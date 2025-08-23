@@ -1,0 +1,958 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AIVIIZN - Property Management System{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Dashboard Extended CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-extended.css') }}">
+    
+    <!-- Page Specific Styles Block -->
+    {% block styles %}{% endblock %}
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-blue: #0B5394;
+            --dark-blue: #073763;
+            --light-blue: #4A90E2;
+            --sidebar-bg: #F8F9FA;
+            --sidebar-text: #495057;
+            --sidebar-hover: #E9ECEF;
+            --border-color: #DEE2E6;
+            --text-primary: #212529;
+            --text-secondary: #6C757D;
+            --success-green: #28A745;
+            --warning-yellow: #FFC107;
+            --danger-red: #DC3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 13px;
+            color: var(--text-primary);
+            background-color: #FFFFFF;
+        }
+        
+        /* Top Navigation Bar */
+        .top-navbar {
+            background-color: var(--primary-blue);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+        }
+        
+        .top-navbar .nav-tabs {
+            border: none;
+            margin-bottom: 0;
+            height: 40px;
+        }
+        
+        .top-navbar .nav-link {
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            background: transparent;
+            border-radius: 0;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .top-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .top-navbar .nav-link.active {
+            background-color: #FFFFFF;
+            color: var(--primary-blue);
+        }
+        
+        /* Main Layout Container */
+        .main-container {
+            display: flex;
+            margin-top: 40px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 180px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-brand {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .sidebar-brand h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .sidebar-item {
+            border-bottom: 1px solid #E9ECEF;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .sidebar-link .chevron-icon {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+            font-size: 10px;
+        }
+        
+        .sidebar-link.expanded .chevron-icon {
+            transform: rotate(180deg);
+        }
+        
+        .sidebar-link:hover {
+            background-color: var(--sidebar-hover);
+            color: var(--primary-blue);
+        }
+        
+        .sidebar-link.active {
+            background-color: #E3F2FD;
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+        
+        .sidebar-link i {
+            width: 20px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .sidebar-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            background-color: #FFFFFF;
+            transition: max-height 0.3s ease;
+        }
+        
+        .sidebar-dropdown.show {
+            max-height: 500px;
+        }
+        
+        .sidebar-dropdown .sidebar-link {
+            padding-left: 45px;
+            font-size: 12px;
+        }
+        
+        .sidebar-company {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .sidebar-minimize {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .sidebar-minimize button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        /* Content Area */
+        .content-wrapper {
+            margin-left: 180px;
+            margin-right: 380px; /* Space for both right sidebars */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #FFFFFF;
+        }
+        
+        .content-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #FFFFFF;
+        }
+        
+        .content-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #F8F9FA;
+        }
+        
+        /* Right Sidebars Container */
+        .right-sidebars-container {
+            display: flex;
+            position: fixed;
+            right: 0;
+            top: 40px;
+            height: calc(100vh - 40px);
+        }
+        
+        /* First Right Sidebar (Context Menu) */
+        .right-sidebar-context {
+            width: 180px;
+            background-color: #FFFFFF;
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        /* Second Right Sidebar (Tasks) */
+        .right-sidebar-tasks {
+            width: 200px;
+            background-color: #F8F9FA;
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .right-sidebar-context h5,
+        .right-sidebar-tasks h5 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .right-sidebar-context h5 i,
+        .right-sidebar-tasks h5 i {
+            margin-right: 8px;
+            color: var(--primary-blue);
+        }
+        
+        .right-sidebar-context .menu-item,
+        .right-sidebar-tasks .task-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .right-sidebar-context .menu-item:hover,
+        .right-sidebar-tasks .task-item:hover,
+        .right-sidebar-tasks a.task-item:hover {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .right-sidebar-tasks .task-section {
+            margin-top: 15px;
+        }
+        
+        .right-sidebar-tasks .task-section-title {
+            font-size: 11px;
+            color: #6C757D;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .right-sidebar-context .support-section,
+        .right-sidebar-tasks .support-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .starred-item::before {
+            content: "★";
+            color: #FFC107;
+            margin-right: 5px;
+        }
+        
+        .unstarred-item::before {
+            content: "☆";
+            color: #DEE2E6;
+            margin-right: 5px;
+        }
+        
+        /* Dashboard Button */
+        .dashboard-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 15px;
+        }
+        
+        .dashboard-btn:hover {
+            background-color: var(--dark-blue);
+        }
+        
+        .dashboard-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Tables */
+        .data-table {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .data-table table {
+            width: 100%;
+            font-size: 12px;
+        }
+        
+        .data-table th {
+            background-color: #F8F9FA;
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        
+        .data-table tr:hover {
+            background-color: #F8F9FA;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+        }
+        
+        /* Search Box */
+        .search-container {
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .search-container p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        /* Status Badges */
+        .badge-current {
+            background-color: var(--success-green);
+        }
+        
+        .badge-past {
+            background-color: var(--text-secondary);
+        }
+        
+        .badge-new {
+            background-color: var(--danger-red);
+        }
+        
+        /* Notification Count */
+        .notification-count {
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+        
+        /* What's New Badge */
+        .whats-new-badge {
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            position: absolute;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <ul class="nav nav-tabs">
+            {% set current_section = request.endpoint.split('.')[0] if '.' in request.endpoint else request.endpoint %}
+            <li class="nav-item">
+                <a class="nav-link {% if current_section in ['dashboard', 'inbox', 'calendar', 'online_payments'] %}active{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_section in ['tenants', 'owners', 'vendors'] %}active{% endif %}" href="{{ url_for('tenants') }}">People</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_section == 'properties' %}active{% endif %}" href="{{ url_for('properties') }}">Properties</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'leasing' in current_section %}active{% endif %}" href="{{ url_for('vacancies') }}">Leasing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'maintenance' in current_section or 'work' in current_section %}active{% endif %}" href="{{ url_for('work_orders') }}">Maintenance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'accounting' in current_section %}active{% endif %}" href="{{ url_for('receivables') }}">Accounting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'reporting' in current_section %}active{% endif %}" href="{{ url_for('reports') }}">Reporting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'communication' in current_section %}active{% endif %}" href="{{ url_for('letters') }}">Communication</a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <div class="sidebar-brand">
+                <h1>AIVIIZN</h1>
+            </div>
+            
+            <button class="dashboard-btn" onclick="location.href='{{ url_for('dashboard') }}'">
+                <i class="fas fa-th-large"></i> Dashboard
+            </button>
+            
+            <nav class="sidebar-menu">
+                {% block sidebar %}
+                <!-- Default sidebar items -->
+                <div class="sidebar-item">
+                    <a href="{{ url_for('calendar') }}" class="sidebar-link">
+                        <i class="far fa-calendar"></i> Calendar
+                    </a>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('leasing-menu', this, event)">
+                        <i class="fas fa-key"></i> Leasing
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="leasing-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('vacancies') }}" class="sidebar-link">Vacancies</a>
+                        <a href="{{ url_for('guest_cards') }}" class="sidebar-link">Guest Cards</a>
+                        <a href="{{ url_for('rental_applications') }}" class="sidebar-link">Rental Applications</a>
+                        <a href="{{ url_for('lease_documents') }}" class="sidebar-link">Leases</a>
+                        <a href="{{ url_for('renewals') }}" class="sidebar-link">Renewals</a>
+                        <a href="{{ url_for('leasing_metrics') }}" class="sidebar-link">Metrics</a>
+                        <a href="{{ url_for('signals') }}" class="sidebar-link">Signals</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="{{ url_for('properties') }}" class="sidebar-link">
+                        <i class="fas fa-building"></i> Properties
+                    </a>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('people-menu', this, event)">
+                        <i class="fas fa-users"></i> People
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="people-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('tenants') }}" class="sidebar-link">Tenants</a>
+                        <a href="{{ url_for('owners') }}" class="sidebar-link">Owners</a>
+                        <a href="{{ url_for('vendors') }}" class="sidebar-link">Vendors</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('accounting-menu', this, event)">
+                        <i class="fas fa-calculator"></i> Accounting
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="accounting-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('receivables') }}" class="sidebar-link">Receivables</a>
+                        <a href="{{ url_for('payables') }}" class="sidebar-link">Payables</a>
+                        <a href="{{ url_for('bank_accounts') }}" class="sidebar-link">Bank Accounts</a>
+                        <a href="{{ url_for('journal_entries') }}" class="sidebar-link">Journal Entries</a>
+                        <a href="{{ url_for('bank_transfers') }}" class="sidebar-link">Bank Transfers</a>
+                        <a href="{{ url_for('gl_accounts') }}" class="sidebar-link">GL Accounts</a>
+                        <a href="{{ url_for('diagnostics') }}" class="sidebar-link">Diagnostics</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('maintenance-menu', this, event)">
+                        <i class="fas fa-wrench"></i> Maintenance
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="maintenance-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('work_orders') }}" class="sidebar-link">Work Orders</a>
+                        <a href="{{ url_for('recurring_work_orders') }}" class="sidebar-link">Recurring Work Orders</a>
+                        <a href="{{ url_for('inspections') }}" class="sidebar-link">Inspections</a>
+                        <a href="{{ url_for('unit_turns') }}" class="sidebar-link">Unit Turns</a>
+                        <a href="{{ url_for('projects') }}" class="sidebar-link">Projects</a>
+                        <a href="{{ url_for('purchase_orders') }}" class="sidebar-link">Purchase Orders</a>
+                        <a href="{{ url_for('inventory') }}" class="sidebar-link">Inventory</a>
+                        <a href="{{ url_for('fixed_assets') }}" class="sidebar-link">Fixed Assets</a>
+                        <a href="{{ url_for('smart_maintenance') }}" class="sidebar-link">Smart Maintenance</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('reporting-menu', this, event)">
+                        <i class="fas fa-chart-bar"></i> Reporting
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="reporting-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('reports') }}" class="sidebar-link">Reports</a>
+                        <a href="{{ url_for('scheduled_reports') }}" class="sidebar-link">Scheduled Reports</a>
+                        <a href="{{ url_for('reporting_metrics') }}" class="sidebar-link">Metrics</a>
+                        <a href="{{ url_for('surveys') }}" class="sidebar-link">Surveys</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="toggleDropdown('communication-menu', this, event)">
+                        <i class="fas fa-envelope"></i> Communication
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </a>
+                    <div id="communication-menu" class="sidebar-dropdown">
+                        <a href="{{ url_for('letters') }}" class="sidebar-link">Letters</a>
+                        <a href="{{ url_for('forms') }}" class="sidebar-link">Forms</a>
+                        <a href="{{ url_for('inbox') }}" class="sidebar-link">Inbox</a>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <a href="{{ url_for('whats_new') }}" class="sidebar-link">
+                        <i class="fas fa-star"></i> What's New
+                        <span class="whats-new-badge">4</span>
+                    </a>
+                </div>
+                {% endblock %}
+            </nav>
+            
+            <div class="sidebar-minimize">
+                <button onclick="toggleSidebar()">
+                    <i class="fas fa-angle-double-left"></i> Minimize
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Content Wrapper -->
+        <main class="content-wrapper">
+            {% block content %}{% endblock %}
+        </main>
+        
+        <!-- Right Sidebars Container -->
+        <div class="right-sidebars-container">
+            <!-- First Right Sidebar - Context Menu -->
+            <aside class="right-sidebar-context">
+                {% block contextsidebar %}
+                <!-- Context-specific menu items based on current page -->
+                {% if request.endpoint == 'tenants' %}
+                    <h5><i class="fas fa-user-friends"></i> Tenants</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Move In Tenant</div>
+                    <div class="menu-item">New Owner</div>
+                    <div class="menu-item">New Vendor</div>
+                    <div class="menu-item">Email All Tenants</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Rent Roll</div>
+                        <div class="menu-item">Tenant Ledger</div>
+                        <div class="menu-item">Tenant Insurance Coverage</div>
+                    </div>
+                {% elif request.endpoint == 'properties' %}
+                    <h5><i class="fas fa-building"></i> Properties</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">New Property</div>
+                    <div class="menu-item">New Property Group</div>
+                    <div class="menu-item">Manage Lockboxes</div>
+                    <div class="menu-item">New Association</div>
+                    <div class="menu-item">Bulk Update Vacancy Posting Contact Info</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Property Directory</div>
+                        <div class="menu-item">Unit Directory</div>
+                        <div class="menu-item">Rent Roll</div>
+                        <div class="menu-item">Unit Vacancy Detail</div>
+                        <div class="menu-item">General Ledger</div>
+                    </div>
+                {% elif 'leasing' in request.endpoint %}
+                    <h5><i class="fas fa-key"></i> Leasing</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Create Vacancies List</div>
+                    <div class="menu-item">New Rental Application</div>
+                    <div class="menu-item">New Guest Card</div>
+                    <div class="menu-item">Lease Templates</div>
+                    <div class="menu-item">Bulk Update Vacancy Posting Contact Info</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Unit Vacancy Detail</div>
+                        <div class="menu-item">Rental Applications</div>
+                        <div class="menu-item">Guest Card Interests</div>
+                        <div class="menu-item">Owner Leasing</div>
+                        <div class="menu-item">Premium Listing Billing Detail</div>
+                        <div class="menu-item">Leasing Agent Performance</div>
+                        <div class="menu-item">Leasing Funnel Performance</div>
+                    </div>
+                {% elif 'accounting' in request.endpoint %}
+                    <h5><i class="fas fa-calculator"></i> Accounting</h5>
+                    <div class="menu-item starred-item">Tasks</div>
+                    <div class="menu-item">Tenant Receipt</div>
+                    <div class="menu-item">Owner Receipt</div>
+                    <div class="menu-item">Other Receipt</div>
+                    <div class="menu-item">Subsidy Receipts</div>
+                    <div class="menu-item">Application Fee</div>
+                    <div class="menu-item">Tenant Charge</div>
+                    <div class="menu-item">Tenant Credit</div>
+                    <div class="menu-item">Pay Bills</div>
+                    <div class="menu-item">Pay Management Fees</div>
+                    <div class="menu-item">Pay Owners</div>
+                    <div class="menu-item">Owner Draw</div>
+                    <div class="menu-item">Tenant Payable</div>
+                    <div class="menu-item">Transfer Owner Funds</div>
+                    <div class="menu-item">Transfer Funds Between Cash Accounts</div>
+                    <div class="menu-item">New Recurring Bill</div>
+                    <div class="menu-item">Manually Post Bills</div>
+                    <div class="menu-item">Sign Up for Online Payables</div>
+                    <div class="menu-item">Upload Bulk Bills</div>
+                    
+                    <div class="task-section">
+                        <div class="task-section-title">Reports</div>
+                        <div class="menu-item">Aged Payables Summary</div>
+                        <div class="menu-item">Check Register</div>
+                        <div class="menu-item">Bill Detail</div>
+                        <div class="menu-item">Vendor Ledger</div>
+                    </div>
+                {% else %}
+                    <!-- Default context menu -->
+                    <h5><i class="fas fa-th"></i> Quick Actions</h5>
+                    <div class="menu-item">New Property</div>
+                    <div class="menu-item">New Tenant</div>
+                    <div class="menu-item">New Work Order</div>
+                    <div class="menu-item">Enter Bill</div>
+                {% endif %}
+                
+                <div class="support-section">
+                    <h5><i class="fas fa-question-circle"></i> Help Topics</h5>
+                    <div class="menu-item">Getting Started</div>
+                    <div class="menu-item">Video Tutorials</div>
+                </div>
+                {% endblock %}
+            </aside>
+            
+            <!-- Second Right Sidebar - Tasks -->
+            <aside class="right-sidebar-tasks">
+                {% block taskssidebar %}
+                <h5><i class="fas fa-tasks"></i> Tasks</h5>
+                
+                <div class="task-item starred-item">Tasks</div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Calendar</div>
+                    <a href="{{ url_for('calendar') }}" class="task-item">View Calendar</a>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Property</div>
+                    <a href="{{ url_for('properties') }}" class="task-item">New Property</a>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">People</div>
+                    <a href="{{ url_for('tenants') }}" class="task-item">Move In Tenant</a>
+                    <a href="{{ url_for('receivables') }}" class="task-item">Tenant Receipt</a>
+                    <a href="{{ url_for('receivables') }}" class="task-item">Homeowner Receipt</a>
+                    <a href="{{ url_for('payables') }}" class="task-item">Enter Bill</a>
+                    <a href="{{ url_for('owners') }}" class="task-item">New Owner</a>
+                    <a href="{{ url_for('vendors') }}" class="task-item">New Vendor</a>
+                    <a href="{{ url_for('leases') }}" class="task-item">Rent Increase</a>
+                    <a href="{{ url_for('payables') }}" class="task-item">Enter Utility Bill (RUBS)</a>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Reports</div>
+                    <a href="{{ url_for('reports') }}" class="task-item">Delinquency</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Tenant Ledger</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Income Statement</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Unit Vacancy Detail</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Rent Roll</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Cash Flow</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Lease Expiration Detail By Month</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Balance Sheet</a>
+                    <a href="{{ url_for('reports') }}" class="task-item">Business Metrics</a>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Letters</div>
+                    <a href="{{ url_for('letters') }}" class="task-item">3-Day Notices</a>
+                    <div class="task-item">Tenant Unpaid Charges</div>
+                    <div class="task-item">Owner Portal Activation</div>
+                </div>
+                
+                <div class="task-section">
+                    <div class="task-section-title">Account</div>
+                    <a href="{{ url_for('properties') }}" class="task-item">Property Groups</a>
+                    <a href="{{ url_for('dashboard') }}" class="task-item">New User</a>
+                </div>
+                
+                <div class="support-section">
+                    <h5><i class="fas fa-life-ring"></i> Support</h5>
+                    <div class="task-item">Contact Support</div>
+                    <div class="task-item">Knowledge Base</div>
+                </div>
+                {% endblock %}
+            </aside>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Toggle dropdown menu with arrow rotation
+        function toggleDropdown(menuId, linkElement, event) {
+            const dropdown = document.getElementById(menuId);
+            const isOpen = dropdown.classList.contains('show');
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.sidebar-dropdown').forEach(function(el) {
+                if (el.id !== menuId) {
+                    el.classList.remove('show');
+                }
+            });
+            
+            // Remove expanded class from all sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                if (link !== linkElement) {
+                    link.classList.remove('expanded');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('show');
+            linkElement.classList.toggle('expanded');
+            
+            // Prevent default link behavior
+            event.preventDefault();
+            return false;
+        }
+        
+        // Minimize/Expand sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.left-sidebar');
+            const content = document.querySelector('.content-wrapper');
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            const sidebarBrand = document.querySelector('.sidebar-brand h1');
+            const dashboardBtn = document.querySelector('.dashboard-btn');
+            const minimizeBtn = document.querySelector('.sidebar-minimize button');
+            
+            if (sidebar.classList.contains('minimized')) {
+                // Expand sidebar
+                sidebar.classList.remove('minimized');
+                sidebar.style.width = '180px';
+                content.style.marginLeft = '180px';
+                sidebarBrand.style.display = 'block';
+                dashboardBtn.innerHTML = '<i class="fas fa-th-large"></i> Dashboard';
+                minimizeBtn.innerHTML = '<i class="fas fa-angle-double-left"></i> Minimize';
+                
+                // Show text in sidebar links
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.querySelectorAll('span').forEach(function(span) {
+                        span.style.display = 'inline';
+                    });
+                });
+            } else {
+                // Minimize sidebar
+                sidebar.classList.add('minimized');
+                sidebar.style.width = '60px';
+                content.style.marginLeft = '60px';
+                sidebarBrand.style.display = 'none';
+                dashboardBtn.innerHTML = '<i class="fas fa-th-large"></i>';
+                minimizeBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+                
+                // Hide text in sidebar links, keep only icons
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.querySelectorAll('span').forEach(function(span) {
+                        span.style.display = 'none';
+                    });
+                });
+                
+                // Close all dropdowns when minimizing
+                document.querySelectorAll('.sidebar-dropdown').forEach(function(dropdown) {
+                    dropdown.classList.remove('show');
+                });
+                document.querySelectorAll('.sidebar-link').forEach(function(link) {
+                    link.classList.remove('expanded');
+                });
+            }
+        }
+        
+        // Initialize on page load - check current page and expand appropriate menu
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            console.log('AIVIIZN: Current path detected:', currentPath);
+            
+            // Auto-expand the relevant menu based on current page
+            if (currentPath.includes('/leasing/') || 
+                currentPath.includes('/vacancies') || currentPath.includes('/guest-cards') || 
+                currentPath.includes('/rental-applications') || currentPath.includes('/leases') ||
+                currentPath.includes('/renewals') || currentPath.includes('/metrics') || 
+                currentPath.includes('/signals')) {
+                const leasingMenu = document.getElementById('leasing-menu');
+                if (leasingMenu) {
+                    const leasingLink = leasingMenu.previousElementSibling;
+                    leasingMenu.classList.add('show');
+                    if (leasingLink) leasingLink.classList.add('expanded');
+                }
+            }
+            
+            if (currentPath.includes('/tenants') || currentPath.includes('/owners') || 
+                currentPath.includes('/vendors') || currentPath.includes('/people/')) {
+                const peopleMenu = document.getElementById('people-menu');
+                const peopleLink = peopleMenu.previousElementSibling;
+                peopleMenu.classList.add('show');
+                peopleLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/accounting/receivables') || currentPath.includes('/accounting/payables') || 
+                currentPath.includes('/accounting/bank-accounts') || currentPath.includes('/accounting/journal-entries') ||
+                currentPath.includes('/accounting/bank-transfers') || currentPath.includes('/accounting/gl-accounts') ||
+                currentPath.includes('/accounting/diagnostics')) {
+                const accountingMenu = document.getElementById('accounting-menu');
+                const accountingLink = accountingMenu.previousElementSibling;
+                accountingMenu.classList.add('show');
+                accountingLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/maintenance/work-orders') || currentPath.includes('/maintenance/recurring-work-orders') ||
+                currentPath.includes('/maintenance/inspections') || currentPath.includes('/maintenance/unit-turns') ||
+                currentPath.includes('/maintenance/projects') || currentPath.includes('/maintenance/purchase-orders') ||
+                currentPath.includes('/maintenance/inventory') || currentPath.includes('/maintenance/fixed-assets') ||
+                currentPath.includes('/maintenance/smart-maintenance')) {
+                const maintenanceMenu = document.getElementById('maintenance-menu');
+                if (maintenanceMenu) {
+                    const maintenanceLink = maintenanceMenu.previousElementSibling;
+                    maintenanceMenu.classList.add('show');
+                    if (maintenanceLink) maintenanceLink.classList.add('expanded');
+                    console.log('AIVIIZN: Maintenance menu expanded for path:', currentPath);
+                }
+            }
+            
+            if (currentPath.includes('/reporting/reports') || currentPath.includes('/reporting/scheduled-reports') ||
+                currentPath.includes('/reporting/metrics') || currentPath.includes('/reporting/surveys')) {
+                const reportingMenu = document.getElementById('reporting-menu');
+                const reportingLink = reportingMenu.previousElementSibling;
+                reportingMenu.classList.add('show');
+                reportingLink.classList.add('expanded');
+            }
+            
+            if (currentPath.includes('/communication/letters') || currentPath.includes('/communication/forms') || 
+                currentPath.includes('/inbox')) {
+                const communicationMenu = document.getElementById('communication-menu');
+                const communicationLink = communicationMenu.previousElementSibling;
+                communicationMenu.classList.add('show');
+                communicationLink.classList.add('expanded');
+            }
+            
+            // Highlight active menu item
+            document.querySelectorAll('.sidebar-dropdown .sidebar-link').forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    <!-- Supabase Configuration -->
+    <script src="{{ url_for('static', filename='js/supabase-config.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

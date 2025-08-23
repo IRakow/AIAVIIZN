@@ -94,11 +94,18 @@ templates = {
     'accounting/diagnostics.html': BASE_TEMPLATE.replace('{{ title }}', 'Financial Diagnostics'),
     'accounting/receipts.html': BASE_TEMPLATE.replace('{{ title }}', 'Receipts'),
     
-    # Reporting section
-    'reporting/reports.html': BASE_TEMPLATE.replace('{{ title }}', 'Reports'),
-    'reporting/scheduled_reports.html': BASE_TEMPLATE.replace('{{ title }}', 'Scheduled Reports'),
-    'reporting/metrics.html': BASE_TEMPLATE.replace('{{ title }}', 'Metrics'),
-    'reporting/surveys.html': BASE_TEMPLATE.replace('{{ title }}', 'Surveys'),
+    # Reports section (matches routes)
+    'reports/rent_roll.html': BASE_TEMPLATE.replace('{{ title }}', 'Rent Roll'),
+    'reports/delinquency_report.html': BASE_TEMPLATE.replace('{{ title }}', 'Delinquency Report'),
+    'reports/income_statement.html': BASE_TEMPLATE.replace('{{ title }}', 'Income Statement'),
+    'reports/metrics.html': BASE_TEMPLATE.replace('{{ title }}', 'Metrics'),
+    'reports/reports.html': BASE_TEMPLATE.replace('{{ title }}', 'Reports'),
+    
+    # Vacancies section (matches routes)
+    'vacancies/vacancies.html': BASE_TEMPLATE.replace('{{ title }}', 'Vacancies'),
+    
+    # Properties section (matches routes)  
+    'properties/property_dashboard.html': BASE_TEMPLATE.replace('{{ title }}', 'Property Dashboard'),
     
     # Communication section
     'communication/letters.html': BASE_TEMPLATE.replace('{{ title }}', 'Letter Templates'),

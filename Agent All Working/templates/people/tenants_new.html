@@ -1,0 +1,114 @@
+<!-- templates/people/tenants_new.html -->
+{% extends "base.html" %}
+
+{% block title %}Tenants - AIVIIZN Property Management{% endblock %}
+
+{% block content %}
+<!-- Content Header with Tabs -->
+<div class="content-header" style="background: white; border-bottom: 1px solid #dee2e6;">
+    <ul class="nav nav-tabs" style="margin-bottom: -1px;">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('tenants') }}" style="color: #0B5394; border-bottom: 2px solid #0B5394; background: white;">Tenants</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('owners') }}" style="color: #6c757d;">Owners</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vendors') }}" style="color: #6c757d;">Vendors</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Content Body -->
+<div class="content-body" style="background: #f8f9fa; padding: 20px;">
+    <!-- Page Title -->
+    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">Tenants</h2>
+    
+    <!-- Alphabet Filter -->
+    <div style="background: white; padding: 10px 15px; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+        {% set alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'] %}
+        {% for letter in alphabet %}
+            <a href="?filter={{ letter }}" 
+               class="alphabet-link {% if request.args.get('filter') == letter %}active{% endif %}"
+               style="padding: 5px 8px; margin: 0 2px; text-decoration: none; color: #0B5394; font-weight: 500;">
+                {{ letter }}
+            </a>
+        {% endfor %}
+        <a href="{{ url_for('tenants') }}" 
+           class="alphabet-link {% if not request.args.get('filter') %}active{% endif %}"
+           style="padding: 5px 8px; margin: 0 2px; text-decoration: none; color: {% if not request.args.get('filter') %}#fff{% else %}#0B5394{% endif %}; background: {% if not request.args.get('filter') %}#0B5394{% else %}transparent{% endif %}; border-radius: 3px; font-weight: 600;">
+            All
+        </a>
+    </div>
+    
+    <!-- Data Table -->
+    <div class="data-table">
+        <table class="table table-hover" style="background: white;">
+            <thead>
+                <tr style="background: #f8f9fa;">
+                    <th style="font-size: 11px; text-transform: uppercase; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6;">
+                        Name 
+                        <a href="?sort=name&dir={% if request.args.get('sort') == 'name' and request.args.get('dir') != 'desc' %}desc{% else %}asc{% endif %}" 
+                           style="color: #6c757d; text-decoration: none; margin-left: 5px;">▲</a>
+                    </th>
+                    <th style="font-size: 11px; text-transform: uppercase; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6;">
+                        Status 
+                        <a href="?sort=status&dir={% if request.args.get('sort') == 'status' and request.args.get('dir') != 'desc' %}desc{% else %}asc{% endif %}" 
+                           style="color: #6c757d; text-decoration: none; margin-left: 5px;">▲</a>
+                    </th>
+                    <th style="font-size: 11px; text-transform: uppercase; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6;">Property</th>
+                    <th style="font-size: 11px; text-transform: uppercase; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6;">Unit</th>
+                    <th style="font-size: 11px; text-transform: uppercase; font-weight: 600; padding: 12px; border-bottom: 2px solid #dee2e6;">Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if tenants %}
+                    {% for tenant in tenants %}
+                    <tr style="cursor: pointer;" onclick="window.location.href='/tenants/{{ tenant.id }}'">
+                        <td style="padding: 12px; color: #0B5394; font-weight: 500;">
+                            {{ tenant.last_name }}, {{ tenant.first_name }}
+                        </td>
+                        <td style="padding: 12px;">
+                            <span class="badge {% if tenant.status == 'Current' %}badge-success{% elif tenant.status == 'Past' %}badge-secondary{% else %}badge-warning{% endif %}" 
+                                  style="padding: 4px 8px; font-size: 11px;">
+                                {{ tenant.status }}
+                            </span>
+                        </td>
+                        <td style="padding: 12px; font-size: 13px;">
+                            {{ tenant.property_name or '-' }}
+                        </td>
+                        <td style="padding: 12px; font-size: 13px;">
+                            {{ tenant.unit_number or '-' }}
+                        </td>
+                        <td style="padding: 12px; font-size: 13px;">
+                            {{ tenant.phone or '-' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                            No tenants found. <a href="{{ url_for('tenants') }}?action=new" style="color: #0B5394;">Add your first tenant</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 13px; color: #6c757d;">
+            Displaying: {{ start_index }}-{{ end_index }} of {{ total_count }}
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm">
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ current_page - 1 }}{{ '&filter=' + request.args.get('filter') if request.args.get('filter') else '' }}">‹‹</a>
+                </li>
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ current_page - 1 }}{{ '&filter=' + request.args.get('filter') if request.args.get('filter') else '' }}">‹</a>
+                </li>
+                
+                {% for page in range(1, total_pages +

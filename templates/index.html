@@ -1,0 +1,1232 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AppFolio Property Manager{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --aiviizn-primary: #2c3e50;
+        --aiviizn-secondary: #3498db;
+        --aiviizn-accent: #e74c3c;
+        --aiviizn-success: #27ae60;
+        --aiviizn-warning: #f39c12;
+        --aiviizn-light: #ecf0f1;
+        --aiviizn-dark: #34495e;
+        --aiviizn-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --aiviizn-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        --aiviizn-shadow-hover: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .dashboard-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .dashboard-header {
+        background: var(--aiviizn-gradient);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: var(--aiviizn-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .dashboard-header__title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .dashboard-header__actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .form-select, .btn {
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--aiviizn-secondary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: var(--aiviizn-shadow);
+    }
+
+    .btn-secondary {
+        background: var(--aiviizn-light);
+        color: var(--aiviizn-dark);
+        border: 1px solid #bdc3c7;
+    }
+
+    .btn-secondary:hover {
+        background: #d5dbdb;
+        transform: translateY(-2px);
+    }
+
+    .btn-link {
+        color: var(--aiviizn-secondary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-link:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    .dashboard-widget {
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--aiviizn-shadow);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .dashboard-widget:hover {
+        box-shadow: var(--aiviizn-shadow-hover);
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background: var(--aiviizn-gradient);
+        color: white;
+        border: none;
+        padding: 1.5rem;
+        position: relative;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alert-info {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .alert--with-icon::before {
+        content: '💡';
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+
+    .feature-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--aiviizn-shadow);
+    }
+
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .table {
+        margin: 0;
+        background: white;
+    }
+
+    .table thead th {
+        background: var(--aiviizn-primary);
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .table thead th:hover {
+        background: var(--aiviizn-dark);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background: #f8f9fa;
+        transform: scale(1.01);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        border-color: #ecf0f1;
+        vertical-align: middle;
+    }
+
+    .ai-enhanced-field {
+        position: relative;
+        border: 2px solid transparent;
+        background: linear-gradient(white, white) padding-box,
+                   linear-gradient(45deg, #667eea, #764ba2) border-box;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .ai-enhanced-field::after {
+        content: '🤖 AI';
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--aiviizn-gradient);
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .search-filters {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: var(--aiviizn-shadow);
+        margin-bottom: 2rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .Select-control {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .Select-control:hover {
+        border-color: var(--aiviizn-secondary);
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--aiviizn-secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .text-danger {
+        color: var(--aiviizn-accent) !important;
+    }
+
+    .text-success {
+        color: var(--aiviizn-success) !important;
+    }
+
+    .text-warning {
+        color: var(--aiviizn-warning) !important;
+    }
+
+    .customize-columns-button {
+        background: var(--aiviizn-secondary);
+        color: white;
+        border: none;
+    }
+
+    .customize-columns-button:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--aiviizn-secondary);
+        border-color: var(--aiviizn-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header__actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            flex-direction: column;
+        }
+        
+        .dashboard-header__title {
+            font-size: 2rem;
+        }
+    }
+
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .widget-enter {
+        animation: widgetEnter 0.5s ease;
+    }
+
+    @keyframes widgetEnter {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div id="content" class="content-wrapper">
+        <main class="main-container mx-auto px-3 w-100">
+            <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+                
+                <div id="site-subtabs" class="full-screen-hide"></div>
+                
+                <div id="flash_messages"></div>
+
+                <div id="customizable-dashboard" class="js-customizable-dashboard fade-in">
+                    <header class="js-dashboard-header dashboard-header page-title">
+                        <h1 class="dashboard-header__title">Dashboard<span class="dashboard-header__status-flag"></span></h1>
+                        <div class="dashboard-header__actions">
+                            <div class="dashboard-header__view-actions">
+                                <label for="property_list" class="text-white-50 me-2">View By</label>
+                                <select name="property_list" id="property_list" class="js-no-autofocus js-dashboard-view-by-select d-inline form-select ai-enhanced-field" 
+                                        data-update-url="{{ url_for('dashboard.update_page') }}" style="width: 200px">
+                                    <option selected="selected" value="">All Properties</option>
+                                    <option value="35">Bill Gluek Properties</option>
+                                    <option value="27">Blue Valley Apts</option>
+                                    <option value="47">BRANCATO</option>
+                                    <option value="38">Brandmeyer Props</option>
+                                    <option value="25">Brentwood Apts</option>
+                                    <option value="2">BRM</option>
+                                    <option value="49">Chris M</option>
+                                    <option value="23">Gary Stache</option>
+                                    <option value="41">Gene Fields Apartments</option>
+                                    <option value="50">Grandview 17</option>
+                                    <option value="44">Greg Sweat</option>
+                                    <option value="42">JOMAR Props</option>
+                                    <option value="46">Kaanapali</option>
+                                    <option value="43">Manheim</option>
+                                    <option value="17">Marcin's Properties</option>
+                                    <option value="37">Michael Sullivan Flats</option>
+                                    <option value="6">MIDTOWN</option>
+                                    <option value="31">Mur Len</option>
+                                    <option value="32">Quail Creek Apts</option>
+                                    <option value="40">Randall Court</option>
+                                    <option value="33">Rock Ridge Ranch Apts</option>
+                                    <option value="48">Ron's Properties</option>
+                                    <option value="45">RRR Jonathan Barr</option>
+                                    <option value="52">Stanion Properties</option>
+                                    <option value="39">STB</option>
+                                    <option value="30">Terry Moran</option>
+                                    <option value="51">Walnut Ridge</option>
+                                    <option value="34">Westheights-KC LL / Mik Kaminsk</option>
+                                </select>
+                                <button class="js-customize-dashboard js-no-autofocus btn btn-outline-light ms-3">
+                                    <i class="fa-solid fa-gear me-2"></i>Customize
+                                </button>
+                            </div>
+                            <div class="dashboard-header__edit-actions" style="display: none;">
+                                <button class="js-save-customization js-no-autofocus btn btn-success me-2" data-disable-with="Please wait...">
+                                    <i class="fa-solid fa-save me-2"></i>Save
+                                </button>
+                                <button class="js-cancel-customization js-no-autofocus btn btn-secondary">
+                                    <i class="fa-solid fa-times me-2"></i>Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <script id="dashboard_json" type="application/json">
+                        {"promptEnableSda":false,"companyName":"Celtic Property Management","screeningsTermsOfServiceSignatureId":null}
+                    </script>
+
+                    <div id="dashboard_root"></div>
+
+                    <!-- Financial Health Alert -->
+                    <div class="js-accounting-health-alert js-hideable-alert alert alert-info alert--with-icon fade-in" style="animation-delay: 0.2s;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Financial Health Check</strong><br>
+                                Have you checked your Financial Diagnostics Page recently?
+                                <a class="js-accounting-health-alert-hide js-alert-hide text-white fw-bold" 
+                                   data-alert-type="accounting_health" href="{{ url_for('accounting.financial_diagnostics') }}">
+                                    Click here
+                                </a> to check up on your Financial Health.
+                            </div>
+                            <div class="btn-group">
+                                <a class="js-accounting-health-alert-hide js-alert-hide btn btn-outline-light btn-sm" 
+                                   data-alert-type="accounting_health" href="#">Remind me in 7 days</a>
+                                <a class="js-accounting-health-alert-hide js-alert-hide btn btn-light btn-sm" 
+                                   data-hide-forever="true" data-alert-type="accounting_health" href="#">Don't show again</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Move Ins Widget -->
+                    <div class="js-dashboard-widget-collection">
+                        <section class="js-dashboard-widget dashboard-widget card js-expandable-section expandable-section is-expanded widget-enter" 
+                                data-id="move_ins" data-initial-state="expanded" data-url="{{ url_for('dashboard.move_ins') }}" data-hidden="false">
+                            
+                            <div class="loading-overlay" id="move-ins-loading">
+                                <div class="spinner"></div>
+                            </div>
+
+                            <header class="expandable-section__title expandable-section__trigger card-header d-flex align-items-center" role="button">
+                                <h2 class="card-title w-100">
+                                    <i class="fa-solid fa-home me-3"></i>Move Ins
+                                </h2>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </header>
+
+                            <section class="expandable-section__body">
+                                <div class="card-body">
+                                    
+                                    <!-- Feature Banner -->
+                                    <div class="feature-banner">
+                                        <div class="d-flex flex-row flex-wrap align-items-center">
+                                            <div class="flex-fill me-auto">
+                                                <h3 class="fw-bold text-uppercase mb-2">
+                                                    <i class="fa-solid fa-star me-2"></i>Move Ins Updated
+                                                </h3>
+                                                <p class="m-0 opacity-90">
+                                                    We've added AI-enhanced tracking to help monitor the progress of your move-ins. 
+                                                    Key information is now highlighted and sorted by priority.
+                                                </p>
+                                            </div>
+                                            <div class="my-auto">
+                                                <button class="js-move-in-flow-feedback btn btn-light fw-bold">
+                                                    <i class="fa-solid fa-envelope me-2"></i>Send Feedback
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Search and Filters -->
+                                    <div class="search-filters">
+                                        <div class="filter-group mb-3">
+                                            <div style="width: 300px;">
+                                                <label class="form-label">Property/Unit Search</label>
+                                                <div class="ai-enhanced-field">
+                                                    <input type="text" class="form-control js-property-units-move-in-search" 
+                                                           placeholder="Search by property, unit or group" id="property-search">
+                                                </div>
+                                            </div>
+                                            <div style="width: 250px;">
+                                                <label class="form-label">Lease Status</label>
+                                                <div class="ai-enhanced-field">
+                                                    <select class="form-select js-lease-status-filter" id="lease-status-filter">
+                                                        <option value="">All Statuses</option>
+                                                        <option value="fully_executed">Fully Executed</option>
+                                                        <option value="out_for_signing">Out for Signing</option>
+                                                        <option value="ready_to_countersign">Ready to Countersign</option>
+                                                        <option value="canceled">Canceled</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="customize-columns-button btn btn-secondary d-block">
+                                                    <i class="fa-solid fa-cogs fa-fw me-2"></i>Customize
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input js-hide-finished-move-ins" type="checkbox" 
+                                                   id="show-finished-move-ins" checked>
+                                            <label class="form-check-label" for="show-finished-move-ins">
+                                                Show Finished Move Ins
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Move Ins Table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-hover" id="move-ins-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="sortable" data-sort="tenant">
+                                                        Future Tenant <i class="fa-solid fa-sort fa-fw"></i>
+                                                    </th>
+                                                    <th class="sortable" data-sort="unit">
+                                                        Property - Unit <i class="fa-solid fa-sort fa-fw"></i>
+                                                    </th>
+                                                    <th class="sortable" data-sort="lease">
+                                                        Lease <i class="fa-solid fa-sort fa-fw"></i>
+                                                    </th>
+                                                    <th class="sortable" data-sort="portal">
+                                                        Portal <i class="fa-solid fa-sort fa-fw"></i>
+                                                    </th>
+                                                    <th class="sortable text-end" data-sort="balance">
+                                                        Balance <i class="fa-solid fa-sort fa-fw"></i>
+                                                    </th>
+                                                    <th>Insurance</th>
+                                                    <th class="sortable" data-sort="date">
+                                                        Move In Date <i class="fa-solid fa-caret-up fa-fw"></i>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="move-ins-tbody">
+                                                <!-- Data will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Profile Switch Form -->
+                                    <div class="modal fade" id="profileSwitchModal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="{{ url_for('user_profiles.switch') }}" method="post" id="profileSwitchForm">
+                                                    <input type="hidden" name="_method" value="put">
+                                                    <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+                                                    <input type="hidden" name="from_page_action" value="dashboard-index">
+                                                    
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Switch Profile</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label for="profile_profile_name" class="form-label">Profile Type</label>
+                                                            <select name="profile[profile_name]" id="profile_profile_name" 
+                                                                    class="form-select ai-enhanced-field" required>
+                                                                <option value="property_management" selected>Property Management</option>
+                                                                <option value="association_management">Association Management</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Switch Profile</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Feed Settings Form -->
+                                    <div class="modal fade" id="feedSettingsModal" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <form action="{{ url_for('dashboard.update_feed_settings') }}" method="post" id="feedSettingsForm">
+                                                    <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+                                                    
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Dashboard Feed Settings</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[activity_due]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[activity_due]" id="categories_activity_due" value="1">
+                                                                    <label class="form-check-label" for="categories_activity_due">
+                                                                        Activity Due Notifications
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[rental_application_creation]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[rental_application_creation]" id="categories_rental_application_creation" value="1">
+                                                                    <label class="form-check-label" for="categories_rental_application_creation">
+                                                                        Rental Application Updates
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[service_request_creation]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[service_request_creation]" id="categories_service_request_creation" value="1">
+                                                                    <label class="form-check-label" for="categories_service_request_creation">
+                                                                        Service Request Notifications
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[tenant_birthday]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[tenant_birthday]" id="categories_tenant_birthday" value="1">
+                                                                    <label class="form-check-label" for="categories_tenant_birthday">
+                                                                        Tenant Birthdays
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[architectural_review_creation]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[architectural_review_creation]" id="categories_architectural_review_creation" value="1">
+                                                                    <label class="form-check-label" for="categories_architectural_review_creation">
+                                                                        Architectural Reviews
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[tenant_insurance_expiration]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[tenant_insurance_expiration]" id="categories_tenant_insurance_expiration" value="1">
+                                                                    <label class="form-check-label" for="categories_tenant_insurance_expiration">
+                                                                        Tenant Insurance Expiration
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check mb-3">
+                                                                    <input type="hidden" name="categories[vendor_insurance_expiration]" value="0">
+                                                                    <input class="form-check-input ai-enhanced-field" type="checkbox" 
+                                                                           name="categories[vendor_insurance_expiration]" id="categories_vendor_insurance_expiration" value="1">
+                                                                    <label class="form-check-label" for="categories_vendor_insurance_expiration">
+                                                                        Vendor Insurance Expiration
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </section>
+                        </section>
+
+                        <!-- Financial Summary Widget -->
+                        <section class="js-dashboard-widget dashboard-widget card js-expandable-section expandable-section is-expanded widget-enter" 
+                                style="animation-delay: 0.3s;" data-id="financial_summary">
+                            <header class="expandable-section__title expandable-section__trigger card-header d-flex align-items-center" role="button">
+                                <h2 class="card-title w-100">
+                                    <i class="fa-solid fa-chart-line me-3"></i>Financial Summary
+                                </h2>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </header>
+                            <section class="expandable-section__body">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Month</th>
+                                                    <th class="text-end">Total Income</th>
+                                                    <th class="text-end">Total Expense</th>
+                                                    <th class="text-end">Net Income</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="financial-summary-tbody">
+                                                <!-- Financial data will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </section>
+                        </section>
+
+                    </div>
+
+                    <div class="dashboard-no-visible-widgets text-center p-5" style="display: none;">
+                        <div class="mb-3">
+                            <i class="fa-solid fa-eye-slash fa-3x text-muted"></i>
+                        </div>
+                        <h3>No Visible Widgets</h3>
+                        <p>Looks like you've hidden all the dashboard widgets. If you want them back, 
+                           <a class="js-customize-dashboard" href="#">Customize your Dashboard</a>
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Move-ins data
+    const moveInsData = [
+        {
+            tenant: "Sainge, Samuel",
+            unit: "-",
+            lease: "-",
+            portal: "Active",
+            balance: 400.00,
+            insurance: "Not Covered",
+            moveInDate: "07/25/2025",
+            url: "{{ url_for('move_in_flow.profiles_edit', web_flow_id=49740) }}"
+        },
+        {
+            tenant: "Bell, Telia R.",
+            unit: "-", 
+            lease: "-",
+            portal: "Active",
+            balance: 0.00,
+            insurance: "Not Covered", 
+            moveInDate: "08/01/2025",
+            url: "{{ url_for('move_in_flow.profiles_edit', web_flow_id=49727) }}"
+        },
+        {
+            tenant: "Hannon, LeAndrae E.",
+            unit: "Walnut Ridge Apts - 6108-A",
+            lease: "Canceled",
+            portal: "Active",
+            balance: 0.00,
+            insurance: "Pending",
+            moveInDate: "08/11/2025"
+        },
+        {
+            tenant: "Juarez, Sabrina M.",
+            unit: "-",
+            lease: "-", 
+            portal: "Active",
+            balance: 2000.00,
+            insurance: "Not Covered",
+            moveInDate: "08/12/2025"
+        },
+        {
+            tenant: "Chahine, Kamar J. (transfer)",
+            unit: "Phog Apartments / Meiners Development Co. of Independence - 3900 #12",
+            lease: "Fully Executed",
+            portal: "Active", 
+            balance: -500.00,
+            insurance: "Covered",
+            moveInDate: "08/22/2025"
+        },
+        {
+            tenant: "meadows, Haley M.",
+            unit: "Randall Court Ventures - 6720-10",
+            lease: "Fully Executed",
+            portal: "Active",
+            balance: -909.73,
+            insurance: "Covered", 
+            moveInDate: "08/22/2025"
+        },
+        {
+            tenant: "Rodriquez, Jose G.",
+            unit: "Blue Ridge Manor - 3805 11",
+            lease: "-",
+            portal: "Inactive",
+            balance: 1375.00,
+            insurance: "Pending",
+            moveInDate: "08/22/2025"
+        },
+        {
+            tenant: "Moussouni, Ahcene", 
+            unit: "Villas of Mur-Len / TSI Villas of Mur-Len - 314 P",
+            lease: "Out for Signing",
+            portal: "Active",
+            balance: 0.00,
+            insurance: "Pending",
+            moveInDate: "08/26/2025"
+        },
+        {
+            tenant: "Aziz, Asif",
+            unit: "Norclay Apartments - 4651-3",
+            lease: "Fully Executed",
+            portal: "Active", 
+            balance: -521.86,
+            insurance: "Pending",
+            moveInDate: "08/26/2025"
+        },
+        {
+            tenant: "Faulkner, Jerome C.",
+            unit: "(BARR) Rock Ridge Ranch Apartments - 49A",
+            lease: "Ready to Countersign",
+            portal: "Active",
+            balance: 0.00,
+            insurance: "Pending",
+            moveInDate: "08/29/2025"
+        }
+    ];
+
+    // Financial data
+    const financialData = [
+        { month: "Aug 2025", income: 979212.93, expense: 520496.07 },
+        { month: "Jul 2025", income: 1016214.13, expense: 628564.34 },
+        { month: "Jun 2025", income: 993797.72, expense: 883381.29 },
+        { month: "May 2025", income: 1063249.56, expense: 733924.20 },
+        { month: "Apr 2025", income: 1078577.70, expense: 694463.25 },
+        { month: "Mar 2025", income: 1087301.61, expense: 759282.04 },
+        { month: "Feb 2025", income: 1035481.11, expense: 726446.47 },
+        { month: "Jan 2025", income: 1045441.39, expense: 731868.84 },
+        { month: "Dec 2024", income: 1015213.20, expense: 838386.46 },
+        { month: "Nov 2024", income: 997502.84, expense: 642339.12 },
+        { month: "Oct 2024", income: 1010235.03, expense: 694014.42 },
+        { month: "Sep 2024", income: 1011237.28, expense: 627590.99 },
+        { month: "Aug 2024", income: 1017413.53, expense: 723587.10 }
+    ];
+
+    let currentSortColumn = 'date';
+    let sortDirection = 'asc';
+    let filteredData = [...moveInsData];
+
+    // Populate move-ins table
+    function renderMoveInsTable(data = filteredData) {
+        const tbody = document.getElementById('move-ins-tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'table-row-animated';
+            
+            const balanceClass = row.balance > 0 ? 'text-success' : row.balance < 0 ? 'text-danger' : '';
+            const dateClass = new Date(row.moveInDate) < new Date() ? 'text-danger' : '';
+            
+            tr.innerHTML = `
+                <td><button type="button" class="btn btn-link p-0 w-100 text-start" onclick="window.location.href='${row.url || '#'}'">
+                    ${row.tenant}
+                </button></td>
+                <td>${row.unit}</td>
+                <td><span class="badge ${getLeaseStatusBadge(row.lease)}">${row.lease}</span></td>
+                <td><span class="badge ${getPortalStatusBadge(row.portal)}">${row.portal}</span></td>
+                <td class="text-end ${balanceClass}">$${Math.abs(row.balance).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td><span class="badge ${getInsuranceBadge(row.insurance)}">${row.insurance}</span></td>
+                <td><span class="${dateClass}">${row.moveInDate}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Populate financial summary table
+    function renderFinancialTable() {
+        const tbody = document.getElementById('financial-summary-tbody');
+        tbody.innerHTML = '';
+
+        financialData.forEach(row => {
+            const tr = document.createElement('tr');
+            const netIncome = row.income - row.expense;
+            const netIncomeClass = netIncome >= 0 ? 'text-success' : 'text-danger';
+            
+            tr.innerHTML = `
+                <td>${row.month}</td>
+                <td class="text-end">$${row.income.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-end">$${row.expense.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-end ${netIncomeClass}">$${netIncome.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function getLeaseStatusBadge(status) {
+        switch(status) {
+            case 'Fully Executed': return 'bg-success';
+            case 'Out for Signing': return 'bg-warning';
+            case 'Ready to Countersign': return 'bg-info';
+            case 'Canceled': return 'bg-danger';
+            default: return 'bg-secondary';
+        }
+    }
+
+    function getPortalStatusBadge(status) {
+        return status === 'Active' ? 'bg-success' : 'bg-secondary';
+    }
+
+    function getInsuranceBadge(status) {
+        switch(status) {
+            case 'Covered': return 'bg-success';
+            case 'Pending': return 'bg-warning';
+            case 'Not Covered': return 'bg-danger';
+            default: return 'bg-secondary';
+        }
+    }
+
+    // Sorting functionality
+    function sortTable(column) {
+        if (currentSortColumn === column) {
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSortColumn = column;
+            sortDirection = 'asc';
+        }
+
+        filteredData.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch(column) {
+                case 'tenant':
+                    aValue = a.tenant.toLowerCase();
+                    bValue = b.tenant.toLowerCase();
+                    break;
+                case 'unit':
+                    aValue = a.unit.toLowerCase();
+                    bValue = b.unit.toLowerCase();
+                    break;
+                case 'lease':
+                    aValue = a.lease.toLowerCase();
+                    bValue = b.lease.toLowerCase();
+                    break;
+                case 'portal':
+                    aValue = a.portal.toLowerCase();
+                    bValue = b.portal.toLowerCase();
+                    break;
+                case 'balance':
+                    aValue = parseFloat(a.balance);
+                    bValue = parseFloat(b.balance);
+                    break;
+                case 'date':
+                    aValue = new Date(a.moveInDate);
+                    bValue = new Date(b.moveInDate);
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        updateSortIcons();
+        renderMoveInsTable();
+    }
+
+    function updateSortIcons() {
+        document.querySelectorAll('.sortable i').forEach(icon => {
+            icon.className = 'fa-solid fa-sort fa-fw';
+        });
+        
+        const currentHeader = document.querySelector(`[data-sort="${currentSortColumn}"] i`);
+        if (currentHeader) {
+            currentHeader.className = `fa-solid fa-caret-${sortDirection === 'asc' ? 'up' : 'down'} fa-fw`;
+        }
+    }
+
+    // Search and filter functionality
+    function filterData() {
+        const searchTerm = document.getElementById('property-search').value.toLowerCase();
+        const leaseStatus = document.getElementById('lease-status-filter').value;
+        const showFinished = document.getElementById('show-finished-move-ins').checked;
+
+        filteredData = moveInsData.filter(row => {
+            const matchesSearch = !searchTerm || 
+                row.tenant.toLowerCase().includes(searchTerm) ||
+                row.unit.toLowerCase().includes(searchTerm);
+            
+            const matchesLeaseStatus = !leaseStatus || 
+                row.lease.toLowerCase().replace(/\s+/g, '_') === leaseStatus;
+
+            const isFinished = new Date(row.moveInDate) < new Date();
+            const matchesFinishedFilter = showFinished || !isFinished;
+
+            return matchesSearch && matchesLeaseStatus && matchesFinishedFilter;
+        });
+
+        renderMoveInsTable();
+    }
+
+    // Event listeners
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', () => {
+            sortTable(header.getAttribute('data-sort'));
+        });
+    });
+
+    document.getElementById('property-search').addEventListener('input', filterData);
+    document.getElementById('lease-status-filter').addEventListener('change', filterData);
+    document.getElementById('show-finished-move-ins').addEventListener('change', filterData);
+
+    // Property filter
+    document.getElementById('property_list').addEventListener('change', function() {
+        showLoading('move-ins-loading');
+        
+        // Simulate API call
+        setTimeout(() => {
+            hideLoading('move-ins-loading');
+            filterData();
+        }, 500);
+    });
+
+    // Customize dashboard
+    document.querySelector('.js-customize-dashboard').addEventListener('click', function() {
+        document.querySelector('.dashboard-header__view-actions').style.display = 'none';
+        document.querySelector('.dashboard-header__edit-actions').style.display = 'flex';
+    });
+
+    document.querySelector('.js-cancel-customization').addEventListener('click', function() {
+        document.querySelector('.dashboard-header__view-actions').style.display = 'flex';
+        document.querySelector('.dashboard-header__edit-actions').style.display = 'none';
+    });
+
+    document.querySelector('.js-save-customization').addEventListener('click', function() {
+        showLoading('move-ins-loading');
+        
+        setTimeout(() => {
+            hideLoading('move-ins-loading');
+            document.querySelector('.dashboard-header__view-actions').style.display = 'flex';
+            document.querySelector('.dashboard-header__edit-actions').style.display = 'none';
+            
+            // Show success toast
+            showToast('Dashboard customization saved successfully!', 'success');
+        }, 1000);
+    });
+
+    // Expandable sections
+    document.querySelectorAll('.expandable-section__trigger').forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const section = this.closest('.expandable-section');
+            const body = section.querySelector('.expandable-section__body');
+            const icon = this.querySelector('i:last-child');
+            
+            if (section.classList.contains('is-expanded')) {
+                section.classList.remove('is-expanded');
+                body.style.display = 'none';
+                icon.style.transform = 'rotate(-90deg)';
+            } else {
+                section.classList.add('is-expanded');
+                body.style.display = 'block';
+                icon.style.transform = 'rotate(0deg)';
+            }
+        });
+    });
+
+    // Alert dismissal
+    document.querySelectorAll('.js-alert-hide').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const alert = this.closest('.alert');
+            alert.style.transition = 'opacity 0.3s ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        });
+    });
+
+    // Loading states
+    function showLoading(elementId) {
+        const loading = document.getElementById(elementId);
+        if (loading) {
+            loading.classList.add('active');
+        }
+    }
+
+    function hideLoading(elementId) {
+        const loading = document.getElementById(elementId);
+        if (loading) {
+            loading.classList.remove('active');
+        }
+    }
+
+    // Toast notifications
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.zIndex = '9999';
+        
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+
+    // Form validation
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                showToast('Please fill in all required fields', 'error');
+            }
+        });
+    });
+
+    // Feedback modal
+    document.querySelector('.js-move-in-flow-feedback').addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('feedbackModal') || createFeedbackModal());
+        modal.show();
+    });
+
+    function createFeedbackModal() {
+        const modalHtml = `
+            <div class="modal fade" id="feedbackModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Move Ins Feedback</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="feedbackForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Overall, how satisfied are you with the information currently provided on the dashboard?</label>
+                                    <div class="rating-group">
+                                        <input type="radio" name="rating" value="1" id="rating1">
+                                        <label for="rating1">1 - Not satisfied at all</label>
+                                        <input type="radio" name="rating" value="2" id="rating2">
+                                        <label for="rating2">2</label>
+                                        <input type="radio" name="rating" value="3" id="rating3">
+                                        <label for="rating3">3</label>
+                                        <input type="radio" name="rating" value="4" id="rating4">
+                                        <label for="rating4">4</label>
+                                        <input type="radio" name="rating" value="5" id="rating5">
+                                        <label for="rating5">5 - Very Satisfied</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="feedbackComments" class="form-label">How could we improve move-in oversight for you?</label>
+                                    <textarea class="form-control" id="feedbackComments" rows="4" 
+                                              placeholder="Please give us as much detail as you can. Thanks!"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="submitFeedback()">Send Feedback</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        return document.getElementById('feedbackModal');
+    }
+
+    window.submitFeedback = function() {
+        const rating = document.querySelector('input[name="rating"]:checked')?.value;
+        const comments = document.getElementById('feedbackComments').value;
+        
+        if (!rating) {
+            showToast('Please select a rating', 'error');
+            return;
+        }
+        
+        // Simulate sending feedback
+        showLoading('move-ins-loading');
+        
+        setTimeout(() => {
+            hideLoading('move-ins-loading');
+            bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+            showToast('Thank you for your feedback!', 'success');
+        }, 1000);
+    };
+
+    // Initialize
+    renderMoveInsTable();
+    renderFinancialTable();
+    updateSortIcons();
+
+    // Supabase integration (placeholder for real implementation)
+    if (typeof supabase !== 'undefined') {
+        // Real Supabase integration would go here
+        console.log('Supabase integration ready');
+    }
+});
+</script>
+{% endblock %}

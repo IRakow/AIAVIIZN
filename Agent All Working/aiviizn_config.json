@@ -1,0 +1,15 @@
+{
+  "project_id": "sejebqdhcilwcpjpznep",
+  "company_id": "5bb7db68-63e2-4750-ac16-ad15f19938a8",
+  "company_name": "AIVIIZN",
+  "source_domain": "celticprop.appfolio.com",
+  "verified_urls": [],
+  "status": "ready_to_start",
+  "created": "2025-08-22",
+  "instructions": {
+    "database": "Use supabase:execute_sql with table creation commands",
+    "capture": "Use playwright:browser_navigate + browser_evaluate",
+    "storage": "Use supabase:execute_sql to store captured data",
+    "templates": "Use filesystem:write_file to create templates"
+  }
+}

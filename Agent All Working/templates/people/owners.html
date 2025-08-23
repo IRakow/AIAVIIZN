@@ -1,0 +1,82 @@
+<!-- templates/owners.html -->
+{% extends "base.html" %}
+
+{% block title %}Owners - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('tenants') }}" class="tab-nav-item">Tenants</a>
+        <a href="{{ url_for('owners') }}" class="tab-nav-item active">Owners</a>
+        <a href="{{ url_for('vendors') }}" class="tab-nav-item">Vendors</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Owners</h1>
+
+<div class="alphabet-filter">
+    <a href="#">A</a>
+    <a href="#">B</a>
+    <a href="#">C</a>
+    <a href="#">D</a>
+    <a href="#">E</a>
+    <a href="#">F</a>
+    <a href="#">G</a>
+    <a href="#">H</a>
+    <a href="#">I</a>
+    <a href="#">J</a>
+    <a href="#">K</a>
+    <a href="#">L</a>
+    <a href="#">M</a>
+    <a href="#">N</a>
+    <a href="#">O</a>
+    <a href="#">P</a>
+    <a href="#">Q</a>
+    <a href="#">R</a>
+    <a href="#">S</a>
+    <a href="#">T</a>
+    <a href="#">U</a>
+    <a href="#">V</a>
+    <a href="#">W</a>
+    <a href="#">X</a>
+    <a href="#">Y</a>
+    <a href="#">Z</a>
+    <a href="#" class="active">All</a>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name <span style="font-size: 10px; color: #6c757d;">↕</span></th>
+                <th>Company</th>
+                <th>Phone</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for owner in owners %}
+            <tr>
+                <td style="color: #0056b3; cursor: pointer;">{{ owner.name }}</td>
+                <td>{{ owner.company }}</td>
+                <td>{{ owner.phone }}</td>
+                <td style="color: #0056b3;">{{ owner.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    <div>Displaying: 1-20 of 55</div>
+    <div class="pagination-buttons">
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>›</button>
+        <button>»</button>
+    </div>
+</div>
+{% endblock %}

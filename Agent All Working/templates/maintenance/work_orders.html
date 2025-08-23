@@ -1,0 +1,1705 @@
+{% extends "base.html" %}
+
+{% block title %}Work Orders - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Work Orders Specific Styles */
+    
+    /* Page Header */
+    .page-header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 400;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .customize-link {
+        color: #007bff;
+        text-decoration: none;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .customize-link:hover {
+        text-decoration: underline;
+    }
+
+    .btn-new-request {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-new-request:hover {
+        background: #0056b3;
+    }
+
+    .btn-actions {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        position: relative;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-divider {
+        height: 0;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Dashboard Metrics */
+    .dashboard-metrics {
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .metric-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 15px;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.2s;
+        cursor: pointer;
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .metric-card.add-metric {
+        border: 2px dashed #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .metric-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .metric-value {
+        font-size: 32px;
+        font-weight: 300;
+        color: #333;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .filter-input, .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-filter {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #495057;
+    }
+
+    .btn-filter:hover {
+        background: #f8f9fa;
+    }
+
+    /* List Controls */
+    .list-controls {
+        padding: 15px 20px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+
+    .select-all {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        position: relative;
+    }
+
+    .btn-bulk:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .sort-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sort-select {
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-sort-direction {
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Work Order Cards */
+    .work-orders-list {
+        padding: 0;
+    }
+
+    .work-order-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        transition: background 0.2s;
+    }
+
+    .work-order-card:hover {
+        background: #f8f9fa;
+    }
+
+    .work-order-main {
+        padding: 15px 20px;
+        display: grid;
+        grid-template-columns: 40px 1fr 1fr 1fr auto;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .wo-checkbox {
+        padding-top: 5px;
+    }
+
+    .wo-header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .wo-number {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .wo-number:hover {
+        text-decoration: underline;
+    }
+
+    .wo-badges {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-new {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .badge-assigned {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .badge-in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-work-done {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-resident {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-internal {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-unit-turn {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .wo-property {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .property-name {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .unit-number {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .tenant-names {
+        color: #495057;
+        font-size: 13px;
+    }
+
+    .wo-assignment {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .assignment-label {
+        font-size: 11px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .vendor-info, .assignee-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .user-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #495057;
+    }
+
+    .wo-metadata {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .created-date {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .btn-expand {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .wo-description {
+        padding: 0 20px 15px 60px;
+        color: #495057;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    /* Pagination */
+    .pagination {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .page-btn:hover {
+        background: #f8f9fa;
+    }
+
+    .page-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Photo Upload */
+    .photo-upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .photo-upload-area:hover {
+        border-color: #007bff;
+        background: #e3f2fd;
+    }
+
+    .photo-upload-area.dragover {
+        border-color: #007bff;
+        background: #e3f2fd;
+    }
+
+    .upload-icon {
+        font-size: 24px;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .upload-text {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .photo-preview {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .photo-item {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+    }
+
+    .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .photo-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #bd2130;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+
+    /* Hide file input */
+    .file-input-hidden {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Work Orders</h1>
+        <div class="page-actions">
+            <a href="#" class="customize-link">Customize</a>
+            <button class="btn-new-request" id="newServiceRequest">
+                <span>+</span>
+                New Service Request
+            </button>
+            <div class="dropdown">
+                <button class="btn-actions" id="actionsDropdown">
+                    Actions
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu" id="actionsMenu">
+                    <div class="dropdown-item" onclick="exportData('csv')">Export to CSV</div>
+                    <div class="dropdown-item" onclick="exportData('pdf')">Export to PDF</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="printWorkOrders()">Print Work Orders</div>
+                    <div class="dropdown-item" onclick="emailReport()">Email Report</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="importWorkOrders()">Import Work Orders</div>
+                    <div class="dropdown-item" onclick="archiveCompleted()">Archive Completed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Metrics -->
+    <div class="dashboard-metrics">
+        <div class="metric-card" onclick="filterByMetric('unassigned-resident')">
+            <div class="metric-label">Unassigned Resident Requested</div>
+            <div class="metric-value">162</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('unassigned-internal')">
+            <div class="metric-label">Unassigned Internal</div>
+            <div class="metric-value">66</div>
+        </div>
+        <div class="metric-card add-metric" onclick="openAddMetricModal()">
+            <div>
+                <div style="font-size: 24px; margin-bottom: 5px;">--</div>
+                <div>Add a Dashboard Metric</div>
+            </div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('ready-to-bill')">
+            <div class="metric-label">Ready to Bill</div>
+            <div class="metric-value">0</div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Properties or Units</label>
+                <input type="text" class="filter-input" id="propertyFilter" 
+                       placeholder="Search by Unit, Property or Property Group"
+                       onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="new">New</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="work-done">Work Done</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Assigned To</label>
+                <input type="text" class="filter-input" id="assigneeFilter" 
+                       placeholder="Search..." onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Vendor</label>
+                <input type="text" class="filter-input" id="vendorFilter" 
+                       placeholder="Search by vendor or management company"
+                       onkeyup="applyFilters()">
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
+            <div style="margin-left: auto;">
+                <label class="filter-label" style="display: inline-block; margin-right: 8px;">Saved Filters</label>
+                <select class="filter-select" style="width: 200px;" onchange="applySavedFilter(this.value)">
+                    <option value="">Select...</option>
+                    <option value="urgent">Urgent Work Orders</option>
+                    <option value="overdue">Overdue Work Orders</option>
+                    <option value="today">Created Today</option>
+                    <option value="this-week">This Week</option>
+                    <option value="high-priority">High Priority</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Controls -->
+    <div class="list-controls">
+        <div class="bulk-actions">
+            <div class="select-all">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll">Select all</label>
+            </div>
+            <div class="dropdown">
+                <button class="btn-bulk" id="bulkActionsBtn" disabled>Bulk Actions</button>
+                <div class="dropdown-menu" id="bulkActionsMenu">
+                    <div class="dropdown-item" onclick="bulkAssign()">Assign to Vendor/Staff</div>
+                    <div class="dropdown-item" onclick="bulkUpdateStatus()">Update Status</div>
+                    <div class="dropdown-item" onclick="bulkSetPriority()">Set Priority</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkAddTags()">Add Tags</div>
+                    <div class="dropdown-item" onclick="bulkSchedule()">Schedule Work</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkPrint()">Print Selected</div>
+                    <div class="dropdown-item" onclick="bulkExport()">Export Selected</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkDelete()" style="color: #dc3545;">Delete Selected</div>
+                </div>
+            </div>
+            <span style="color: #666; font-size: 13px;" id="selectedCount">0 Selected</span>
+        </div>
+        <div class="sort-controls">
+            <span style="color: #666; font-size: 13px;">Sort by</span>
+            <select class="sort-select" id="sortBy" onchange="sortWorkOrders()">
+                <option value="created">Created At</option>
+                <option value="number">Number</option>
+                <option value="status">Status</option>
+                <option value="vendor">Vendor Name</option>
+                <option value="property">Property</option>
+                <option value="scheduled">Scheduled Start</option>
+                <option value="priority">Priority</option>
+            </select>
+            <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                <span>▼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Work Orders List -->
+    <div class="work-orders-list" id="workOrdersList">
+        <!-- Work orders will be dynamically inserted here -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>←</button>
+        <span id="pageNumbers"></span>
+        <button class="page-btn" onclick="changePage('next')" id="nextPage">→</button>
+    </div>
+</div>
+
+<!-- New Service Request Modal -->
+<div id="newRequestModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">New Service Request</h2>
+            <button class="modal-close" onclick="closeModal('newRequestModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="newRequestForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Property <span class="required">*</span></label>
+                        <select class="form-control" required>
+                            <option value="">Select Property</option>
+                            <option>West Plaza</option>
+                            <option>Longmeadow Apartments</option>
+                            <option>Norclay Apartments</option>
+                            <option>Brentwood Park</option>
+                            <option>Randall Court Ventures</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit</label>
+                        <input type="text" class="form-control" placeholder="Unit number">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Request Type <span class="required">*</span></label>
+                    <select class="form-control" required>
+                        <option value="">Select Type</option>
+                        <option>Resident Request</option>
+                        <option>Internal Maintenance</option>
+                        <option>Unit Turn</option>
+                        <option>Preventive Maintenance</option>
+                        <option>Emergency</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category <span class="required">*</span></label>
+                    <select class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option>Plumbing</option>
+                        <option>Electrical</option>
+                        <option>HVAC</option>
+                        <option>Appliance</option>
+                        <option>General Maintenance</option>
+                        <option>Landscaping</option>
+                        <option>Painting</option>
+                        <option>Flooring</option>
+                        <option>Pest Control</option>
+                        <option>Security</option>
+                        <option>Cleaning</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-control">
+                        <option>Low</option>
+                        <option selected>Medium</option>
+                        <option>High</option>
+                        <option>Emergency</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description <span class="required">*</span></label>
+                    <textarea class="form-control" required placeholder="Describe the issue in detail..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Photos</label>
+                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Click to upload photos or drag and drop</div>
+                        <input type="file" id="photoInput" class="file-input-hidden" multiple accept="image/*" onchange="handlePhotoUpload(event)">
+                    </div>
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Assign To</label>
+                        <select class="form-control">
+                            <option value="">Unassigned</option>
+                            <option>John Smith - Maintenance</option>
+                            <option>ABC Plumbing</option>
+                            <option>XYZ Electric</option>
+                            <option>HVAC Pros</option>
+                            <option>Quality Painting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scheduled Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Entry Instructions</label>
+                    <textarea class="form-control" placeholder="Special entry instructions or notes..."></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="notifyTenant">
+                    <label for="notifyTenant">Notify tenant via email/SMS</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="requirePermission">
+                    <label for="requirePermission">Require permission to enter</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="allowKeyAccess">
+                    <label for="allowKeyAccess">Property manager may use key for access</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('newRequestModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveNewRequest()">Create Work Order</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Work orders data will be loaded from Supabase
+    let workOrders = [];
+    let totalWorkOrders = 0;
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let sortOrder = 'desc';
+    let currentSort = 'created';
+    let uploadedPhotos = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadWorkOrders();
+        await loadProperties();
+        await loadVendors();
+        initializeEventListeners();
+        setupDragAndDrop();
+    });
+    
+    // Load work orders from Supabase
+    async function loadWorkOrders() {
+        try {
+            const filters = getCurrentFilters();
+            const { data, count, error } = await SupabaseUtils.getWorkOrders(currentPage, itemsPerPage, filters);
+            
+            if (error) {
+                console.error('Error loading work orders:', error);
+                showToast('Error loading work orders', 'error');
+                return;
+            }
+            
+            // Transform Supabase data to match expected format
+            workOrders = data.map(wo => ({
+                id: wo.work_order_number,
+                status: wo.status,
+                type: wo.request_type,
+                property: wo.property_name,
+                unit: wo.unit_number || '',
+                tenant: wo.tenant_name || '',
+                vendor: wo.vendor_name || '',
+                assignee: wo.assigned_to || '',
+                created: new Date(wo.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                description: wo.description,
+                priority: wo.priority,
+                category: wo.category,
+                dbId: wo.id // Keep database ID for updates
+            }));
+            
+            totalWorkOrders = count;
+            renderWorkOrders();
+            renderPagination();
+            
+        } catch (error) {
+            console.error('Error loading work orders:', error);
+            showToast('Error loading work orders', 'error');
+        }
+    }
+    
+    // Load properties for dropdowns
+    async function loadProperties() {
+        try {
+            const { data, error } = await SupabaseUtils.getProperties();
+            
+            if (error) {
+                console.error('Error loading properties:', error);
+                return;
+            }
+            
+            // Update property dropdowns in the modal form
+            const modalPropertySelect = document.querySelector('#newRequestModal select');
+            if (modalPropertySelect) {
+                // Clear existing options except the first
+                while (modalPropertySelect.children.length > 1) {
+                    modalPropertySelect.removeChild(modalPropertySelect.lastChild);
+                }
+                
+                // Add properties
+                data.forEach(property => {
+                    const option = document.createElement('option');
+                    option.value = property.name;
+                    option.textContent = property.name;
+                    modalPropertySelect.appendChild(option);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+    
+    // Load vendors for dropdowns
+    async function loadVendors() {
+        try {
+            const { data, error } = await SupabaseUtils.getVendors();
+            
+            if (error) {
+                console.error('Error loading vendors:', error);
+                return;
+            }
+            
+            // Update vendor dropdowns in the modal form
+            const modalVendorSelects = document.querySelectorAll('#newRequestModal select');
+            const assignToSelect = modalVendorSelects[5]; // The "Assign To" dropdown
+            if (assignToSelect) {
+                // Clear existing options except the first
+                while (assignToSelect.children.length > 1) {
+                    assignToSelect.removeChild(assignToSelect.lastChild);
+                }
+                
+                // Add vendors
+                data.forEach(vendor => {
+                    const option = document.createElement('option');
+                    option.value = vendor.name;
+                    option.textContent = `${vendor.name}${vendor.type === 'staff' ? ' - ' + vendor.specialty : ''}`;
+                    assignToSelect.appendChild(option);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading vendors:', error);
+        }
+    }
+    
+    // Get current filter values
+    function getCurrentFilters() {
+        return {
+            property: document.getElementById('propertyFilter')?.value || '',
+            status: document.getElementById('statusFilter')?.value || '',
+            assignee: document.getElementById('assigneeFilter')?.value || '',
+            vendor: document.getElementById('vendorFilter')?.value || ''
+        };
+    }
+
+    // Setup drag and drop for photo upload
+    function setupDragAndDrop() {
+        const uploadArea = document.querySelector('.photo-upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handlePhotoFiles(files);
+        });
+    }
+
+    // Handle photo upload
+    function handlePhotoUpload(event) {
+        const files = event.target.files;
+        handlePhotoFiles(files);
+    }
+
+    function handlePhotoFiles(files) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotos.push({
+                        file: file,
+                        url: e.target.result
+                    });
+                    renderPhotoPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function renderPhotoPreview() {
+        const preview = document.getElementById('photoPreview');
+        preview.innerHTML = '';
+        
+        uploadedPhotos.forEach((photo, index) => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.innerHTML = `
+                <img src="${photo.url}" alt="Upload ${index + 1}">
+                <button type="button" class="photo-remove" onclick="removePhoto(${index})">&times;</button>
+            `;
+            preview.appendChild(photoItem);
+        });
+    }
+
+    function removePhoto(index) {
+        uploadedPhotos.splice(index, 1);
+        renderPhotoPreview();
+    }
+
+    // Render work orders
+    function renderWorkOrders() {
+        const list = document.getElementById('workOrdersList');
+        list.innerHTML = '';
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageOrders = workOrders.slice(start, end);
+
+        pageOrders.forEach(order => {
+            const card = createWorkOrderCard(order);
+            list.appendChild(card);
+        });
+
+        // Re-initialize description toggles
+        document.querySelectorAll('.wo-description').forEach(desc => {
+            desc.style.display = 'none';
+        });
+    }
+
+    // Create work order card HTML
+    function createWorkOrderCard(order) {
+        const card = document.createElement('div');
+        card.className = 'work-order-card';
+        card.dataset.id = order.id;
+        
+        // Determine badges
+        let badges = `<span class="badge badge-${order.status}">${order.status.toUpperCase()}</span>`;
+        if (order.type === 'resident') {
+            badges += ' <span class="badge badge-resident">RESIDENT</span>';
+        } else if (order.type === 'internal') {
+            badges += ' <span class="badge badge-internal">INTERNAL</span>';
+        } else if (order.type === 'unit-turn') {
+            badges += ' <span class="badge badge-unit-turn">UNIT TURN</span>';
+        }
+
+        card.innerHTML = `
+            <div class="work-order-main">
+                <div class="wo-checkbox">
+                    <input type="checkbox" onchange="updateSelectedCount()">
+                </div>
+                <div class="wo-header">
+                    <a href="#" class="wo-number" onclick="openWorkOrder('${order.id}')">${order.id}</a>
+                    <div class="wo-badges">${badges}</div>
+                </div>
+                <div class="wo-property">
+                    <div class="property-name">${order.property}</div>
+                    <div class="unit-number">${order.unit}</div>
+                    <div class="tenant-names">${order.tenant}</div>
+                </div>
+                <div class="wo-assignment">
+                    <div>
+                        <div class="assignment-label">Vendor/Assignee</div>
+                        <div class="vendor-info">${order.vendor || '--'}</div>
+                        <div class="assignee-info">
+                            <span class="user-icon">👤</span>
+                            <span>${order.assignee || '--'}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="assignment-label" style="margin-top: 10px;">Created</div>
+                        <div class="created-date">${order.created}</div>
+                    </div>
+                </div>
+                <div class="wo-metadata">
+                    <button class="btn-expand" onclick="toggleDescription(this)">
+                        <span>Expand</span>
+                        <span>▼</span>
+                    </button>
+                </div>
+            </div>
+            <div class="wo-description">${order.description}</div>
+        `;
+
+        return card;
+    }
+
+    // Render pagination
+    function renderPagination() {
+        const totalPages = Math.ceil(totalWorkOrders / itemsPerPage);
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(btn);
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                pageNumbers.appendChild(span);
+            }
+        }
+
+        // Update prev/next buttons
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+        // Select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.work-order-card input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateSelectedCount();
+        });
+
+        // Actions dropdown
+        document.getElementById('actionsDropdown').addEventListener('click', function() {
+            document.getElementById('actionsMenu').classList.toggle('show');
+        });
+
+        // Bulk actions dropdown
+        document.getElementById('bulkActionsBtn').addEventListener('click', function() {
+            if (!this.disabled) {
+                document.getElementById('bulkActionsMenu').classList.toggle('show');
+            }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('.btn-actions') && !e.target.matches('.btn-bulk')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+
+        // New service request button
+        document.getElementById('newServiceRequest').addEventListener('click', function() {
+            openModal('newRequestModal');
+        });
+    }
+
+    // Toggle description
+    function toggleDescription(button) {
+        const card = button.closest('.work-order-card');
+        const description = card.querySelector('.wo-description');
+        
+        if (description.style.display === 'none' || !description.style.display) {
+            description.style.display = 'block';
+            button.querySelector('span:first-child').textContent = 'Collapse';
+        } else {
+            description.style.display = 'none';
+            button.querySelector('span:first-child').textContent = 'Expand';
+        }
+    }
+
+    // Update selected count
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = `${count} Selected`;
+        document.getElementById('bulkActionsBtn').disabled = count === 0;
+        
+        // Update select all checkbox
+        const allCheckboxes = document.querySelectorAll('.work-order-card input[type="checkbox"]');
+        document.getElementById('selectAll').checked = count === allCheckboxes.length && count > 0;
+    }
+
+    // Pagination functions
+    async function goToPage(page) {
+        currentPage = page;
+        await loadWorkOrders();
+    }
+
+    async function changePage(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            await goToPage(currentPage - 1);
+        } else if (direction === 'next') {
+            const totalPages = Math.ceil(totalWorkOrders / itemsPerPage);
+            if (currentPage < totalPages) {
+                await goToPage(currentPage + 1);
+            }
+        }
+    }
+
+    // Sort functions
+    async function sortWorkOrders() {
+        const sortBy = document.getElementById('sortBy').value;
+        currentSort = sortBy;
+        
+        // Reload data with new sort order - Supabase handles sorting
+        await loadWorkOrders();
+    }
+
+    async function toggleSortDirection() {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        const icon = document.querySelector('#sortDirection span');
+        icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+        await sortWorkOrders();
+    }
+
+    // Filter functions
+    async function applyFilters() {
+        currentPage = 1; // Reset to first page when filtering
+        await loadWorkOrders();
+    }
+
+    async function resetFilters() {
+        document.querySelectorAll('.filter-input, .filter-select').forEach(input => {
+            if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0;
+            } else {
+                input.value = '';
+            }
+        });
+        await applyFilters();
+        showToast('Filters cleared', 'info');
+    }
+
+    function applySavedFilter(filterName) {
+        if (!filterName) return;
+        
+        resetFilters();
+        
+        switch(filterName) {
+            case 'urgent':
+                document.getElementById('statusFilter').value = 'high';
+                break;
+            case 'overdue':
+                // Would filter by date in real implementation
+                break;
+            case 'today':
+                // Would filter by today's date
+                break;
+            case 'this-week':
+                // Would filter by this week
+                break;
+            case 'high-priority':
+                // Would filter by high priority
+                break;
+        }
+        
+        applyFilters();
+        showToast(`Applied filter: ${filterName}`, 'info');
+    }
+
+    function filterByMetric(metric) {
+        resetFilters();
+        
+        switch(metric) {
+            case 'unassigned-resident':
+                // Would filter unassigned resident requests
+                break;
+            case 'unassigned-internal':
+                // Would filter unassigned internal requests
+                break;
+            case 'ready-to-bill':
+                document.getElementById('statusFilter').value = 'work-done';
+                break;
+        }
+        
+        applyFilters();
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+        // Reset form if it's the new request modal
+        if (modalId === 'newRequestModal') {
+            uploadedPhotos = [];
+            renderPhotoPreview();
+        }
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    function openWorkOrder(orderId) {
+        // This would open a detailed view modal
+        showToast(`Opening work order ${orderId}`, 'info');
+    }
+
+    async function saveNewRequest() {
+        const form = document.getElementById('newRequestForm');
+        if (form.checkValidity()) {
+            try {
+                const formData = new FormData(form);
+                const formElements = form.elements;
+                
+                const workOrderData = {
+                    property: formElements[0].value, // First select is property
+                    unit: formElements[1].value, // First input is unit
+                    requestType: formElements[2].value, // Request type select
+                    category: formElements[3].value, // Category select
+                    priority: formElements[4].value, // Priority select
+                    title: `${formElements[3].value} - ${formElements[2].value}`,
+                    description: formElements[5].value, // Textarea
+                    assignedTo: formElements[6].value, // Assign to select
+                    scheduledDate: formElements[7].value, // Scheduled date
+                    entryInstructions: formElements[8].value, // Entry instructions textarea
+                    notifyTenant: document.getElementById('notifyTenant').checked,
+                    entryPermission: document.getElementById('requirePermission').checked,
+                    allowKeyAccess: document.getElementById('allowKeyAccess').checked
+                };
+                
+                const { data, error } = await SupabaseUtils.createWorkOrder(workOrderData);
+                
+                if (error) {
+                    console.error('Error creating work order:', error);
+                    showToast('Error creating work order', 'error');
+                    return;
+                }
+                
+                showToast('New work order created successfully', 'success');
+                closeModal('newRequestModal');
+                
+                // Reload work orders to show the new one
+                await loadWorkOrders();
+                
+            } catch (error) {
+                console.error('Error creating work order:', error);
+                showToast('Error creating work order', 'error');
+            }
+        } else {
+            showToast('Please fill in all required fields', 'error');
+        }
+    }
+
+    // Bulk action functions
+    function bulkAssign() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Assigning ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkUpdateStatus() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Updating status for ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkSetPriority() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Setting priority for ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkAddTags() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Adding tags to ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkSchedule() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Scheduling ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkPrint() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Printing ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkExport() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        showToast(`Exporting ${selected} work orders...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkDelete() {
+        const selected = document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').length;
+        if (confirm(`Are you sure you want to delete ${selected} work orders?`)) {
+            showToast(`Deleted ${selected} work orders`, 'success');
+            document.getElementById('bulkActionsMenu').classList.remove('show');
+            
+            // Remove selected cards
+            document.querySelectorAll('.work-order-card input[type="checkbox"]:checked').forEach(cb => {
+                cb.closest('.work-order-card').remove();
+            });
+            updateSelectedCount();
+        }
+    }
+
+    // Export/Action functions
+    function exportData(format) {
+        showToast(`Exporting data as ${format.toUpperCase()}...`, 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function printWorkOrders() {
+        window.print();
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function emailReport() {
+        showToast('Opening email composer...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function importWorkOrders() {
+        showToast('Opening import dialog...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function archiveCompleted() {
+        showToast('Archiving completed work orders...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('show');
+        }
+    }
+</script>
+{% endblock %}

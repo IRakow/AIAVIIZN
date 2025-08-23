@@ -1,0 +1,725 @@
+
+{% extends 'base.html' %}
+
+{% block title %}AppFolio Property Manager - Additional Services{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+
+    .gradient-bg {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        margin: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .service-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .service-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .featured-service {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        position: relative;
+    }
+
+    .featured-service::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px;
+        background: var(--primary-gradient);
+        border-radius: inherit;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: xor;
+        z-index: -1;
+    }
+
+    .badge-enhanced {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-marketing { background: var(--secondary-gradient); }
+    .badge-maintenance { background: var(--danger-gradient); }
+    .badge-accounting { background: var(--success-gradient); }
+    .badge-affordable { background: var(--dark-gradient); }
+
+    .btn-enhanced {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border-radius: 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary-enhanced {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary-enhanced:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .btn-outline-enhanced {
+        background: transparent;
+        border: 2px solid;
+        border-image: var(--primary-gradient) 1;
+        color: #667eea;
+    }
+
+    .btn-outline-enhanced:hover {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .alert-enhanced {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border: none;
+        border-left: 4px solid #667eea;
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    .status-enabled {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ai-enhanced-field {
+        position: relative;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-left: 4px solid #667eea;
+    }
+
+    .ai-enhanced-field::after {
+        content: 'AI Enhanced';
+        position: absolute;
+        top: -8px;
+        right: 10px;
+        background: var(--primary-gradient);
+        color: white;
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .loading-shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    .profile-selector {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    .error-state {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        color: #721c24;
+    }
+
+    .success-state {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+        border: 1px solid rgba(40, 167, 69, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        color: #155724;
+    }
+
+    .service-list {
+        max-height: 600px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #667eea #f8f9fa;
+    }
+
+    .service-list::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .service-list::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .service-list::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 10px;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 1rem;
+        }
+        
+        .service-card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content-wrapper position-relative">
+    <main class="main-container mx-auto px-3 w-100 fade-in">
+        <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+            
+            <!-- Flash Messages -->
+            <div id="flash_messages" class="mb-4"></div>
+
+            <!-- Profile Selector Form -->
+            <div class="profile-selector ai-enhanced-field">
+                <form id="profileForm" method="post" action="{{ url_for('switch_profile') }}" class="d-flex align-items-center gap-3 flex-wrap">
+                    <input type="hidden" name="_method" value="put">
+                    <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="from_page_action" value="v_plus_services_marketplace-index" class="ai-field" data-ai-name="originating_page_action">
+                    
+                    <div class="flex-grow-1">
+                        <label for="profile_profile_name" class="form-label fw-bold">Profile Type</label>
+                        <select name="profile[profile_name]" id="profile_profile_name" class="form-select ai-field" data-ai-name="selectedProfileName" data-ai-type="Property Management Profile">
+                            <option value="property_management" selected>Property Management</option>
+                            <option value="association_management">Association Management</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" id="switch_profile_button" class="btn btn-primary-enhanced pulse-animation">
+                            <i class="fas fa-exchange-alt me-2"></i>Switch Profile
+                        </button>
+                        <button type="button" class="btn btn-outline-enhanced">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Main Content -->
+            <div id="v_plus_services_marketplace_main">
+                <div id="app" class="mt-4">
+                    <h1 class="js-title border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+                        <span class="gradient-text">Additional Services</span>
+                        <i class="fas fa-plus-circle text-primary"></i>
+                    </h1>
+
+                    <!-- New Feature Alert -->
+                    <div class="alert-enhanced mb-4" role="alert">
+                        <div class="d-flex align-items-center">
+                            <div class="me-4">
+                                <span class="badge badge-enhanced pulse-animation">NEW</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="h5 mb-2 fw-bold">You'll wonder how you ever managed to manage.</h3>
+                                <p class="mb-0">Realm-X Flows is a workflow automation engine that helps you standardize your processes and increases the speed, efficiency, and consistency of how they are executed. <a href="{{ url_for('apm_plus') }}" class="text-decoration-none fw-bold">Learn More</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Section -->
+                    <div class="hero-section">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6">
+                                <h2 class="display-4 fw-bold mb-4">Maximize your partnership with AppFolio</h2>
+                                <p class="lead mb-4">Take advantage of additional services that are built to work seamlessly across your workflows.</p>
+                                <button class="btn btn-primary-enhanced btn-lg me-3">
+                                    <i class="fas fa-rocket me-2"></i>Get Started
+                                </button>
+                                <button class="btn btn-outline-enhanced btn-lg">
+                                    <i class="fas fa-play me-2"></i>Watch Demo
+                                </button>
+                            </div>
+                            <div class="col-lg-6 text-center">
+                                <img src="https://public.cdn.appfolio.com/public/images/marketplace/final.png" 
+                                     class="img-fluid rounded-4 shadow-lg" 
+                                     alt="People in office presentation" 
+                                     style="max-height: 400px; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Featured Services -->
+                    <div class="mb-5">
+                        <h2 class="h3 mb-4 fw-bold">Featured Services</h2>
+                        <div class="row">
+                            <!-- FolioGuard Smart Ensure -->
+                            <div class="col-12 mb-4">
+                                <div class="service-card featured-service h-100">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h3 class="h4 fw-bold text-primary">FolioGuard™ Smart Ensure</h3>
+                                            <span class="status-enabled">
+                                                <i class="fas fa-check-circle"></i>Enabled
+                                            </span>
+                                        </div>
+                                        <p class="mb-4">Unlock new revenue streams with Smart Ensure while protecting your properties. Automatically track and enforce your insurance requirements - let the system do the heavy lifting.</p>
+                                        <a href="{{ url_for('smart_ensure') }}" class="btn btn-outline-enhanced">
+                                            <i class="fas fa-info-circle me-2"></i>Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Affordable Housing & Screening -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="service-card h-100">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <h3 class="h4 fw-bold mb-3">Add Affordable Housing Units to Your Portfolio</h3>
+                                        <p class="flex-grow-1">Gain peace of mind by streamlining your affordable housing property management with AppFolio. Efficiently operate your affordable housing and market-rate units on one powerful platform.</p>
+                                        <div class="d-flex gap-2 mt-3">
+                                            <button class="btn btn-primary-enhanced btn-sm">
+                                                <i class="fas fa-user-plus me-2"></i>Sign Up
+                                            </button>
+                                            <a href="{{ url_for('affordable_housing') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 mb-4">
+                                <div class="service-card h-100">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <h3 class="h4 fw-bold mb-3">FolioScreen™ Trusted Renter</h3>
+                                        <p class="flex-grow-1">Select the most qualified applicants for your community and approve them quickly— all while reducing fraud & staying fair housing compliant.</p>
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <span class="status-enabled">
+                                                <i class="fas fa-check-circle"></i>Enabled
+                                            </span>
+                                            <a href="{{ url_for('screenings_awareness') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Services -->
+                    <div class="service-card">
+                        <div class="card-header bg-transparent p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h2 class="h3 mb-0 fw-bold">Available Services</h2>
+                                <div class="d-flex gap-2">
+                                    <input type="text" id="serviceSearch" class="form-control form-control-sm" placeholder="Search services..." style="width: 200px;">
+                                    <select id="categoryFilter" class="form-select form-select-sm" style="width: 180px;">
+                                        <option value="">All Categories</option>
+                                        <option value="marketing">Marketing & Leasing</option>
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="accounting">Accounting</option>
+                                        <option value="affordable">Affordable Housing</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-0">
+                            <div class="service-list">
+                                <ul class="list-group list-group-flush" id="servicesList">
+                                    <li class="list-group-item service-item p-4" data-category="affordable">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Affordable Housing</h4>
+                                                <span class="badge-enhanced badge-affordable">AFFORDABLE HOUSING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('affordable_housing') }}" class="btn btn-outline-enhanced btn-sm">
+                                                        <i class="fas fa-info-circle me-2"></i>Learn More
+                                                    </a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">
+                                                        <i class="fas fa-calendar-alt me-2"></i>Request Demo
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="marketing">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Websites</h4>
+                                                <span class="badge-enhanced badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('websites_awareness') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Request Demo</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="marketing">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">AI Leasing Assistant, Lisa</h4>
+                                                <span class="badge-enhanced badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('lisa') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Request Demo</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="marketing">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Leasing CRM</h4>
+                                                <span class="badge-enhanced badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('leasing_crm') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Request Demo</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="marketing">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Leasing Signals</h4>
+                                                <span class="badge-enhanced badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('leasing_signals') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Request Demo</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="maintenance">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Smart Maintenance</h4>
+                                                <span class="badge-enhanced badge-maintenance">MAINTENANCE</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('smart_maintenance_awareness') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Request Demo</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="list-group-item service-item p-4" data-category="accounting">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <h4 class="mb-2 fw-bold">Online Payables</h4>
+                                                <span class="badge-enhanced badge-accounting">ACCOUNTING</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="{{ url_for('online_payables_help') }}" class="btn btn-outline-enhanced btn-sm">Learn More</a>
+                                                    <button class="btn btn-primary-enhanced btn-sm">Get Started</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(255, 255, 255, 0.9); z-index: 9999;">
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="h5">Loading services...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalTitle">Notification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="messageModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary-enhanced" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize components
+    initializeSearch();
+    initializeFilters();
+    initializeForms();
+    initializeAnimations();
+    
+    // Search functionality
+    function initializeSearch() {
+        const searchInput = document.getElementById('serviceSearch');
+        const serviceItems = document.querySelectorAll('.service-item');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                serviceItems.forEach(item => {
+                    const title = item.querySelector('h4').textContent.toLowerCase();
+                    const badge = item.querySelector('.badge-enhanced').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || badge.includes(searchTerm)) {
+                        item.style.display = '';
+                        item.classList.add('fade-in');
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    }
+    
+    // Category filter functionality
+    function initializeFilters() {
+        const categoryFilter = document.getElementById('categoryFilter');
+        const serviceItems = document.querySelectorAll('.service-item');
+        
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                
+                serviceItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    
+                    if (!selectedCategory || itemCategory === selectedCategory) {
+                        item.style.display = '';
+                        item.classList.add('fade-in');
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    }
+    
+    // Form handling
+    function initializeForms() {
+        const profileForm = document.getElementById('profileForm');
+        
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                
+                // Show loading state
+                loadingOverlay.classList.remove('d-none');
+                
+                // Simulate API call
+                setTimeout(() => {
+                    loadingOverlay.classList.add('d-none');
+                    showMessage('Success', 'Profile switched successfully!', 'success');
+                }, 1500);
+            });
+        }
+        
+        // Handle service buttons
+        document.querySelectorAll('.btn-primary-enhanced').forEach(button => {
+            if (button.textContent.includes('Request Demo') || button.textContent.includes('Sign Up')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showMessage('Demo Request', 'Your demo request has been submitted. We will contact you shortly.', 'success');
+                });
+            }
+        });
+    }
+    
+    // Animation initialization
+    function initializeAnimations() {
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        });
+        
+        document.querySelectorAll('.service-card').forEach(card => {
+            observer.observe(card);
+        });
+    }
+    
+    // Utility function to show messages
+    function showMessage(title, message, type = 'info') {
+        const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const titleEl = document.getElementById('messageModalTitle');
+        const bodyEl = document.getElementById('messageModalBody');
+        
+        titleEl.textContent = title;
+        bodyEl.innerHTML = `<div class="${type === 'success' ? 'success-state' : 'error-state'}"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}</div>`;
+        
+        modal.show();
+    }
+    
+    // Handle AI-enhanced fields
+    document.querySelectorAll('.ai-field').forEach(field => {
+        field.addEventListener('focus', function() {
+            this.style.boxShadow = '0 0 0 0.2rem rgba(102, 126, 234, 0.25)';
+        });
+        
+        field.addEventListener('blur', function() {
+            this.style.boxShadow = '';
+        });
+    });
+    
+    // Supabase integration placeholder
+    async function loadServices() {
+        try {
+            // Placeholder for Supabase integration
+            const response = await fetch('/api/services');
+            const services = await response.json();
+            
+            // Update UI with loaded services
+            // This would be implemented based on actual API structure
+            
+        } catch (error) {
+            console.error('Error loading services:', error);
+            showMessage('Error', 'Failed to load services. Please try again.', 'error');
+        }
+    }
+    
+    // Initialize data loading
+    // loadServices();
+});
+</script>
+{% endblock %}

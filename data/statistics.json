@@ -1,0 +1,10 @@
+{
+  "fields_identified": 0,
+  "fields_ai_named": 0,
+  "calculations_mapped": 33,
+  "duplicates_prevented": 1,
+  "pages_processed": 5,
+  "total_cost": 1.6596389999999999,
+  "claude_cost": 1.6596389999999999,
+  "gemini_cost": 0.0
+}

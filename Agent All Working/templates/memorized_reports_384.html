@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grouped Financial Reports - Deposit Register - AIVIIZN AI</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom styles with AI field highlighting -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --ai-color: #9b59b6;
+            --calculated-color: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .ai-field {
+            position: relative;
+            border: 2px solid var(--ai-color);
+            background: linear-gradient(45deg, rgba(155, 89, 182, 0.05), rgba(155, 89, 182, 0.1));
+            transition: all 0.3s;
+        }
+        
+        .ai-field:hover {
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .calculated-field {
+            border: 2px solid var(--calculated-color);
+            background: linear-gradient(45deg, rgba(231, 76, 60, 0.05), rgba(231, 76, 60, 0.1));
+        }
+        
+        .field-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--ai-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+        
+        .calculated-badge {
+            background: var(--calculated-color);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .field-info {
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            border-left: 4px solid var(--ai-color);
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .ai-name {
+            color: var(--ai-color);
+            font-weight: 600;
+        }
+        
+        .original-name {
+            color: #7f8c8d;
+            font-size: 11px;
+            font-style: italic;
+        }
+        
+        .data-type {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        
+        .calculation-info {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--calculated-color);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .ai-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--ai-color);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Grouped Financial Reports - Deposit Register</h1>
+            <p class="text-muted">Powered by AI Field Intelligence</p>
+            
+            <!-- AI Statistics -->
+            <div class="ai-stats">
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Fields Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">AI Named</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Calculated Fields</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Formulas Mapped</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Field Intelligence Summary -->
+        <div class="field-intelligence-summary mb-4">
+            <h3>AI Field Intelligence Report</h3>
+            <div class="row">
+                
+            </div>
+        </div>
+        
+        <!-- Calculations Summary -->
+        
+        
+        <!-- Forms with AI Intelligence -->
+        
+    </div>
+    
+    <script type="module">
+        // AI field mappings
+        const aiFieldMappings = [];
+        
+        console.log('🧠 AI Field Mappings loaded:', aiFieldMappings.length);
+        
+        // Enhance fields with AI information
+        aiFieldMappings.forEach(mapping => {
+            const element = document.querySelector(`[name="${mapping.original}"]`);
+            if (element) {
+                element.classList.add(mapping.is_calculated ? 'calculated-field' : 'ai-field');
+                element.setAttribute('data-ai-name', mapping.ai_name);
+                element.setAttribute('data-semantic-type', mapping.semantic_type);
+                element.setAttribute('data-confidence', mapping.confidence);
+                
+                // Add tooltip
+                element.title = `AI: ${mapping.ai_name} (${mapping.semantic_type}) - Confidence: ${(mapping.confidence * 100).toFixed(0)}%`;
+            }
+        });
+        
+        // Highlight calculated fields
+        document.querySelectorAll('.calculated-field').forEach(field => {
+            field.addEventListener('change', () => {
+                console.log('📊 Calculated field changed:', field.getAttribute('data-ai-name'));
+                // Here you could trigger recalculation
+            });
+        });
+    </script>
+</body>
+</html>

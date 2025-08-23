@@ -1,0 +1,850 @@
+
+{% extends 'base.html' %}
+
+{% block title %}AppFolio Property Manager - Advanced Search{% endblock %}
+
+{% block extra_css %}
+<style>
+    .advanced-search-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .search-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .search-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .page-title {
+        color: #2d3748;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .search-input-group {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .advanced-search-input {
+        border-radius: 15px;
+        border: 2px solid #e2e8f0;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .advanced-search-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 5px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .search-icon {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 0 15px 15px 0;
+        color: white;
+        padding: 1rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-icon:hover {
+        background: linear-gradient(45deg, #764ba2, #667eea);
+        transform: scale(1.05);
+    }
+
+    .ai-enhanced {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ai-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+        animation: shimmer 2s infinite;
+        z-index: 1;
+    }
+
+    .ai-enhanced::after {
+        content: 'AI';
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: bold;
+        z-index: 2;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .category-section {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .category-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .category-dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        text-align: left;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-toggle:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .dropdown-menu {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .dropdown-item.active {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .show-hidden-checkbox {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .profile-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-select {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-right: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .profile-select:focus {
+        background: white;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-switch {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-switch:hover {
+        background: linear-gradient(45deg, #764ba2, #667eea);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
+    }
+
+    .footer-links {
+        background: rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+        margin-top: 3rem;
+        text-align: center;
+    }
+
+    .footer-links a {
+        color: #4a5568;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    .footer-links a:hover {
+        color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .loading-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: linear-gradient(45deg, #fc8181, #f56565);
+        color: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: none;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .search-card {
+            margin: 1rem;
+            border-radius: 15px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .advanced-search-input {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="advanced-search-container">
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-lg-10">
+                <!-- Profile Form -->
+                <div class="profile-form">
+                    <form id="profileForm" action="{{ url_for('user_profiles.switch') }}" method="post">
+                        <input type="hidden" name="_method" value="put">
+                        <input type="hidden" name="authenticity_token" value="7R428S7jLIcYI9Gva4n0LIbhweFoNW13eIAh-NUUxVK4xdVRprRQPGy1_uSebsRKks-U5SSnnuEyL8QV9HhlbQ">
+                        <input type="hidden" name="from_page_action" value="advanced_search-advanced_search" id="from_page_action">
+                        
+                        <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
+                            <select name="profile[profile_name]" id="profile_profile_name" class="profile-select ai-enhanced">
+                                <option value="property_management" selected>Property Management</option>
+                                <option value="association_management">Association Management</option>
+                            </select>
+                            <button type="submit" id="switch_profile_button" class="btn btn-switch">
+                                Switch Profile
+                            </button>
+                            <button type="button" class="btn btn-cancel">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Main Search Card -->
+                <div class="search-card position-relative">
+                    <div class="loading-overlay" id="loadingOverlay">
+                        <div class="loading-spinner"></div>
+                    </div>
+
+                    <div class="p-4 p-md-5">
+                        <div id="flash_messages">
+                            <div class="error-message" id="errorMessage"></div>
+                        </div>
+
+                        <h1 class="page-title">Advanced Search</h1>
+
+                        <!-- Search Input -->
+                        <div class="search-input-group">
+                            <div class="input-group">
+                                <input 
+                                    type="search" 
+                                    id="advanced-search-input" 
+                                    class="form-control advanced-search-input ai-enhanced" 
+                                    placeholder="Search AppFolio - AI-powered intelligent search"
+                                    aria-label="Advanced Search"
+                                    autocomplete="off"
+                                >
+                                <button class="btn search-icon" type="button" id="searchButton">
+                                    <i class="fas fa-search fa-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Show Hidden Items Checkbox -->
+                        <div class="show-hidden-checkbox">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    id="checkbox-boolean-input-0"
+                                >
+                                <label class="form-check-label" for="checkbox-boolean-input-0">
+                                    Show Hidden Items
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Category Section -->
+                        <div class="category-section">
+                            <div class="category-label">Category</div>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="dropdown category-dropdown">
+                                        <button 
+                                            class="dropdown-toggle ai-enhanced" 
+                                            type="button" 
+                                            id="categoryDropdown" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false"
+                                        >
+                                            <span id="selectedCategory">All</span>
+                                            <i class="fas fa-chevron-down float-end mt-1"></i>
+                                        </button>
+                                        <ul class="dropdown-menu w-100" aria-labelledby="categoryDropdown">
+                                            <li><a class="dropdown-item active" href="#" data-value="">All</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="bank_accounts">Bank Accounts</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="help_articles">Help Articles</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="in_progress">In Progress</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="key_infos">Keys</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="pages">Pages</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="people">People</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="property">Properties</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="purchase_orders">Purchase Orders</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="reports">Reports</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="saved_reports">Saved Reports</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="tasks">Tasks</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="transactions">Transactions</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="units">Units</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="unit_turns">Unit Turns</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="violations">Violations</a></li>
+                                            <li><a class="dropdown-item" href="#" data-value="work_orders">Work Orders</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search Results Container -->
+                        <div id="searchResults" class="mt-4" style="display: none;">
+                            <h3>Search Results</h3>
+                            <div id="resultsContainer" class="row">
+                                <!-- Results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="footer-links">
+                        <a href="{{ url_for('privacy') }}" target="_blank" rel="noopener">Privacy</a>
+                        <span class="mx-2">|</span>
+                        <a href="{{ url_for('help.login') }}" target="_blank" rel="noopener">Help & Training</a>
+                        <span class="mx-2">|</span>
+                        <a href="{{ url_for('help.suggestion') }}" target="_blank" rel="noopener">Make a Suggestion »</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Supabase integration
+const supabaseUrl = '{{ config.SUPABASE_URL }}';
+const supabaseKey = '{{ config.SUPABASE_ANON_KEY }}';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+class AdvancedSearchManager {
+    constructor() {
+        this.searchInput = document.getElementById('advanced-search-input');
+        this.categoryDropdown = document.getElementById('categoryDropdown');
+        this.showHiddenCheckbox = document.getElementById('checkbox-boolean-input-0');
+        this.searchResults = document.getElementById('searchResults');
+        this.resultsContainer = document.getElementById('resultsContainer');
+        this.loadingOverlay = document.getElementById('loadingOverlay');
+        this.errorMessage = document.getElementById('errorMessage');
+        
+        this.currentCategory = '';
+        this.searchTimeout = null;
+        
+        this.initializeEventListeners();
+        this.loadSearchHistory();
+    }
+
+    initializeEventListeners() {
+        // Real-time search
+        this.searchInput.addEventListener('input', (e) => {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.performSearch(e.target.value);
+            }, 500);
+        });
+
+        // Search button
+        document.getElementById('searchButton').addEventListener('click', () => {
+            this.performSearch(this.searchInput.value);
+        });
+
+        // Enter key search
+        this.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.performSearch(this.searchInput.value);
+            }
+        });
+
+        // Category dropdown
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.selectCategory(e.target);
+            });
+        });
+
+        // Show hidden checkbox
+        this.showHiddenCheckbox.addEventListener('change', () => {
+            if (this.searchInput.value.trim()) {
+                this.performSearch(this.searchInput.value);
+            }
+        });
+
+        // Profile form
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            this.handleProfileSwitch(e);
+        });
+
+        // Auto-complete functionality
+        this.searchInput.addEventListener('focus', () => {
+            this.showSearchSuggestions();
+        });
+    }
+
+    selectCategory(item) {
+        // Remove active class from all items
+        document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+        
+        // Add active class to selected item
+        item.classList.add('active');
+        
+        // Update selected category display
+        document.getElementById('selectedCategory').textContent = item.textContent;
+        this.currentCategory = item.dataset.value;
+        
+        // Close dropdown
+        const dropdown = bootstrap.Dropdown.getInstance(this.categoryDropdown);
+        if (dropdown) dropdown.hide();
+        
+        // Perform search if there's a query
+        if (this.searchInput.value.trim()) {
+            this.performSearch(this.searchInput.value);
+        }
+    }
+
+    async performSearch(query) {
+        if (!query.trim()) {
+            this.hideSearchResults();
+            return;
+        }
+
+        this.showLoading();
+        this.hideError();
+
+        try {
+            // Save search to history
+            await this.saveSearchHistory(query, this.currentCategory);
+            
+            // Perform the actual search
+            const results = await this.searchDatabase(query);
+            
+            this.displayResults(results);
+            this.showSearchResults();
+            
+        } catch (error) {
+            console.error('Search error:', error);
+            this.showError('Search failed. Please try again.');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async searchDatabase(query) {
+        // This is a mock search function - replace with actual Supabase queries
+        // based on the selected category
+        
+        let searchTable = 'search_items'; // Default table
+        let searchColumns = ['id', 'title', 'description', 'category', 'url'];
+        
+        // Category-specific search logic
+        switch(this.currentCategory) {
+            case 'people':
+                searchTable = 'people';
+                searchColumns = ['id', 'name', 'email', 'phone', 'role'];
+                break;
+            case 'property':
+                searchTable = 'properties';
+                searchColumns = ['id', 'name', 'address', 'type', 'status'];
+                break;
+            case 'units':
+                searchTable = 'units';
+                searchColumns = ['id', 'unit_number', 'property_id', 'status'];
+                break;
+            // Add more categories as needed
+        }
+
+        let searchQuery = supabase
+            .from(searchTable)
+            .select(searchColumns.join(','))
+            .ilike('title', `%${query}%`);
+
+        // Add hidden items filter
+        if (!this.showHiddenCheckbox.checked) {
+            searchQuery = searchQuery.eq('hidden', false);
+        }
+
+        const { data, error } = await searchQuery.limit(20);
+        
+        if (error) throw error;
+        
+        return data || [];
+    }
+
+    displayResults(results) {
+        this.resultsContainer.innerHTML = '';
+        
+        if (results.length === 0) {
+            this.resultsContainer.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <h5>No results found</h5>
+                        <p>Try adjusting your search terms or category filter.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        results.forEach(result => {
+            const resultCard = this.createResultCard(result);
+            this.resultsContainer.appendChild(resultCard);
+        });
+    }
+
+    createResultCard(result) {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-md-6 col-lg-4 mb-3';
+        
+        col.innerHTML = `
+            <div class="card h-100 result-card">
+                <div class="card-body">
+                    <h6 class="card-title">${result.title || result.name || 'Untitled'}</h6>
+                    <p class="card-text text-muted small">${result.description || result.email || result.address || 'No description available'}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">${result.category || this.currentCategory || 'General'}</small>
+                        <button class="btn btn-sm btn-outline-primary" onclick="window.open('${result.url || '#'}', '_blank')">
+                            View <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add animation
+        col.style.opacity = '0';
+        col.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            col.style.transition = 'all 0.3s ease';
+            col.style.opacity = '1';
+            col.style.transform = 'translateY(0)';
+        }, 100);
+        
+        return col;
+    }
+
+    async saveSearchHistory(query, category) {
+        try {
+            const { data, error } = await supabase
+                .from('search_history')
+                .insert([
+                    {
+                        query: query,
+                        category: category,
+                        user_id: this.getCurrentUserId(),
+                        created_at: new Date().toISOString()
+                    }
+                ]);
+            
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error saving search history:', error);
+        }
+    }
+
+    async loadSearchHistory() {
+        try {
+            const { data, error } = await supabase
+                .from('search_history')
+                .select('query, category, created_at')
+                .eq('user_id', this.getCurrentUserId())
+                .order('created_at', { ascending: false })
+                .limit(10);
+            
+            if (error) throw error;
+            
+            // Store for autocomplete suggestions
+            this.searchHistory = data || [];
+        } catch (error) {
+            console.error('Error loading search history:', error);
+            this.searchHistory = [];
+        }
+    }
+
+    showSearchSuggestions() {
+        // Implement autocomplete dropdown based on search history
+        if (this.searchHistory.length === 0) return;
+        
+        // Create suggestions dropdown (implementation would go here)
+    }
+
+    getCurrentUserId() {
+        // This should return the current user's ID from your auth system
+        return 'current_user_id'; // Replace with actual user ID logic
+    }
+
+    async handleProfileSwitch(e) {
+        e.preventDefault();
+        
+        this.showLoading();
+        
+        try {
+            const formData = new FormData(e.target);
+            const profileData = Object.fromEntries(formData);
+            
+            // Save profile switch to Supabase
+            const { data, error } = await supabase
+                .from('user_profiles')
+                .upsert([
+                    {
+                        user_id: this.getCurrentUserId(),
+                        profile_name: profileData['profile[profile_name]'],
+                        updated_at: new Date().toISOString()
+                    }
+                ]);
+            
+            if (error) throw error;
+            
+            // Submit the form
+            e.target.submit();
+            
+        } catch (error) {
+            console.error('Profile switch error:', error);
+            this.showError('Failed to switch profile. Please try again.');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    showLoading() {
+        this.loadingOverlay.classList.add('show');
+    }
+
+    hideLoading() {
+        this.loadingOverlay.classList.remove('show');
+    }
+
+    showError(message) {
+        this.errorMessage.textContent = message;
+        this.errorMessage.style.display = 'block';
+        
+        setTimeout(() => {
+            this.hideError();
+        }, 5000);
+    }
+
+    hideError() {
+        this.errorMessage.style.display = 'none';
+    }
+
+    showSearchResults() {
+        this.searchResults.style.display = 'block';
+    }
+
+    hideSearchResults() {
+        this.searchResults.style.display = 'none';
+    }
+}
+
+// Initialize the search manager when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    new AdvancedSearchManager();
+    
+    // Add some additional CSS for result cards
+    const style = document.createElement('style');
+    style.textContent = `
+        .result-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-card .card-body {
+            position: relative;
+        }
+        
+        .result-card .card-title {
+            color: #2d3748;
+            font-weight: 600;
+        }
+    `;
+    document.head.appendChild(style);
+});
+
+// Add some keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + K to focus search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('advanced-search-input').focus();
+    }
+    
+    // Escape to clear search
+    if (e.key === 'Escape') {
+        document.getElementById('advanced-search-input').value = '';
+        document.getElementById('searchResults').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

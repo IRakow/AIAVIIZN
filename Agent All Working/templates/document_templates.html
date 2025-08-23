@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Document Templates{% endblock %}
+{% block content %}
+<h2>Document Templates</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Last Modified</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for template in templates %}
+            <tr>
+                <td>{{ template.name }}</td>
+                <td>{{ template.type }}</td>
+                <td>{{ template.last_modified }}</td>
+                <td>
+                    <button class="btn-sm btn-primary">Edit</button>
+                    <button class="btn-sm btn-info">Preview</button>
+                    <button class="btn-sm btn-danger">Delete</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align: center;">No templates found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

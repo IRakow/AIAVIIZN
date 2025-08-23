@@ -1,0 +1,13 @@
+AIVIIZN Agent Backup
+Timestamp: 20250822_214602
+Files copied: 38
+Files skipped: 0
+
+Backup includes:
+- Main agent scripts
+- Configuration files
+- Database schemas
+- Templates directory
+- Data directory
+- Session data
+- Screenshots

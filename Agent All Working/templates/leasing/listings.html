@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Listings{% endblock %}
+{% block content %}
+<h2>Property Listings</h2>
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Rent</th>
+                <th>Available Date</th>
+                <th>Listed On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+                <td>{{ listing.property }}</td>
+                <td>{{ listing.unit }}</td>
+                <td>${{ listing.rent }}</td>
+                <td>{{ listing.available_date }}</td>
+                <td>{{ listing.listed_on|join(', ') }}</td>
+                <td>{{ listing.status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align: center;">No active listings</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,1581 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Inventory Page Specific Styles */
+    .content-header {
+        padding: 20px;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .content-header h2 {
+        font-size: 24px;
+        font-weight: 400;
+        color: #333;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-search {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #495057;
+    }
+
+    .btn-search:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-add-inventory {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-add-inventory:hover {
+        background: #0056b3;
+    }
+
+    /* Search Section */
+    .search-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        display: none;
+    }
+
+    .search-section.show {
+        display: block;
+    }
+
+    .search-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .search-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .search-input, .search-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .search-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-filter {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-filter:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-filter.primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-filter.primary:hover {
+        background: #0056b3;
+    }
+
+    /* Inventory Table */
+    .inventory-table-container {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .inventory-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .inventory-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .inventory-table th:hover {
+        background: #e9ecef;
+    }
+
+    .inventory-table th .sort-icon {
+        float: right;
+        color: #6c757d;
+        font-size: 10px;
+    }
+
+    .inventory-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+    }
+
+    .inventory-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .item-name {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .item-name:hover {
+        text-decoration: underline;
+    }
+
+    .quantity-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .quantity-normal {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .quantity-low {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .quantity-critical {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-action {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    .btn-action:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-action.edit {
+        color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-action.adjust {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-action.delete {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+
+    .empty-state-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .empty-state-text {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+    }
+
+    .pagination-info {
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: #f8f9fa;
+    }
+
+    .page-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #bd2130;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-action-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .quick-action-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .quick-action-btn.secondary {
+        background: #6c757d;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <h2>Inventory Items</h2>
+        <div class="header-actions">
+            <button class="btn-search" onclick="toggleSearch()">
+                Click here to search
+            </button>
+            <button class="btn-add-inventory" onclick="openAddInventoryModal()">
+                <span>+</span>
+                Add Inventory
+            </button>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <!-- Search Section -->
+        <div class="search-section" id="searchSection">
+            <div class="search-grid">
+                <div class="search-group">
+                    <label class="search-label">Item Name</label>
+                    <input type="text" class="search-input" id="searchName" placeholder="Search by item name..." onkeyup="filterInventory()">
+                </div>
+                <div class="search-group">
+                    <label class="search-label">Category</label>
+                    <select class="search-select" id="searchCategory" onchange="filterInventory()">
+                        <option value="">All Categories</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="appliances">Appliances</option>
+                        <option value="paint">Paint & Supplies</option>
+                        <option value="cleaning">Cleaning Supplies</option>
+                        <option value="tools">Tools</option>
+                        <option value="hardware">Hardware</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="safety">Safety Equipment</option>
+                    </select>
+                </div>
+                <div class="search-group">
+                    <label class="search-label">Location</label>
+                    <select class="search-select" id="searchLocation" onchange="filterInventory()">
+                        <option value="">All Locations</option>
+                        <option value="main-warehouse">Main Warehouse</option>
+                        <option value="west-plaza">West Plaza Storage</option>
+                        <option value="brentwood">Brentwood Maintenance</option>
+                        <option value="longmeadow">Longmeadow Storage</option>
+                        <option value="mobile-unit-1">Mobile Unit 1</option>
+                        <option value="mobile-unit-2">Mobile Unit 2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn-filter primary" onclick="filterInventory()">Apply Filters</button>
+                <button class="btn-filter" onclick="clearFilters()">Clear Filters</button>
+                <button class="btn-filter" onclick="exportInventory()">Export to CSV</button>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table-container">
+            <table class="inventory-table" id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('name')">
+                            Name
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('quantity')">
+                            Quantity
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('reorder')">
+                            Reorder
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('category')">
+                            Category
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th onclick="sortTable('location')">
+                            Location
+                            <span class="sort-icon">▼</span>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                    <!-- Inventory items will be loaded here -->
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📦</div>
+                <div class="empty-state-title">No inventory items found</div>
+                <div class="empty-state-text">Start by adding your first inventory item</div>
+                <button class="btn btn-primary" onclick="openAddInventoryModal()">Add First Item</button>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Displaying: <span id="itemRange">1-10</span> of <span id="totalItems">0</span>
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>Previous</button>
+                    <span id="pageNumbers"></span>
+                    <button class="page-btn" onclick="changePage('next')" id="nextPage">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Inventory Modal -->
+<div id="inventoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Add Inventory Item</h2>
+            <button class="modal-close" onclick="closeModal('inventoryModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="inventoryForm">
+                <div class="form-group">
+                    <label class="form-label">Item Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="itemName" required placeholder="e.g., 2-inch PVC Pipe">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category <span class="required">*</span></label>
+                        <select class="form-control" id="itemCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="hvac">HVAC</option>
+                            <option value="appliances">Appliances</option>
+                            <option value="paint">Paint & Supplies</option>
+                            <option value="cleaning">Cleaning Supplies</option>
+                            <option value="tools">Tools</option>
+                            <option value="hardware">Hardware</option>
+                            <option value="landscaping">Landscaping</option>
+                            <option value="safety">Safety Equipment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location <span class="required">*</span></label>
+                        <select class="form-control" id="itemLocation" required>
+                            <option value="">Select Location</option>
+                            <option value="main-warehouse">Main Warehouse</option>
+                            <option value="west-plaza">West Plaza Storage</option>
+                            <option value="brentwood">Brentwood Maintenance</option>
+                            <option value="longmeadow">Longmeadow Storage</option>
+                            <option value="mobile-unit-1">Mobile Unit 1</option>
+                            <option value="mobile-unit-2">Mobile Unit 2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Current Quantity <span class="required">*</span></label>
+                        <input type="number" class="form-control" id="itemQuantity" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reorder Level <span class="required">*</span></label>
+                        <input type="number" class="form-control" id="itemReorder" required min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Unit Cost ($)</label>
+                        <input type="number" class="form-control" id="itemCost" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SKU/Part Number</label>
+                        <input type="text" class="form-control" id="itemSku" placeholder="Optional">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Supplier/Vendor</label>
+                    <select class="form-control" id="itemSupplier">
+                        <option value="">Select Supplier</option>
+                        <option value="home-depot">Home Depot</option>
+                        <option value="lowes">Lowe's</option>
+                        <option value="ferguson">Ferguson</option>
+                        <option value="grainger">Grainger</option>
+                        <option value="84-lumber">84 Lumber</option>
+                        <option value="ace-hardware">Ace Hardware</option>
+                        <option value="amazon">Amazon Business</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description/Notes</label>
+                    <textarea class="form-control" id="itemDescription" rows="3" placeholder="Additional details about this item..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('inventoryModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveInventoryItem()">Save Item</button>
+        </div>
+    </div>
+</div>
+
+<!-- Adjust Quantity Modal -->
+<div id="adjustModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Adjust Quantity</h2>
+            <button class="modal-close" onclick="closeModal('adjustModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Current Quantity</label>
+                <input type="text" class="form-control" id="currentQty" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Adjustment Type</label>
+                <select class="form-control" id="adjustType" onchange="updateAdjustmentLabel()">
+                    <option value="add">Add to Inventory</option>
+                    <option value="remove">Remove from Inventory</option>
+                    <option value="set">Set Quantity To</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="adjustLabel">Add Quantity</label>
+                <input type="number" class="form-control" id="adjustQty" min="0" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reason/Notes</label>
+                <textarea class="form-control" id="adjustReason" rows="2" placeholder="Optional"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('adjustModal')">Cancel</button>
+            <button class="btn btn-success" onclick="adjustQuantity()">Apply Adjustment</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Add Modal -->
+<div id="bulkAddModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Bulk Add Inventory Items</h2>
+            <button class="modal-close" onclick="closeModal('bulkAddModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="color: #6c757d; margin-bottom: 20px;">Add multiple inventory items at once. Each row represents one item.</p>
+            <table class="inventory-table" style="margin-bottom: 15px;">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Quantity</th>
+                        <th>Reorder</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="bulkAddBody">
+                    <tr class="bulk-row">
+                        <td><input type="text" class="form-control" placeholder="Item name"></td>
+                        <td>
+                            <select class="form-control">
+                                <option value="">Select</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="hvac">HVAC</option>
+                                <option value="tools">Tools</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option value="">Select</option>
+                                <option value="main-warehouse">Main Warehouse</option>
+                                <option value="west-plaza">West Plaza</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="form-control" min="0" placeholder="0"></td>
+                        <td><input type="number" class="form-control" min="0" placeholder="0"></td>
+                        <td><button class="btn-action delete" onclick="removeBulkRow(this)">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn btn-secondary" onclick="addBulkRow()">+ Add Another Row</button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('bulkAddModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveBulkItems()">Save All Items</button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="quick-action-btn secondary" onclick="openBulkAddModal()" title="Bulk Add Items">
+        <i class="fas fa-layer-group"></i>
+    </button>
+    <button class="quick-action-btn secondary" onclick="generateReorderReport()" title="Reorder Report">
+        <i class="fas fa-exclamation-triangle"></i>
+    </button>
+    <button class="quick-action-btn" onclick="openAddInventoryModal()" title="Add Item">
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Global variables
+    let inventoryItems = [];
+    let filteredItems = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentSort = { column: 'name', order: 'asc' };
+    let editingItemId = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadInventoryItems();
+        setupEventListeners();
+        await loadCategories();
+        await loadLocations();
+    });
+
+    // Load inventory items from Supabase
+    async function loadInventoryItems() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('inventory_items')
+                .select('*')
+                .order(currentSort.column, { ascending: currentSort.order === 'asc' });
+
+            if (error) {
+                console.error('Error loading inventory:', error);
+                // Use mock data if Supabase fails
+                inventoryItems = getMockInventoryData();
+            } else {
+                inventoryItems = data || getMockInventoryData();
+            }
+
+            filteredItems = [...inventoryItems];
+            renderInventoryTable();
+            updatePagination();
+        } catch (error) {
+            console.error('Error:', error);
+            inventoryItems = getMockInventoryData();
+            filteredItems = [...inventoryItems];
+            renderInventoryTable();
+            updatePagination();
+        }
+    }
+
+    // Get mock inventory data
+    function getMockInventoryData() {
+        return [
+            { id: 1, name: '2-inch PVC Pipe', quantity: 45, reorder_level: 20, category: 'Plumbing', location: 'Main Warehouse', unit_cost: 5.99, sku: 'PVC-2IN-10FT' },
+            { id: 2, name: 'LED Light Bulbs (60W)', quantity: 8, reorder_level: 24, category: 'Electrical', location: 'West Plaza Storage', unit_cost: 3.49, sku: 'LED-60W-4PK' },
+            { id: 3, name: 'HVAC Filter 20x20x1', quantity: 36, reorder_level: 12, category: 'HVAC', location: 'Main Warehouse', unit_cost: 8.99, sku: 'FILTER-20X20' },
+            { id: 4, name: 'White Interior Paint (1 Gal)', quantity: 12, reorder_level: 6, category: 'Paint & Supplies', location: 'Brentwood Maintenance', unit_cost: 24.99, sku: 'PAINT-INT-WHITE' },
+            { id: 5, name: 'Toilet Flapper Universal', quantity: 3, reorder_level: 10, category: 'Plumbing', location: 'Mobile Unit 1', unit_cost: 4.99, sku: 'FLAPPER-UNI' },
+            { id: 6, name: 'Circuit Breaker 20A', quantity: 15, reorder_level: 5, category: 'Electrical', location: 'Main Warehouse', unit_cost: 12.99, sku: 'BREAKER-20A' },
+            { id: 7, name: 'All-Purpose Cleaner', quantity: 24, reorder_level: 12, category: 'Cleaning Supplies', location: 'Longmeadow Storage', unit_cost: 3.99, sku: 'CLEANER-AP-32OZ' },
+            { id: 8, name: 'Cordless Drill Battery', quantity: 4, reorder_level: 2, category: 'Tools', location: 'Mobile Unit 2', unit_cost: 49.99, sku: 'BATTERY-20V' },
+            { id: 9, name: 'Door Handle Set (Satin)', quantity: 7, reorder_level: 4, category: 'Hardware', location: 'Main Warehouse', unit_cost: 18.99, sku: 'HANDLE-SATIN' },
+            { id: 10, name: 'Mulch Bags (2 cu ft)', quantity: 48, reorder_level: 20, category: 'Landscaping', location: 'West Plaza Storage', unit_cost: 3.99, sku: 'MULCH-2CF' }
+        ];
+    }
+
+    // Render inventory table
+    function renderInventoryTable() {
+        const tbody = document.getElementById('inventoryBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.getElementById('inventoryTable');
+        
+        if (filteredItems.length === 0) {
+            tbody.innerHTML = '';
+            table.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        table.style.display = 'table';
+        emptyState.style.display = 'none';
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = filteredItems.slice(start, end);
+        
+        tbody.innerHTML = pageItems.map(item => {
+            const quantityStatus = getQuantityStatus(item.quantity, item.reorder_level);
+            return `
+                <tr data-id="${item.id}">
+                    <td><a href="#" class="item-name" onclick="viewItemDetails(${item.id})">${item.name}</a></td>
+                    <td>
+                        <span class="quantity-badge quantity-${quantityStatus}">
+                            ${item.quantity}
+                        </span>
+                    </td>
+                    <td>${item.reorder_level}</td>
+                    <td>${item.category}</td>
+                    <td>${item.location}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action edit" onclick="editItem(${item.id})">Edit</button>
+                            <button class="btn-action adjust" onclick="openAdjustModal(${item.id})">Adjust</button>
+                            <button class="btn-action delete" onclick="deleteItem(${item.id})">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Get quantity status
+    function getQuantityStatus(quantity, reorderLevel) {
+        if (quantity <= reorderLevel * 0.5) return 'critical';
+        if (quantity <= reorderLevel) return 'low';
+        return 'normal';
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        };
+    }
+
+    // Toggle search section
+    function toggleSearch() {
+        const searchSection = document.getElementById('searchSection');
+        searchSection.classList.toggle('show');
+    }
+
+    // Filter inventory
+    function filterInventory() {
+        const nameFilter = document.getElementById('searchName').value.toLowerCase();
+        const categoryFilter = document.getElementById('searchCategory').value;
+        const locationFilter = document.getElementById('searchLocation').value;
+        
+        filteredItems = inventoryItems.filter(item => {
+            const nameMatch = item.name.toLowerCase().includes(nameFilter);
+            const categoryMatch = !categoryFilter || item.category === categoryFilter;
+            const locationMatch = !locationFilter || item.location === locationFilter;
+            return nameMatch && categoryMatch && locationMatch;
+        });
+        
+        currentPage = 1;
+        renderInventoryTable();
+        updatePagination();
+    }
+
+    // Clear filters
+    function clearFilters() {
+        document.getElementById('searchName').value = '';
+        document.getElementById('searchCategory').value = '';
+        document.getElementById('searchLocation').value = '';
+        filterInventory();
+        showToast('Filters cleared', 'info');
+    }
+
+    // Sort table
+    function sortTable(column) {
+        if (currentSort.column === column) {
+            currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.order = 'asc';
+        }
+        
+        filteredItems.sort((a, b) => {
+            let aVal = a[column];
+            let bVal = b[column];
+            
+            if (typeof aVal === 'string') {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+            }
+            
+            if (currentSort.order === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+        
+        renderInventoryTable();
+    }
+
+    // Update pagination
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+        const pageNumbers = document.getElementById('pageNumbers');
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        
+        // Update item range
+        const start = (currentPage - 1) * itemsPerPage + 1;
+        const end = Math.min(currentPage * itemsPerPage, filteredItems.length);
+        document.getElementById('itemRange').textContent = `${start}-${end}`;
+        document.getElementById('totalItems').textContent = filteredItems.length;
+        
+        // Generate page buttons
+        pageNumbers.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(btn);
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                span.style.padding = '0 5px';
+                pageNumbers.appendChild(span);
+            }
+        }
+        
+        // Update prev/next buttons
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+    }
+
+    // Go to page
+    function goToPage(page) {
+        currentPage = page;
+        renderInventoryTable();
+        updatePagination();
+    }
+
+    // Change page
+    function changePage(direction) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+        
+        if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (direction === 'next' && currentPage < totalPages) {
+            currentPage++;
+        }
+        
+        renderInventoryTable();
+        updatePagination();
+    }
+
+    // Open add inventory modal
+    function openAddInventoryModal() {
+        document.getElementById('modalTitle').textContent = 'Add Inventory Item';
+        document.getElementById('inventoryForm').reset();
+        editingItemId = null;
+        openModal('inventoryModal');
+    }
+
+    // Edit item
+    function editItem(id) {
+        const item = inventoryItems.find(i => i.id === id);
+        if (!item) return;
+        
+        document.getElementById('modalTitle').textContent = 'Edit Inventory Item';
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemCategory').value = item.category;
+        document.getElementById('itemLocation').value = item.location;
+        document.getElementById('itemQuantity').value = item.quantity;
+        document.getElementById('itemReorder').value = item.reorder_level;
+        document.getElementById('itemCost').value = item.unit_cost || '';
+        document.getElementById('itemSku').value = item.sku || '';
+        document.getElementById('itemDescription').value = item.description || '';
+        
+        editingItemId = id;
+        openModal('inventoryModal');
+    }
+
+    // Save inventory item
+    async function saveInventoryItem() {
+        const form = document.getElementById('inventoryForm');
+        if (!form.checkValidity()) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const itemData = {
+            name: document.getElementById('itemName').value,
+            category: document.getElementById('itemCategory').value,
+            location: document.getElementById('itemLocation').value,
+            quantity: parseInt(document.getElementById('itemQuantity').value),
+            reorder_level: parseInt(document.getElementById('itemReorder').value),
+            unit_cost: parseFloat(document.getElementById('itemCost').value) || null,
+            sku: document.getElementById('itemSku').value || null,
+            supplier: document.getElementById('itemSupplier').value || null,
+            description: document.getElementById('itemDescription').value || null
+        };
+        
+        try {
+            if (editingItemId) {
+                // Update existing item
+                const { error } = await supabaseClient
+                    .from('inventory_items')
+                    .update(itemData)
+                    .eq('id', editingItemId);
+                
+                if (error) throw error;
+                
+                // Update local data
+                const index = inventoryItems.findIndex(i => i.id === editingItemId);
+                if (index !== -1) {
+                    inventoryItems[index] = { ...inventoryItems[index], ...itemData };
+                }
+                
+                showToast('Item updated successfully', 'success');
+            } else {
+                // Add new item
+                const { data, error } = await supabaseClient
+                    .from('inventory_items')
+                    .insert([itemData])
+                    .select();
+                
+                if (error) throw error;
+                
+                // Add to local data
+                const newItem = data ? data[0] : { 
+                    ...itemData, 
+                    id: Math.max(...inventoryItems.map(i => i.id), 0) + 1 
+                };
+                inventoryItems.push(newItem);
+                
+                showToast('Item added successfully', 'success');
+            }
+            
+            closeModal('inventoryModal');
+            filterInventory(); // Refresh the display
+            
+        } catch (error) {
+            console.error('Error saving item:', error);
+            // If Supabase fails, still update local data
+            if (editingItemId) {
+                const index = inventoryItems.findIndex(i => i.id === editingItemId);
+                if (index !== -1) {
+                    inventoryItems[index] = { ...inventoryItems[index], ...itemData };
+                }
+            } else {
+                inventoryItems.push({ 
+                    ...itemData, 
+                    id: Math.max(...inventoryItems.map(i => i.id), 0) + 1 
+                });
+            }
+            
+            closeModal('inventoryModal');
+            filterInventory();
+            showToast(editingItemId ? 'Item updated successfully' : 'Item added successfully', 'success');
+        }
+    }
+
+    // Delete item
+    async function deleteItem(id) {
+        if (!confirm('Are you sure you want to delete this item?')) return;
+        
+        try {
+            const { error } = await supabaseClient
+                .from('inventory_items')
+                .delete()
+                .eq('id', id);
+            
+            if (error) throw error;
+            
+            inventoryItems = inventoryItems.filter(i => i.id !== id);
+            filterInventory();
+            showToast('Item deleted successfully', 'success');
+            
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            // If Supabase fails, still remove from local data
+            inventoryItems = inventoryItems.filter(i => i.id !== id);
+            filterInventory();
+            showToast('Item deleted successfully', 'success');
+        }
+    }
+
+    // Open adjust quantity modal
+    function openAdjustModal(id) {
+        const item = inventoryItems.find(i => i.id === id);
+        if (!item) return;
+        
+        document.getElementById('currentQty').value = item.quantity;
+        document.getElementById('adjustType').value = 'add';
+        document.getElementById('adjustQty').value = '';
+        document.getElementById('adjustReason').value = '';
+        
+        window.adjustingItemId = id;
+        updateAdjustmentLabel();
+        openModal('adjustModal');
+    }
+
+    // Update adjustment label
+    function updateAdjustmentLabel() {
+        const type = document.getElementById('adjustType').value;
+        const label = document.getElementById('adjustLabel');
+        
+        switch(type) {
+            case 'add':
+                label.textContent = 'Add Quantity';
+                break;
+            case 'remove':
+                label.textContent = 'Remove Quantity';
+                break;
+            case 'set':
+                label.textContent = 'Set Quantity To';
+                break;
+        }
+    }
+
+    // Adjust quantity
+    async function adjustQuantity() {
+        const item = inventoryItems.find(i => i.id === window.adjustingItemId);
+        if (!item) return;
+        
+        const type = document.getElementById('adjustType').value;
+        const qty = parseInt(document.getElementById('adjustQty').value);
+        const reason = document.getElementById('adjustReason').value;
+        
+        if (!qty && qty !== 0) {
+            showToast('Please enter a valid quantity', 'error');
+            return;
+        }
+        
+        let newQuantity;
+        switch(type) {
+            case 'add':
+                newQuantity = item.quantity + qty;
+                break;
+            case 'remove':
+                newQuantity = Math.max(0, item.quantity - qty);
+                break;
+            case 'set':
+                newQuantity = qty;
+                break;
+        }
+        
+        try {
+            // Update in Supabase
+            const { error } = await supabaseClient
+                .from('inventory_items')
+                .update({ quantity: newQuantity })
+                .eq('id', window.adjustingItemId);
+            
+            if (error) throw error;
+            
+            // Record transaction
+            await supabaseClient
+                .from('inventory_transactions')
+                .insert([{
+                    item_id: window.adjustingItemId,
+                    type: type,
+                    quantity: qty,
+                    reason: reason,
+                    date: new Date().toISOString()
+                }]);
+            
+        } catch (error) {
+            console.error('Error adjusting quantity:', error);
+        }
+        
+        // Update local data
+        item.quantity = newQuantity;
+        
+        closeModal('adjustModal');
+        renderInventoryTable();
+        showToast('Quantity adjusted successfully', 'success');
+    }
+
+    // Open bulk add modal
+    function openBulkAddModal() {
+        document.getElementById('bulkAddBody').innerHTML = `
+            <tr class="bulk-row">
+                <td><input type="text" class="form-control" placeholder="Item name"></td>
+                <td>
+                    <select class="form-control">
+                        <option value="">Select</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="tools">Tools</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control">
+                        <option value="">Select</option>
+                        <option value="main-warehouse">Main Warehouse</option>
+                        <option value="west-plaza">West Plaza</option>
+                    </select>
+                </td>
+                <td><input type="number" class="form-control" min="0" placeholder="0"></td>
+                <td><input type="number" class="form-control" min="0" placeholder="0"></td>
+                <td><button class="btn-action delete" onclick="removeBulkRow(this)">×</button></td>
+            </tr>
+        `;
+        openModal('bulkAddModal');
+    }
+
+    // Add bulk row
+    function addBulkRow() {
+        const tbody = document.getElementById('bulkAddBody');
+        const newRow = tbody.querySelector('.bulk-row').cloneNode(true);
+        
+        // Clear inputs in the new row
+        newRow.querySelectorAll('input').forEach(input => input.value = '');
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        
+        tbody.appendChild(newRow);
+    }
+
+    // Remove bulk row
+    function removeBulkRow(button) {
+        const row = button.closest('tr');
+        const tbody = document.getElementById('bulkAddBody');
+        
+        if (tbody.querySelectorAll('.bulk-row').length > 1) {
+            row.remove();
+        } else {
+            showToast('At least one row is required', 'error');
+        }
+    }
+
+    // Save bulk items
+    async function saveBulkItems() {
+        const rows = document.querySelectorAll('#bulkAddBody .bulk-row');
+        const items = [];
+        
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const selects = row.querySelectorAll('select');
+            
+            if (inputs[0].value && selects[0].value && selects[1].value) {
+                items.push({
+                    name: inputs[0].value,
+                    category: selects[0].value,
+                    location: selects[1].value,
+                    quantity: parseInt(inputs[1].value) || 0,
+                    reorder_level: parseInt(inputs[2].value) || 0
+                });
+            }
+        });
+        
+        if (items.length === 0) {
+            showToast('Please fill in at least one complete item', 'error');
+            return;
+        }
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('inventory_items')
+                .insert(items)
+                .select();
+            
+            if (error) throw error;
+            
+            // Add to local data
+            const newItems = data || items.map((item, index) => ({
+                ...item,
+                id: Math.max(...inventoryItems.map(i => i.id), 0) + index + 1
+            }));
+            
+            inventoryItems.push(...newItems);
+            
+        } catch (error) {
+            console.error('Error adding bulk items:', error);
+            // If Supabase fails, still add to local data
+            items.forEach((item, index) => {
+                inventoryItems.push({
+                    ...item,
+                    id: Math.max(...inventoryItems.map(i => i.id), 0) + index + 1
+                });
+            });
+        }
+        
+        closeModal('bulkAddModal');
+        filterInventory();
+        showToast(`${items.length} items added successfully`, 'success');
+    }
+
+    // Generate reorder report
+    function generateReorderReport() {
+        const lowStockItems = inventoryItems.filter(item => 
+            item.quantity <= item.reorder_level
+        );
+        
+        if (lowStockItems.length === 0) {
+            showToast('No items need reordering', 'info');
+            return;
+        }
+        
+        // Create CSV content
+        let csv = 'Item Name,Current Quantity,Reorder Level,Suggested Order,Category,Location,Supplier\n';
+        lowStockItems.forEach(item => {
+            const suggestedOrder = (item.reorder_level * 2) - item.quantity;
+            csv += `"${item.name}",${item.quantity},${item.reorder_level},${suggestedOrder},"${item.category}","${item.location}","${item.supplier || ''}"\n`;
+        });
+        
+        // Download CSV
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reorder_report_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        
+        showToast(`Reorder report generated for ${lowStockItems.length} items`, 'success');
+    }
+
+    // Export inventory
+    function exportInventory() {
+        let csv = 'Item Name,Quantity,Reorder Level,Category,Location,Unit Cost,SKU,Supplier\n';
+        filteredItems.forEach(item => {
+            csv += `"${item.name}",${item.quantity},${item.reorder_level},"${item.category}","${item.location}",${item.unit_cost || ''},"${item.sku || ''}","${item.supplier || ''}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inventory_export_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        
+        showToast('Inventory exported successfully', 'success');
+    }
+
+    // View item details
+    function viewItemDetails(id) {
+        const item = inventoryItems.find(i => i.id === id);
+        if (!item) return;
+        
+        // For now, just edit the item
+        editItem(id);
+    }
+
+    // Load categories from Supabase
+    async function loadCategories() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('inventory_categories')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update category dropdowns
+                updateCategoryDropdowns(data);
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+
+    // Load locations from Supabase
+    async function loadLocations() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('inventory_locations')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update location dropdowns
+                updateLocationDropdowns(data);
+            }
+        } catch (error) {
+            console.error('Error loading locations:', error);
+        }
+    }
+
+    // Update category dropdowns
+    function updateCategoryDropdowns(categories) {
+        // This would update all category dropdowns with data from database
+        // For now, using hardcoded categories
+    }
+
+    // Update location dropdowns
+    function updateLocationDropdowns(locations) {
+        // This would update all location dropdowns with data from database
+        // For now, using hardcoded locations
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,1323 @@
+<!-- AIVIIZN Template: Bank Transfers - AppFolio Property Manager -->
+<!-- Generated from: https://celticprop.appfolio.com/accounting/bank_transfers -->
+<!-- Timestamp: 20250821_020946 -->
+<!-- Beautiful AppFolio-inspired design -->
+
+{% extends "base.html" %}
+
+{% block title %}Bank Transfers - AppFolio Property Manager - AIVIIZN Property Manager{% endblock %}
+
+{% block styles %}
+<style>
+/* AppFolio-inspired styling converted for AIVIIZN */
+
+/* AppFolio-inspired color scheme */
+:root {
+    --appfolio-blue: #0066CC;
+    --appfolio-dark-blue: #0052A3;
+    --appfolio-light-blue: #4A90E2;
+    --appfolio-gray: #F8F9FA;
+    --appfolio-border: #E0E6ED;
+}
+
+/* AppFolio-style navigation */
+.aiviizn-nav {
+    background: var(--appfolio-blue);
+    border-bottom: 2px solid var(--appfolio-dark-blue);
+}
+
+/* AppFolio-style content areas */
+.aiviizn-content {
+    background: white;
+    border: 1px solid var(--appfolio-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* AppFolio-style data tables */
+.aiviizn-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--appfolio-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.aiviizn-table th {
+    background: var(--appfolio-gray);
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid var(--appfolio-border);
+}
+
+.aiviizn-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.aiviizn-table tr:hover {
+    background: #f8f9fa;
+}
+
+
+/* Page-specific styling */
+/* Adapted from AppFolio */
+.scroll-container.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:none;content:'';display:block;top:0px;left:0px;bottom:0px;right:0px;pointer-events:none;position:absolute;z-index:990;}.scroll-container.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:-8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-left.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-left.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:8px 0 8px -8px rgba(0,0,0,0.25) inset, -8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-bottom.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 -8px 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-bottom.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 -8px 8px -8px rgba(0,0,0,0.25) inset, -8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-bottom.overflow-left.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 -8px 8px -8px rgba(0,0,0,0.25) inset, 8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-bottom.overflow-left.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 -8px 8px -8px rgba(0,0,0,0.25) inset, 8px 0 8px -8px rgba(0,0,0,0.25) inset,-8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, -8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-left.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, 8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-left.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, 8px 0 8px -8px rgba(0,0,0,0.25) inset,-8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-bottom.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, 0 -8px 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-bottom.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, -8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-bottom.overflow-left.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, 0 -8px 8px -8px rgba(0,0,0,0.25) inset,8px 0 8px -8px rgba(0,0,0,0.25) inset;}.scroll-container.overflow-top.overflow-bottom.overflow-left.overflow-right.jsx-201526664 .container-shadow.jsx-201526664{box-shadow:0 8px 8px -8px rgba(0,0,0,0.25) inset, 8px 0 8px -8px rgba(0,0,0,0.25) inset,-8px 0 8px -8px rgba(0,0,0,0.25) inset, 0 -8px 8px -8px rgba(0,0,0,0.25) inset;}
+/* Adapted from AppFolio */
+
+        .cls-1 {
+          fill: none;
+        }
+
+        .cls-2 {
+          fill: #1a1e23;
+        }
+
+        .cls-3 {
+          clip-path: url(#clippath);
+        }
+      
+/* Adapted from AppFolio */
+html.intercom-mobile-messenger-active,html.intercom-mobile-messenger-active>body,html.intercom-modal-open,#intercom-container-body{overflow:hidden!important;}html.intercom-mobile-messenger-active,html.intercom-mobile-messenger-active>body{position:static!important;transform:none!important;}html.intercom-mobile-messenger-active>body{height:0!important;margin:0!important;}iframe#intercom-frame{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;top:0!important;left:0!important;border:none!important;display:block!important;z-index:-1!important;;};;
+/* Adapted from AppFolio */
+
+/* Adapted from AppFolio */
+
+
+
+/* AIVIIZN Beautiful Enhancements */
+.aiviizn-page {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.content-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.aiviizn-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 8px 8px 0 0;
+    margin: -30px -30px 30px -30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.aiviizn-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.aiviizn-header h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+.aiviizn-header p {
+    margin: 8px 0 0 0;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* Beautiful AppFolio-style buttons */
+.btn-appfolio {
+    background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-appfolio:hover {
+    background: linear-gradient(135deg, #0052A3 0%, #004182 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+}
+
+.btn-appfolio:active {
+    transform: translateY(0);
+}
+
+/* Beautiful data grid styling */
+.data-grid {
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    background: white;
+}
+
+.data-grid th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #495057;
+}
+
+.data-grid td {
+    padding: 12px;
+    border-bottom: 1px solid #f8f9fa;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.data-grid tr:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+    transition: all 0.2s ease;
+}
+
+.data-grid tr:last-child td {
+    border-bottom: none;
+}
+
+/* Beautiful currency formatting */
+.currency {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-weight: 600;
+    text-align: right;
+    font-size: 14px;
+}
+
+.currency.positive {
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.currency.negative {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Beautiful form styling */
+.aiviizn-form {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin: 20px 0;
+}
+
+.aiviizn-input {
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.aiviizn-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+    outline: none;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .aiviizn-header {
+        padding: 20px;
+        margin: -20px -20px 20px -20px;
+    }
+    
+    .data-grid {
+        font-size: 12px;
+    }
+    
+    .data-grid th,
+    .data-grid td {
+        padding: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="aiviizn-page accounting">
+    <div class="content-wrapper">
+        <div class="aiviizn-header">
+            <h1><i class="fas fa-chart-line me-3"></i>Bank Transfers - AppFolio Property Manager</h1>
+            <p class="mb-0">Professional property management reporting with beautiful design</p>
+        </div>
+        
+        <!-- AppFolio Content Converted to Beautiful AIVIIZN Design -->
+        <div class="aiviizn-content-area">
+            <main class="aiviizn-main-container mx-auto px-3 w-100">
+<section class="aiviizn-js-page-content-body page__content-body page-content-body px-1 py-3">
+<div class="aiviizn-full-screen-hide" id="site-subtabs">
+<div class="aiviizn-js-responsive-table-container responsive-table u-medium-down-hidden"><div class="aiviizn-js-responsive-table-inner responsive-table__inner"><ul class="aiviizn-is-displayed-in-medium-down subnav-tabs" data-container-classes="u-medium-down-hidden" data-level="0">
+<li class="aiviizn-"><a href="/accounting/receivable_payments">Receivables</a></li>
+<li class="aiviizn-"><a href="/accounting/payable_invoices">Payables</a></li>
+<li class="aiviizn-"><a href="/accounting/bank_accounts">Bank Accounts</a></li>
+<li class="aiviizn-"><a href="/accounting/journal_entries">Journal Entries</a></li>
+<li class="aiviizn-is-selected"><a href="/accounting/bank_transfers">Bank Transfers</a></li>
+<li class="aiviizn-"><a href="/accounting/gl_accounts">GL Accounts</a></li>
+<li class="aiviizn-"><a href="/accounting/financial_diagnostics">Diagnostics</a></li>
+</ul></div></div>
+</div>
+<div id="flash_messages">
+</div>
+<div id="bank_transfers_main"><div class="aiviizn-mt-3" id="app"><div class="aiviizn-mt-1 mb-3"><ul class="aiviizn-nav nav-tabs"><li class="aiviizn-nav-item"><a class="aiviizn-nav-link active" href="/accounting/bank_transfers/incomplete">Incomplete Transfers</a></li><li class="aiviizn-nav-item"><a class="aiviizn-nav-link" href="/accounting/bank_transfers/completed">Completed Transfers</a></li></ul></div><div></div><div><h1 class="aiviizn-page-title js-bank-transfer-header">Incomplete Transfers</h1><div class="aiviizn-mb-3 btn-group" role="group"><button aria-disabled="false" aria-label="Transfer Individually" class="aiviizn-js-transfer-individually btn btn-secondary active" type="button">Transfer Individually</button><button aria-disabled="false" aria-label="Transfer as Group" class="aiviizn-js-transfer-as-group btn btn-secondary" type="button">Transfer as Group</button></div><div><div class="aiviizn-js-bank-transfers-list aiviizn-card list-group list-group-flush"><header class="aiviizn-d-flex align-items-center js-header list-group-item"><div class="aiviizn-w-100"><div class="aiviizn-gx-0 row"><div class="aiviizn-col-12 col-sm-6 col-md-4"><label class="aiviizn-visually-hidden form-label" for="filter-2">Filter by:</label><input class="aiviizn-js-filter aiviizn-input" id="filter-2" placeholder="Search by Bank Name and Property Name" type="search" value=""/></div></div></div></header><div class="aiviizn-jsx-201526664 scroll-container position-relative"><div class="aiviizn-jsx-201526664" style="overflow: auto;"><ul class="aiviizn-list-group list-group-flush"><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/1" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Charlotte Park Apartments LLC*</h4><p class="aiviizn-mb-0 js-w-property-name">Charlotte Park Apartments </p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Charlotte Park Apartments LLC</h4><p class="aiviizn-mb-0 js-d-property-name">Charlotte Park Apartments </p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>03/25/2022</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$4,460.63</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/46" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Goodman Townhomes / Goodman Holding LLC / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Goodman Townhomes</p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Goodman Townhomes/Goodman CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Goodman Townhomes</p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$110.38</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/47" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Goodman Townhomes / Goodman Holding LLC / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Goodman Townhomes</p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Goodman Townhomes/Goodman CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Goodman Townhomes</p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$35.48</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/48" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Goodman Townhomes / Goodman Holding LLC / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Goodman Townhomes</p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Goodman Townhomes/Goodman CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Goodman Townhomes</p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$55.97</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/49" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Goodman Townhomes / Goodman Holding LLC / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Goodman Townhomes</p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Goodman Townhomes/Goodman CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Goodman Townhomes</p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$2,446.13</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/50" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Goodman Townhomes / Goodman Holding LLC / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Goodman Townhomes</p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Goodman Townhomes/Goodman CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Goodman Townhomes</p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$647.80</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/51" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Martway Townhomes / Martway Holdings / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Martway Townhomes </p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Martway Townhomes/Martway CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Martway Townhomes </p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$446.92</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li><li class="aiviizn-rounded-0 list-group-item"><div class="aiviizn-d-flex align-items-center"><div class="aiviizn-me-auto w-100 px-2" style="max-width: 100%;"><a href="/accounting/bank_transfers/52" style="text-decoration: inherit; color: inherit;"><div class="aiviizn-mb-0 gx-0 row"><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-w-bank-name">Martway Townhomes / Martway Holdings / Jeff Lamott</h4><p class="aiviizn-mb-0 js-w-property-name">Martway Townhomes </p></div><div class="aiviizn-text-center col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"><i aria-hidden="true" class="aiviizn-fa-solid fa-arrow-right mt-4 text-body-secondary"></i></div><div class="aiviizn-mb-2 col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3"><h4 class="aiviizn-m-0 js-d-bank-name">Martway Townhomes/Martway CoreFirst</h4><p class="aiviizn-mb-0 js-d-property-name">Martway Townhomes </p></div><div class="aiviizn-js-empty-column col-0 col-sm-0 col-md-0 col-lg-0 col-xl-1"></div><div class="aiviizn-js-no-date-transferred col-0 col-sm-0 col-md-3 col-lg-3 col-xl-1"></div><div class="aiviizn-js-date-created mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Created</span>06/01/2024</div><div class="aiviizn-js-amount mb-2 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-1"><span class="aiviizn-text-body-secondary d-block">Amount</span>$2,446.13</div><div class="aiviizn-js-status mb-2 col-6 col-sm-6 col-md-1 col-lg-3 col-xl-1"><span class="aiviizn-badge badge-secondary">Incomplete</span></div></div></a></div><button aria-disabled="false" class="aiviizn-btn btn-link" style="visibility: hidden;" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-chevron-down"></i><span class="aiviizn-sr-only">Expand </span></button></div></li></ul></div><div></div><div class="aiviizn-jsx-201526664 container-shadow"></div></div></div></div></div></div></div>
+</section>
+<div class="aiviizn-d-print-none js-footer full-screen-hide" id="main-footer">
+<hr class="aiviizn-m-0 footer-hr"/>
+<div class="aiviizn-p-2">
+<a href="https://www.aiviizn.com/privacy" id="privacy_link, :rel" rel="noopener" target="_blank">Privacy</a>
+<span class="aiviizn-mx-1">|</span>
+<a href="/help/login" id="help_and_training_link" rel="noopener" target="_blank">Help &amp; Training</a>
+<span class="aiviizn-mx-1">|</span>
+<a href="/help/login" id="suggestion_link" rel="noopener" target="_blank">Make a Suggestion »</a>
+</div>
+</div>
+</main>
+        </div>
+        
+        <!-- Interactive Forms with Beautiful Styling -->
+        <div class="aiviizn-forms-section">
+            <form class="aiviizn-form" accept-charset="UTF-8" action="/aiviizn/user_profiles/switch" class="form form--full-width" data-remote="true" id="new_profile" method="post" novalidate="novalidate"><input autocomplete="off" name="_method" type="hidden" value="put"/><input autocomplete="off" name="authenticity_token" type="hidden" value="Z8z49qoe1qhUNePtW6eLRMdnE5x6FVqoQs9V-ziJYCBynZ3QZSuwJ44XF6F9yk9SJYKP77tw3cZbFY5CEXtFvg"/>
+<div class="js-user-profile-alert alert alert-info alert--with-icon u-space-bm">
+      Profiles allow you to see only what you need for certain tasks. You can change profiles at any time.
+    </div>
+<div class="form__row"><label class="form__row__label" for="profile_profile_name">Profile</label><div class="form__row__body"><div class="form__row__field-wrapper"><select id="profile_profile_name" name="profile[profile_name]"><option selected="selected" value="property_management">Property Management</option>
+<option value="association_management">Association Management</option></select></div></div></div>
+<i>
+      Not seeing the profile you want? <a href="https://goo.gl/forms/52AWVHKAoMFs8JAb2" target="_blank">Suggest one!</a><br/><br/>
+</i>
+<input autocomplete="off" id="from_page_action" name="from_page_action" type="hidden" value="bank_transfers-index"/>
+<input class="btn btn-primary" data-disable-with="Please Wait..." id="switch_profile_button" name="commit" type="submit" value="Switch Profile"/>
+<input class="btn btn-secondary js-modal-hide" type="button" value="Cancel"/>
+</form>
+
+        </div>
+        
+        <!-- Data Visualization Section -->
+        <div class="mt-4" id="data-visualization">
+            <h3 class="mb-3"><i class="fas fa-chart-bar me-2"></i>Data Insights</h3>
+            <div class="row">
+                <div class="col-md-8">
+                    <canvas id="main-chart" style="max-height: 400px;"></canvas>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Quick Stats</h5>
+                            <div id="quick-stats">
+                                <!-- Stats will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export and Action Buttons -->
+        <div class="mt-4 d-flex justify-content-between align-items-center">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-appfolio" onclick="exportToPDF()">
+                    <i class="fas fa-file-pdf me-2"></i>Export PDF
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel me-2"></i>Export Excel
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+            </div>
+            <small class="text-muted">
+                Last updated: <span id="last-updated">{ page_data.timestamp }</span>
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js for beautiful visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// AIVIIZN JavaScript - Beautiful AppFolio functionality
+console.log('🚀 AIVIIZN Bank Transfers - AppFolio Property Manager - Loading...');
+
+// Supabase connection
+const supabaseUrl = '{{ supabase_url }}';
+const supabaseAnonKey = '{{ supabase_anon_key }}';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+// Page-specific calculations converted from AppFolio
+// Extracted calculations from AppFolio
+// Calculation: $4,460.63
+// Context: Amount$4,460.63
+
+// Calculation: $110.38
+// Context: Amount$110.38
+
+// Calculation: $35.48
+// Context: Amount$35.48
+
+// Calculation: $55.97
+// Context: Amount$55.97
+
+// Calculation: $2,446.13
+// Context: Amount$2,446.13
+
+// Calculation: $647.80
+// Context: Amount$647.80
+
+// Calculation: $446.92
+// Context: Amount$446.92
+
+// Calculation: $2,446.13
+// Context: Amount$2,446.13
+
+// Calculation: function setCookie({ key, value }) {
+      document.cookie = `${key}=${value}; path=/; max-age=86400;`;
+    }
+
+    function getCookie(key) {
+      const cookieValue = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith(`${key}=`))
+        ?.split('=')[1];
+      return cookieValue;
+    }
+
+    function runStartSidebar() {
+      const mainSidebar = document.querySelector('.future-start-sidebar');
+      const toggleButton = document.querySelector('.start-sidebar-toggle');
+      const maximizeTooltip = bootstrap.Tooltip.getOrCreateInstance('.start-sidebar-toggle');
+      const expandableMenus = document.querySelectorAll('.start-sidebar-expandable');
+      const collapseButtons = document.querySelectorAll('.start-sidebar-expandable .start-sidebar-collapse-button');
+      const submenus = document.querySelectorAll('.start-sidebar-submenu');
+      const menuTooltipElements = mainSidebar.querySelectorAll('.start-sidebar-menu-tooltip');
+      const menuTooltips = Array.from(menuTooltipElements).map((element) => bootstrap.Tooltip.getOrCreateInstance(element));
+      const navLogoWide = document.querySelector('.top-nav-logo-wide');
+      const navLogoNarrow = document.querySelector('.top-nav-logo-narrow .logo');
+      const whatsNewsCount = document.querySelector('#notification-for-start-nav-menu-what_s_new');
+      const whatsNewsDot = document.querySelector('#dot-for-what_s_new');
+      const contentArea = document.querySelector('.content-wrapper');
+
+      function loadWhatsNews() {
+        // This is a client-side check to see if the user has any unseen "What's New" notifications.
+        // There is no equivalent server-side check for this.
+        if (whatsNewsCount) {
+          fetch('/whats_news/unseen_count')
+            .then((response) => response.json())
+            .then((data) => {
+              const count = data.unseen_count;
+              if (count === 0) {
+                // When there are no notifications, we remove the count badge and dot.
+                // The count badge is hidden using inline styles because of how this same dot is
+                //  shown/hidden in the "Messages" menu item.
+                whatsNewsCount.classList.remove('has-count');
+                whatsNewsDot.style.display = 'none';
+                return;
+              }
+
+              // When there are notifications, add the count to the badge.
+              whatsNewsCount.textContent = count;
+              whatsNewsCount.classList.add('has-count');
+
+              if (mainSidebar.classList.contains('start-sidebar-minimized')) {
+                whatsNewsDot.style.display = 'block';
+                whatsNewsCount.classList.add('d-none');
+              } else {
+                whatsNewsDot.style.display = 'none';
+                whatsNewsCount.classList.remove('d-none');
+              }
+            });
+        }
+      }
+
+      function minimizeStartSidebar() {
+        // Minimize the sidebar
+        mainSidebar.classList.add('start-sidebar-minimized');
+
+        // Manually collapse an open menu
+        const openMenu = document.querySelector('.start-sidebar-menu-row .collapse.show');
+        if (openMenu) {
+          const openMenuButton = openMenu.previousElementSibling;
+          if (openMenuButton) {
+            openMenuButton.classList.add('collapsed');
+            openMenuButton.setAttribute('aria-expanded', 'false');
+            openMenu.classList.remove('show');
+          }
+        }
+
+        // Transition from Accordion to Dropdown
+        expandableMenus.forEach((menu) => {
+          menu.classList.add('btn-group');
+          menu.classList.add('dropend');
+        });
+        submenus.forEach((submenu) => {
+          submenu.classList.add('dropdown-menu');
+          submenu.classList.add('shadow-lg');
+        });
+        collapseButtons.forEach((button) => {
+          button.classList.add('dropdown-toggle');
+          button.setAttribute('data-bs-toggle', 'dropdown');
+          new bootstrap.Dropdown(button);
+        });
+
+        // Enable the "Maximize" tooltip
+        maximizeTooltip.enable();
+        menuTooltips.forEach((tooltip) => {
+          tooltip.enable();
+        });
+
+        // Manage the "What's New" notification indicators
+        if (whatsNewsCount.classList.contains('has-count')) {
+          whatsNewsCount.classList.add('d-none');
+          whatsNewsDot.style.display = 'block';
+        }
+      }
+
+      function maximizeStartSidebar() {
+        // Maximize the sidebar
+        mainSidebar.classList.remove('start-sidebar-minimized');
+
+        // Manually close an open dropdown
+        const openDropdown = document.querySelector('.start-sidebar-menu-row .dropdown-menu.show');
+        if (openDropdown) {
+          bootstrap.Dropdown.getOrCreateInstance(openDropdown.previousElementSibling).hide();
+        }
+
+        // Transition from Dropdown to Accordion
+        expandableMenus.forEach((menu) => {
+          menu.classList.remove('btn-group');
+          menu.classList.remove('dropend');
+        });
+        collapseButtons.forEach((button) => {
+          button.classList.remove('dropdown-toggle');
+          button.setAttribute('data-bs-toggle', 'collapse');
+        });
+        submenus.forEach((submenu) => {
+          submenu.classList.remove('dropdown-menu');
+          submenu.classList.remove('shadow-lg');
+        });
+
+        // Manually open an active accordion submenu
+        const activeMenu = document.querySelector('.start-sidebar-menu-row.active .collapse');
+        if (activeMenu) {
+          const activeMenuButton = activeMenu.previousElementSibling;
+          if (activeMenuButton) {
+            activeMenuButton.classList.remove('collapsed');
+            activeMenuButton.setAttribute('aria-expanded', 'true');
+            activeMenu.classList.add('show');
+          }
+        }
+
+        // Disable the tooltips
+        maximizeTooltip.hide();
+        maximizeTooltip.disable();
+        menuTooltips.forEach((tooltip) => {
+          tooltip.disable();
+        });
+
+        // Manage the "What's New" notification indicators
+        if (whatsNewsCount.classList.contains('has-count')) {
+          whatsNewsCount.classList.remove('d-none');
+          whatsNewsDot.style.display = 'none';
+        }
+      }
+
+      loadWhatsNews();
+
+      // Initial logic to run the start sidebar
+      if (!mainSidebar.classList.contains('start-sidebar-minimized')) {
+        // Disable all of the tooltips in maximized state
+        maximizeTooltip.disable();
+        menuTooltips.forEach((tooltip) => {
+          tooltip.disable();
+        });
+      }
+
+      // Do some client-side processing of Bootstrap components. These are things that can not be set server-side in the HTML.
+      Array.from(document.querySelectorAll('.start-sidebar-menu-tooltip')).forEach((element) => {
+        const menuButton = element.querySelector('.start-sidebar-menu-button');
+
+        if(menuButton) {
+          // Set the dropdown's boundary to the content area so it doesn't overflow into any layout elements.
+          //  `boundary` can only be set viw JS, not via data attributes.
+          bootstrap.Dropdown.getOrCreateInstance(menuButton, { boundary: contentArea });
+
+          // Initialize the tooltips for the menu buttons so they can be hidden when their dropdown is open
+          const elementTooltip = bootstrap.Tooltip.getOrCreateInstance(element);
+          menuButton.addEventListener('show.bs.dropdown', () => {
+            elementTooltip.hide();
+            elementTooltip.disable();
+          });
+          menuButton.addEventListener('hidden.bs.dropdown', () => {
+            elementTooltip.enable();
+          });
+        }
+      });
+
+      // Listen for the click event on the toggle button to minimize or maximize the sidebar
+      toggleButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mainSidebar.classList.contains('start-sidebar-minimized')) {
+          // Perform the maximize action
+          maximizeStartSidebar();
+
+          navLogoNarrow.classList.add('d-none');
+          navLogoWide.classList.remove('d-none');
+
+          // Store the state in a cookie so it can be read on page load
+          setCookie({ key: 'start_sidebar_state', value: 'start-sidebar-maximized' });
+        } else {
+          // Perform the minimize action
+          minimizeStartSidebar();
+
+          navLogoWide.classList.add('d-none');
+          navLogoNarrow.classList.remove('d-none');
+
+          // Store the state in a cookie so it can be read on page load
+          setCookie({ key: 'start_sidebar_state', value: 'start-sidebar-minimized' });
+        }
+      });
+
+      // These breakpoints correspond to the ones defined in the Coastline layout CSS as well as the
+      //  Bootstrap utilities for `xl`, `md`, and `sm`.
+      const breakpoints = {
+        '(min-width: 1200px)': 'extra-large',
+        '(min-width: 768px) and (max-width: 1199px)': 'medium',
+        '(max-width: 767px)': 'small'
+      };
+
+      function handleMqlMatches(mql, screenSize) {
+        if (!mql.matches) {
+          return;
+        }
+        // Store the current screen size in a cookie so it can be read on page load
+        setCookie({ key: 'current_screen_size', value: screenSize });
+        const sidebarState = getCookie('start_sidebar_state');
+
+        // No cookies are stored for these media query changes because they are not user-driven
+        // We only store the state of the sidebar when the user explicitly changes it with the button click above
+        // In other words, the maximized/minimized state is ignored unless we're in the "extra-large" screen size
+        if (screenSize === 'extra-large') {
+          if (sidebarState !== 'start-sidebar-minimized') {
+            maximizeStartSidebar();
+            navLogoNarrow.classList.add('d-none');
+            navLogoWide.classList.remove('d-none');
+          }
+          toggleButton.classList.remove('d-none');
+        } else if (screenSize === 'medium') {
+          minimizeStartSidebar();
+          toggleButton.classList.add('d-none');
+
+          navLogoNarrow.classList.remove('d-none');
+          navLogoWide.classList.add('d-none');
+        } else if (screenSize === 'small') {
+          maximizeStartSidebar();
+          navLogoNarrow.classList.add('d-none');
+          navLogoWide.classList.add('d-none');
+        }
+      }
+
+      // Listen for changes in the viewport width to determine the current breakpoint
+      // This is necessary because so many of the sidebar's behaviors are JS-driven and can't be done with CSS alone
+      Object.keys(breakpoints).forEach((breakpoint) => {
+        const screenSize = breakpoints[breakpoint];
+        const mql = window.matchMedia(breakpoint);
+        handleMqlMatches(mql, screenSize);
+        mql.addEventListener('change', (mqlEvent) => {
+          handleMqlMatches(mqlEvent, screenSize);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', runStartSidebar, { once: true });
+// Context: function setCookie({ key, value }) {
+      document.cookie = `${key}=${value}; path=/; max-age=86400
+
+// Calculation: function intercomNativeFixup() {
+        let intercom
+        Object.defineProperty(window, 'Intercom', {
+          enumerable: true,
+          configurable: true,
+          get: () => intercom,
+          set: (v) => {
+            intercom = v;
+            if (false) {
+              if (window.intercomSettings) window.intercomSettings.hide_default_launcher = false;
+            } else {
+              const intercomButton = document.querySelector('#Intercom');
+
+              intercom('onHide', () => {
+                if (intercomButton) {
+                  removeButtonActiveState(intercomButton);
+                  // Dispatch an event to notify that the intercom is closed
+                  window.dispatchEvent(new CustomEvent('sidebar-toggled', {
+                    detail: {
+                      activeTabId: 'none'
+                    }
+                  }));
+                }
+              });
+
+              intercom('onShow', () => {
+                setActiveTab('intercom-sidebar');
+              });
+
+              intercom('onUnreadCountChange', (unreadCount) => {
+                toggleIntercomNotificationDot(unreadCount);
+              });
+
+              if (window.intercomSettings) {
+                window.intercomSettings.hide_default_launcher = true;
+                window.intercomSettings.horizontal_padding = 84;
+              }
+
+              // Only show the appfolio support button if intercom is actually loaded on the page
+              intercomButton.classList.remove('d-none');
+            }
+          }
+        });
+      }
+
+      function hideTabContent(content) {
+        content.classList.add('d-none');
+      }
+
+      function getCookie(key) {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith(`${key}=`))
+          ?.split('=')[1];
+        return cookieValue;
+      }
+
+      function removeButtonActiveState(button) {
+        button.classList.remove('active');
+
+        // Change all icons to regular
+        const icon = button.querySelector('i');
+        if (icon && icon.classList.contains('fa-solid')) {
+          icon.classList.remove('fa-solid');
+          icon.classList.add('fa-regular');
+        }
+
+        // Enable all tooltips
+        bootstrap.Tooltip.getOrCreateInstance(button).enable();
+      }
+
+      function clearTabStateCookie() {
+        document.cookie = 'active_end_sidebar_tab=none; path=/; max-age=86400;';
+      }
+
+      function toggleIntercomNotificationDot(unreadCount) {
+        const notificationDotEl = document.getElementById('intercom-notification-dot');
+
+        if (!notificationDotEl) {
+          return;
+        }
+
+        if (unreadCount === 0) {
+          notificationDotEl.classList.add('d-none');
+        } else {
+          notificationDotEl.classList.remove('d-none');
+        }
+      }
+
+      function closeAllTabs(persist = false, dispatchEvent = true) {
+        // Hide all tabs and make the buttons non-active
+        Array.from(document.querySelectorAll('.end-sidebar-tab-content')).forEach(hideTabContent);
+        Array.from(document.querySelectorAll('.end-sidebar-menu nav button')).forEach(removeButtonActiveState);
+
+        // Save the 'none' tab state
+        if (persist) {
+          clearTabStateCookie();
+        }
+
+        if (dispatchEvent) {
+          window.dispatchEvent(new CustomEvent('sidebar-toggled', {
+            detail: {
+              activeTabId: 'none'
+            }
+          }));
+        }
+      }
+
+      function setActiveTab(tabId) {
+        // Close all tabs first
+        closeAllTabs(false, false);
+
+        // Make the tab active
+        const tabEl = document.querySelector(`.end-sidebar-menu nav button[data-tab-id="${tabId}"]`);
+        tabEl.classList.add('active');
+
+        // Change the icon to solid
+        const tabIcon = tabEl.querySelector('i');
+        if (tabIcon) {
+          tabIcon.classList.remove('fa-regular');
+          tabIcon.classList.add('fa-solid');
+        }
+
+        // Make the corresponding tab content visible
+        const tabContent = document.getElementById(tabId);
+        tabContent?.classList.remove('d-none');
+
+        // close intercom if it's not the active tab
+        if (tabId !== 'intercom-sidebar' && typeof window.Intercom === 'function') {
+          window.Intercom('hide');
+        }
+
+        // Disable the tooltip for the active tab
+        const currentTooltip = bootstrap.Tooltip.getOrCreateInstance(tabEl);
+        currentTooltip.dispose();
+
+        // Store the active tab in local storage, because we want it to persist across tabs
+        document.cookie = `active_end_sidebar_tab=${tabId}; path=/; max-age=86400;`;
+
+        // Dispatch an event to notify that the sidebar is open
+        window.dispatchEvent(new CustomEvent('sidebar-toggled', {
+          detail: {
+            activeTabId: tabId,
+          }
+        }));
+      }
+
+      function initializeEndSidebar() {
+        intercomNativeFixup();
+        // Initialize the tooltips for the sidebar buttons.
+        // This *might* be done elsewhere, but that's magical. Doing it here with `getOrCreateInstance()` ensures they are initialized.
+        Array.from(document.querySelectorAll('.end-sidebar-label-button')).forEach((tooltipButton) => {
+          bootstrap.Tooltip.getOrCreateInstance(tooltipButton);
+        });
+
+        if (typeof getCookie('active_end_sidebar_tab') === 'undefined') {
+          setActiveTab('tasks-sidebar');
+        };
+
+        const currentActiveTab = document.querySelector('.end-sidebar-menu nav button.active');
+        if (currentActiveTab) {
+          bootstrap.Tooltip.getOrCreateInstance(currentActiveTab).disable();
+        }
+
+        document.querySelectorAll('.end-sidebar-menu nav button').forEach((tabButton) => {
+          tabButton.addEventListener('click', (e) => {
+            const current = document.querySelector('.end-sidebar-menu nav button.active');
+            if (current && current.dataset.tabId === e.currentTarget.dataset.tabId) {
+              closeAllTabs(true, true);
+            } else {
+              setActiveTab(e.currentTarget.dataset.tabId);
+            }
+          });
+        });
+
+        document.querySelectorAll('.end-sidebar-tab-content .dismiss-btn').forEach(dismissBtn => {
+          dismissBtn.addEventListener('click', () => {
+            closeAllTabs(true, true);
+          });
+        });
+
+        // Open the RealmX chat when a suggested action is triggered from the Universal Inbox
+        window.addEventListener('realmXInput', (e) => {
+          setActiveTab('chat-sidebar');
+          document.getElementById('content-container').classList.add('end-sidebar-open');
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeEndSidebar();
+        document.removeEventListener('DOMContentLoaded', initializeEndSidebar);
+      });
+// Context: function intercomNativeFixup() {
+        let intercom
+        Object.defineProperty(window, 'Interco
+
+// Calculation: (function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+      define(
+      [
+        'jquery'
+      ], factory);
+    } else {
+      factory(
+        root.jQuery
+      );
+    }
+  }(this, function($) {
+    'use strict';
+
+    $(function() {
+      $(document).trigger('property:domchanged');
+    });
+  }));
+// Context: (function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+      define(
+     
+
+
+
+// Beautiful AIVIIZN Database Class
+class AIVIIZNDatabase {
+    constructor() {
+        this.tableName = 'accounting_entries';
+        this.cache = new Map();
+    }
+    
+    // Load data for this beautiful page
+    async loadPageData() {
+        try {
+            console.log('📊 Loading data for Bank Transfers - AppFolio Property Manager...');
+            const { data, error } = await supabase
+                .from(this.tableName)
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            this.cache.set('pageData', data);
+            this.renderBeautifulData(data);
+            this.updateCalculations(data);
+            this.createVisualization(data);
+            
+            console.log('✅ Data loaded successfully!');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            this.showErrorMessage('Failed to load data. Please try again.');
+        }
+    }
+    
+    // Render data in beautiful AppFolio-style tables
+    renderBeautifulData(data) {
+        const tableContainer = document.querySelector('.data-grid');
+        if (!tableContainer || !data.length) return;
+        
+        // Create beautiful table HTML
+        let tableHTML = '<table class="table table-hover data-grid">';
+        
+        // Beautiful header
+        tableHTML += '<thead><tr>';
+        Object.keys(data[0]).forEach(key => {
+            if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                tableHTML += `<th>${this.formatColumnName(key)}</th>`;
+            }
+        });
+        tableHTML += '</tr></thead>';
+        
+        // Beautiful body
+        tableHTML += '<tbody>';
+        data.forEach(row => {
+            tableHTML += '<tr>';
+            Object.entries(row).forEach(([key, value]) => {
+                if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                    const formattedValue = this.formatCellValue(key, value);
+                    tableHTML += `<td>${formattedValue}</td>`;
+                }
+            });
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        
+        tableContainer.innerHTML = tableHTML;
+    }
+    
+    // Format column names beautifully
+    formatColumnName(name) {
+        return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+    
+    // Format cell values beautifully
+    formatCellValue(key, value) {
+        if (value === null || value === undefined) return '<em class="text-muted">—</em>';
+        
+        // Currency formatting
+        if (key.includes('amount') || key.includes('balance') || key.includes('total')) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                const formatted = this.formatCurrency(numValue);
+                const cssClass = numValue >= 0 ? 'positive' : 'negative';
+                return `<span class="currency ${cssClass}">${formatted}</span>`;
+            }
+        }
+        
+        // Date formatting
+        if (key.includes('date') || key.includes('time')) {
+            return new Date(value).toLocaleDateString();
+        }
+        
+        // Percentage formatting
+        if (key.includes('percent') || key.includes('rate')) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                return `<span class="badge bg-info">${numValue}%</span>`;
+            }
+        }
+        
+        return value;
+    }
+    
+    // Beautiful currency formatting
+    formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
+    
+    // Update calculations with beautiful animations
+    updateCalculations(data) {
+        console.log('🧮 Updating calculations...');
+        
+        // Calculate totals
+        const totals = this.calculateTotals(data);
+        
+        // Update UI with beautiful animations
+        Object.entries(totals).forEach(([key, value]) => {
+            const element = document.querySelector(`[data-calculation="${key}"]`);
+            if (element) {
+                this.animateValueChange(element, value);
+            }
+        });
+        
+        
+// Calculate grand totals for financial data
+function calculateGrandTotal() {
+    let total = 0;
+    const values = document.querySelectorAll('.currency-value');
+    values.forEach(value => {
+        const amount = parseFloat(value.textContent.replace(/[$,]/g, ''));
+        if (!isNaN(amount)) {
+            total += amount;
+        }
+    });
+    
+    const totalElement = document.querySelector('.grand-total');
+    if (totalElement) {
+        totalElement.textContent = formatCurrency(total);
+    }
+}
+
+// Format currency values
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+
+    }
+    
+    // Create beautiful data visualization
+    createVisualization(data) {
+        const ctx = document.getElementById('main-chart');
+        if (!ctx || !data.length) return;
+        
+        // Prepare data for Chart.js
+        const chartData = this.prepareChartData(data);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Bank Transfers - AppFolio Property Manager Trends',
+                        font: {
+                            family: 'Inter',
+                            size: 16,
+                            weight: '600'
+                        }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    },
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    }
+                }
+            }
+        });
+    }
+    
+    // Prepare chart data from database
+    prepareChartData(data) {
+        // This would be customized based on the specific page type
+        return {
+            labels: data.map((_, index) => `Period ${index + 1}`),
+            datasets: [{
+                label: 'Values',
+                data: data.map(row => Object.values(row)[1]), // First numeric column
+                borderColor: 'rgb(11, 83, 148)',
+                backgroundColor: 'rgba(11, 83, 148, 0.1)',
+                fill: true
+            }]
+        };
+    }
+    
+    // Calculate totals and summaries
+    calculateTotals(data) {
+        const totals = {};
+        
+        if (!data.length) return totals;
+        
+        // Calculate sums for numeric columns
+        Object.keys(data[0]).forEach(key => {
+            if (key.includes('amount') || key.includes('balance') || key.includes('total')) {
+                totals[key] = data.reduce((sum, row) => {
+                    const value = parseFloat(row[key]) || 0;
+                    return sum + value;
+                }, 0);
+            }
+        });
+        
+        return totals;
+    }
+    
+    // Animate value changes
+    animateValueChange(element, newValue) {
+        const currentValue = parseFloat(element.textContent.replace(/[^\d.-]/g, '')) || 0;
+        const duration = 1000;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            
+            const interpolatedValue = currentValue + (newValue - currentValue) * easeOutQuart;
+            
+            if (element.classList.contains('currency')) {
+                element.textContent = this.formatCurrency(interpolatedValue);
+            } else {
+                element.textContent = Math.round(interpolatedValue).toLocaleString();
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+    
+    // Show beautiful error messages
+    showErrorMessage(message) {
+        const alertHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        const container = document.querySelector('.content-wrapper');
+        container.insertAdjacentHTML('afterbegin', alertHTML);
+    }
+}
+
+// Initialize beautiful page functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎨 Initializing beautiful AIVIIZN page...');
+    
+    const db = new AIVIIZNDatabase();
+    db.loadPageData();
+    
+    // Initialize all beautiful interactions
+    initializeFilters();
+    initializeDatePickers();
+    initializeDataTables();
+    initializeCalculations();
+    initializeAnimations();
+    
+    console.log('✨ Beautiful AIVIIZN page ready!');
+});
+
+// Beautiful filter functionality
+function initializeFilters() {
+    const filters = document.querySelectorAll('.filter-control');
+    filters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            const loading = document.querySelector('.content-wrapper');
+            loading.classList.add('loading');
+            
+            setTimeout(() => {
+                updateDataDisplay();
+                loading.classList.remove('loading');
+            }, 500);
+        });
+    });
+}
+
+// Beautiful date picker initialization
+function initializeDatePickers() {
+    const datePickers = document.querySelectorAll('.date-picker');
+    datePickers.forEach(picker => {
+        picker.addEventListener('change', function() {
+            refreshReportData();
+        });
+    });
+}
+
+// Beautiful data table functionality
+function initializeDataTables() {
+    const tables = document.querySelectorAll('.data-grid');
+    tables.forEach(table => {
+        addTableSorting(table);
+        addTableFiltering(table);
+        addTableAnimations(table);
+    });
+}
+
+// Beautiful real-time calculations
+function initializeCalculations() {
+    const calculationFields = document.querySelectorAll('.calculation-field');
+    calculationFields.forEach(field => {
+        field.addEventListener('input', function() {
+            recalculateAllTotals();
+        });
+    });
+}
+
+// Beautiful animations
+function initializeAnimations() {
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+            }
+        });
+    });
+    
+    document.querySelectorAll('.data-grid, .aiviizn-form, .card').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+// Export functions
+function exportToPDF() {
+    console.log('📄 Exporting to beautiful PDF...');
+    // Implementation would go here
+    alert('PDF export functionality would be implemented here');
+}
+
+function exportToExcel() {
+    console.log('📊 Exporting to Excel...');
+    // Implementation would go here
+    alert('Excel export functionality would be implemented here');
+}
+
+function refreshData() {
+    console.log('🔄 Refreshing data...');
+    const db = new AIVIIZNDatabase();
+    db.loadPageData();
+    
+    // Update timestamp
+    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+`;
+document.head.appendChild(style);
+
+</script>
+{% endblock %}

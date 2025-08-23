@@ -55,5 +55,20 @@ htmlcov/
 # Uploads
 app/static/uploads/
 
+# Browser data (cookies, login state)
+browser_data/
+
 # Migrations
 migrations/.env
+
+# Files with hardcoded API keys (need to be fixed)
+automated_appfolio_builder_FINAL_WORKING.py
+autonomous_aiviizn_builder.py
+build_app_fixed.py
+build_real_system.py
+enhanced_aiviizn_builder_direct_fixed.py
+enhanced_aiviizn_builder_direct.py
+enhanced_aiviizn_builder_with_db.py
+enhanced_aiviizn_builder_with_discovery.py
+test_supabase_mcp.py
+enhanced_aiviizn_builder_no_bootstrap.py.deleted

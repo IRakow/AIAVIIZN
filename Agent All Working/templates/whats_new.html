@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}What's New - Property Management{% endblock %}
+{% block page_title %}What's New{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filters-sidebar {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .filters-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #212529;
+    }
+    
+    .filter-group {
+        margin-bottom: 20px;
+    }
+    
+    .filter-group-title {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+    
+    .filter-checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    
+    .filter-checkbox input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    
+    .filter-checkbox label {
+        font-size: 13px;
+        color: #212529;
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    .content-area {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 20px;
+    }
+    
+    .updates-list {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    
+    .update-item {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        transition: background-color 0.2s;
+    }
+    
+    .update-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .update-item:last-child {
+        border-bottom: none;
+    }
+    
+    .update-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    
+    .update-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #212529;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .update-date {
+        font-size: 12px;
+        color: #6c757d;
+    }
+    
+    .update-badges {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 3px;
+        text-transform: uppercase;
+    }
+    
+    .badge-general {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+    
+    .badge-leasing {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+    
+    .badge-maintenance {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+    
+    .badge-accounting {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .badge-residential {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .badge-commercial {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+    
+    .badge-new {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .update-content {
+        font-size: 14px;
+        color: #495057;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    .update-actions {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .update-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .update-link:hover {
+        text-decoration: underline;
+    }
+    
+    .feedback-button {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: #0d6efd;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .feedback-button:hover {
+        background: #0b5ed7;
+        box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-area">
+    <div class="filters-sidebar">
+        <div class="filters-title">Filters</div>
+        
+        <div class="filter-group">
+            <div class="filter-group-title">Feature Type</div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-accounting" checked>
+                <label for="filter-accounting">Accounting</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-housing" checked>
+                <label for="filter-housing">Affordable Housing</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-communication" checked>
+                <label for="filter-communication">Communication</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-general" checked>
+                <label for="filter-general">General</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-integration" checked>
+                <label for="filter-integration">Integration</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-leasing" checked>
+                <label for="filter-leasing">Leasing</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-maintenance" checked>
+                <label for="filter-maintenance">Maintenance</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-reporting" checked>
+                <label for="filter-reporting">Reporting</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-realm" checked>
+                <label for="filter-realm">Realm-X</label>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-group-title">Property Type</div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-commercial" checked>
+                <label for="filter-commercial">Commercial</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-community" checked>
+                <label for="filter-community">Community Association</label>
+            </div>
+            <div class="filter-checkbox">
+                <input type="checkbox" id="filter-residential" checked>
+                <label for="filter-residential">Residential</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="updates-list">
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">
+                    <span>🎉</span>
+                    <span>FolioScreen: Consumer Report Access</span>
+                </div>
+                <div class="update-date">August 4, 2025</div>
+            </div>
+            <div class="update-badges">
+                <span class="badge badge-general">GENERAL</span>
+                <span class="badge badge-leasing">LEASING</span>
+                <span class="badge badge-residential">RESIDENTIAL</span>
+                <span class="badge badge-new">NEW</span>
+            </div>
+            <div class="update-content">
+                Starting August 4, 2025, FolioScreen will automatically give applicants a copy of their consumer report if one is run. This change supports applicants' rights to access their consumer report and allows them to review and dispute any inaccuracies earlier, leading to faster resolutions. For FolioScreen customers in relevant jurisdictions, this update helps you meet your sharing obligations without additional action.
+            </div>
+            <div class="update-actions">
+                <a href="#" class="update-link">Submit Feedback</a>
+                <a href="#" class="update-link">Learn More</a>
+            </div>
+        </div>
+        
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">
+                    <span>🚀</span>
+                    <span>Automated Comps for Leasing Signals</span>
+                </div>
+                <div class="update-date">July 28, 2025</div>
+            </div>
+            <div class="update-badges">
+                <span class="badge badge-leasing">LEASING</span>
+            </div>
+            <div class="update-content">
+                Confident pricing begins with better data. AIVIIZN's new partnership with Markerr pipes the most up-to-date, public data directly into your platform. For every Leasing Signals-enabled property, you'll now get automatic access to floorplan-level data from five nearby comps. No spreadsheets or desk research required.
+            </div>
+            <div class="update-actions">
+                <a href="#" class="update-link">Learn More</a>
+                <a href="#" class="update-link">View Demo</a>
+            </div>
+        </div>
+        
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">
+                    <span>📋</span>
+                    <span>Work Order Billing Queue</span>
+                </div>
+                <div class="update-date">July 15, 2025</div>
+            </div>
+            <div class="update-badges">
+                <span class="badge badge-general">GENERAL</span>
+                <span class="badge badge-accounting">ACCOUNTING</span>
+                <span class="badge badge-maintenance">MAINTENANCE</span>
+                <span class="badge badge-commercial">COMMERCIAL</span>
+                <span class="badge badge-residential">RESIDENTIAL</span>
+            </div>
+            <div class="update-content">
+                To make creating work order bills more efficient we've added the ability to create a designated "Billing Queue" of work orders that are ready to bill. On the work order bill page, you will now see a "Save & Next" button that will create the current bill and move to the next create bill page that matches your billing queue criteria instead of going back to your list of work orders.
+            </div>
+            <div class="update-actions">
+                <a href="#" class="update-link">Save & Next Bill</a>
+                <a href="#" class="update-link">Create Bill</a>
+                <a href="#" class="update-link">Save For Later</a>
+                <a href="#" class="update-link">Cancel</a>
+            </div>
+        </div>
+        
+        <div class="update-item">
+            <div class="update-header">
+                <div class="update-title">
+                    <span>💼</span>
+                    <span>Enhanced Vendor Management</span>
+                </div>
+                <div class="update-date">July 1, 2025</div>
+            </div>
+            <div class="update-badges">
+                <span class="badge badge-maintenance">MAINTENANCE</span>
+                <span class="badge badge-integration">INTEGRATION</span>
+            </div>
+            <div class="update-content">
+                We've improved the vendor management experience with new features including vendor performance tracking, automated vendor onboarding, and integrated W-9 collection. Track response times, completion rates, and customer satisfaction scores all in one place.
+            </div>
+            <div class="update-actions">
+                <a href="#" class="update-link">Explore Features</a>
+                <a href="#" class="update-link">Setup Guide</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="feedback-button">
+    <i class="fas fa-comment"></i>
+    Send Feedback
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const checkboxes = document.querySelectorAll('.filter-checkbox input[type="checkbox"]');
+    const updateItems = document.querySelectorAll('.update-item');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', filterUpdates);
+    });
+    
+    function filterUpdates() {
+        // Filter logic would go here
+        console.log('Filtering updates...');
+    }
+    
+    // Feedback button
+    document.querySelector('.feedback-button').addEventListener('click', function() {
+        alert('Feedback form would open here');
+    });
+});
+</script>
+{% endblock %}

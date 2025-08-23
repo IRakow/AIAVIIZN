@@ -1,0 +1,353 @@
+<!-- AIVIIZN Stack™ Marketplace Template -->
+<!-- Generated from: https://celticprop.appfolio.com/stack -->
+<!-- Timestamp: 2025-08-21T08:15:37.620Z -->
+
+{% extends "base.html" %}
+
+{% block title %}AIVIIZN Stack™ Marketplace - AIVIIZN Property Manager{% endblock %}
+
+{% block content %}
+<div class="aiviizn-page marketplace">
+    <main class="main-container mx-auto px-3 w-100">
+        <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+            
+            <!-- Main Marketplace App -->
+            <div id="partner_connections_main" data-env="production">
+                <div id="app" class="mt-4">
+                    <h1 class="border-bottom pb-1 mb-4 d-flex justify-content-between align-items-center">
+                        AIVIIZN Stack™ Marketplace
+                        <button type="button" aria-disabled="false" class="js-no-autofocus p-2 btn btn-outline-primary">
+                            <span class="fw-bold text-uppercase">
+                                <i aria-hidden="true" class="fa-solid fa-envelope me-2"></i>Feedback
+                            </span>
+                        </button>
+                    </h1>
+
+                    <!-- "How does this work?" Section -->
+                    <section class="my-4">
+                        <header>
+                            <div tabindex="0" role="button" aria-expanded="false" class="jsx-1135919111 rg-ClickableContainer d-flex align-items-center w-100">
+                                <i aria-hidden="true" class="fa-solid fa-chevron-down fa-fw text-muted me-1" style="transition: transform 200ms ease-in-out;"></i>
+                                <h2 class="m-0">"How does this work?"</h2>
+                            </div>
+                        </header>
+                        <div class="collapse">
+                            <div class="py-3">
+                                <div class="row">
+                                    <div class="col-xl-6">
+                                        The version of AIVIIZN Property Manager you're on determines which partners are available for your use.
+                                        <ul class="list list--bulletted">
+                                            <li><strong>Your business has purchased: AIVIIZN Property Manager Core</strong></li>
+                                            <li>You can use all the partners listed on this page, some of which (those marked as Premium) involve additional charges from AIVIIZN.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <div class="card">
+                                            <div class="rounded card-body">
+                                                <h4>The Types of Partners Available</h4>
+                                                <span class="badge badge-primary mb-1">App</span>
+                                                <p>App Partners offer software applications that we've integrated with so you can sync your data between AIVIIZN Property Manager and their application.</p>
+                                                <span class="badge badge-primary mb-1">Solution</span>
+                                                <p>Solution Partners offer advisory and managed services so you can get whatever help you need.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Filter Controls -->
+                    <div>
+                        <div class="_9NAqHbtTTAF3ul5zaPxPmA==">
+                            <div class="d-flex flex-column justify-content-between ViCZUicS2-CXkNbKw224KA==">
+                                
+                                <!-- Partner Type Filter -->
+                                <div class="text-muted" style="font-size: 16px;">
+                                    Partner Type / Status:
+                                    <span data-testid="partner-filter-help-bubble">
+                                        <span class="ms-1" style="cursor: pointer;">
+                                            <button type="button" aria-disabled="false" class="p-0 btn btn-link" aria-label="More Info">
+                                                <i id="help-bubble-0" aria-hidden="true" class="fa-solid fa-circle-question text-primary"></i>
+                                            </button>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div data-testid="partner-type-and-status-filter">
+                                    <!-- Filter dropdown implementation -->
+                                    <select class="form-control" id="partner-type-filter">
+                                        <option value="all">All Partners</option>
+                                        <option value="premium">Premium Partners</option>
+                                        <option value="standard">Standard Partners</option>
+                                        <option value="app">App Partners</option>
+                                        <option value="solution">Solution Partners</option>
+                                        <option value="connected">Connected</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="d-flex flex-column justify-content-between">
+                                <span class="text-muted" style="font-size: 16px;">
+                                    Category:
+                                    <span class="ms-1" style="cursor: pointer;">
+                                        <button type="button" aria-disabled="false" class="p-0 btn btn-link" aria-label="More Info">
+                                            <i id="help-bubble-1" aria-hidden="true" class="fa-solid fa-circle-question text-primary"></i>
+                                        </button>
+                                    </span>
+                                </span>
+                                <div data-testid="category-filter">
+                                    <select class="form-control" id="category-filter">
+                                        <option value="">Click to select an option...</option>
+                                        <option value="accounting">Accounting & Reporting</option>
+                                        <option value="compliance">Compliance</option>
+                                        <option value="construction">Construction Management</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="delinquencies">Delinquencies</option>
+                                        <option value="inspections">Inspections</option>
+                                        <option value="iot">IoT & Smart Properties</option>
+                                        <option value="mailing">Mailing Service</option>
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="marketing">Marketing & Leasing</option>
+                                        <option value="package">Package Delivery / Management</option>
+                                        <option value="resident">Resident App</option>
+                                        <option value="utility">Utility Management</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Search Input -->
+                            <input placeholder="Search" type="text" class="rounded align-self-end form-control" id="partner-search" style="grid-column: span 3;">
+
+                            <!-- Sort Control -->
+                            <div class="d-flex flex-column justify-content-between wgq8jk6Hi3yKMzhyMjLc1g==">
+                                <div class="text-muted" style="font-size: 16px;">Sort:</div>
+                                <select class="form-control" id="sort-filter">
+                                    <option value="date">By Date Added</option>
+                                    <option value="name">By Name</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Partner Grid -->
+                        <div class="gap-5" id="partners-grid" style="margin-bottom: -10rem; padding-bottom: 10rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); display: grid;">
+                            
+                            <!-- Sample Partner Cards - TODO: Load from database -->
+                            <div class="p-1 rounded partner-card">
+                                <a class="text-decoration-none text-body" href="/stack/partner-1" style="outline: none;">
+                                    <div class="bg-white w-100 border rounded position-relative d-flex partner-logo-container">
+                                        <div class="position-absolute top-0 end-0 m-2">
+                                            <span class="align-self-end badge badge-info">
+                                                <i aria-hidden="true" class="fa-solid fa-lock me-1"></i>Premium
+                                            </span>
+                                        </div>
+                                        <div class="position-absolute bottom-0 start-0 m-2"></div>
+                                        <div data-testid="partner-logo" class="w-100 partner-logo" style="background-image: url('/static/images/partners/sample-logo.png'); background-size: contain; background-position: center center; background-repeat: no-repeat;"></div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="text-nowrap overflow-hidden partner-name" style="text-overflow: ellipsis; font-weight: 500;">Sample Partner</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mt-1">
+                                            <span class="flex-shrink-0 badge badge-primary">App</span>
+                                            <span class="text-nowrap overflow-hidden ms-2" style="text-overflow: ellipsis; font-size: 0.9rem;">Sample Category</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- More partner cards will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// AIVIIZN Stack Marketplace JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize marketplace functionality
+    
+    // Filter handling
+    const partnerTypeFilter = document.getElementById('partner-type-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const searchInput = document.getElementById('partner-search');
+    const sortFilter = document.getElementById('sort-filter');
+    
+    // Sample partner data - TODO: Load from AIVIIZN API
+    const partners = [
+        {
+            id: 1,
+            name: "Sample Partner 1",
+            type: "app",
+            category: "accounting",
+            premium: true,
+            logo: "/static/images/partners/partner1.png",
+            description: "Accounting & Reporting solutions"
+        },
+        {
+            id: 2,
+            name: "Sample Partner 2", 
+            type: "solution",
+            category: "consulting",
+            premium: false,
+            logo: "/static/images/partners/partner2.png",
+            description: "Consulting services"
+        }
+    ];
+    
+    // Filter and search functionality
+    function filterPartners() {
+        const typeValue = partnerTypeFilter.value;
+        const categoryValue = categoryFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+        const sortValue = sortFilter.value;
+        
+        let filteredPartners = partners.filter(partner => {
+            const matchesType = typeValue === 'all' || 
+                               (typeValue === 'premium' && partner.premium) ||
+                               (typeValue === 'standard' && !partner.premium) ||
+                               (typeValue === partner.type);
+            
+            const matchesCategory = !categoryValue || partner.category === categoryValue;
+            
+            const matchesSearch = !searchValue || 
+                                partner.name.toLowerCase().includes(searchValue) ||
+                                partner.description.toLowerCase().includes(searchValue);
+            
+            return matchesType && matchesCategory && matchesSearch;
+        });
+        
+        // Sort partners
+        if (sortValue === 'name') {
+            filteredPartners.sort((a, b) => a.name.localeCompare(b.name));
+        } else {
+            filteredPartners.sort((a, b) => b.id - a.id); // By date added (newest first)
+        }
+        
+        renderPartners(filteredPartners);
+    }
+    
+    // Render partner cards
+    function renderPartners(partnersToRender) {
+        const grid = document.getElementById('partners-grid');
+        
+        grid.innerHTML = partnersToRender.map(partner => `
+            <div class="p-1 rounded partner-card">
+                <a class="text-decoration-none text-body" href="/stack/${partner.id}" style="outline: none;">
+                    <div class="bg-white w-100 border rounded position-relative d-flex partner-logo-container">
+                        ${partner.premium ? `
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="align-self-end badge badge-info">
+                                <i aria-hidden="true" class="fa-solid fa-lock me-1"></i>Premium
+                            </span>
+                        </div>
+                        ` : ''}
+                        <div class="partner-logo w-100" style="background-image: url('${partner.logo}'); background-size: contain; background-position: center center; background-repeat: no-repeat;"></div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-nowrap overflow-hidden partner-name" style="text-overflow: ellipsis; font-weight: 500;">${partner.name}</span>
+                        </div>
+                        <div class="d-flex align-items-center mt-1">
+                            <span class="flex-shrink-0 badge badge-primary">${partner.type === 'app' ? 'App' : 'Solution'}</span>
+                            <span class="text-nowrap overflow-hidden ms-2" style="text-overflow: ellipsis; font-size: 0.9rem;">${partner.description}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        `).join('');
+    }
+    
+    // Event listeners
+    partnerTypeFilter.addEventListener('change', filterPartners);
+    categoryFilter.addEventListener('change', filterPartners);
+    searchInput.addEventListener('input', filterPartners);
+    sortFilter.addEventListener('change', filterPartners);
+    
+    // Initialize with all partners
+    filterPartners();
+    
+    // Collapsible "How does this work?" section
+    const howItWorksHeader = document.querySelector('.rg-ClickableContainer');
+    const howItWorksContent = howItWorksHeader.nextElementSibling;
+    
+    howItWorksHeader.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+        
+        const chevron = this.querySelector('.fa-chevron-down');
+        if (!isExpanded) {
+            howItWorksContent.classList.add('show');
+            chevron.style.transform = 'rotate(180deg)';
+        } else {
+            howItWorksContent.classList.remove('show');
+            chevron.style.transform = 'rotate(0deg)';
+        }
+    });
+});
+
+// TODO: Implement AIVIIZN-specific functionality:
+// - Load partners from AIVIIZN database
+// - Partner connection management
+// - Integration setup wizards
+// - Partner usage analytics
+// - Custom partner requests
+</script>
+
+<style>
+/* AIVIIZN Stack Marketplace Styles */
+.partner-card {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.partner-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.partner-logo-container {
+    height: 120px;
+    padding: 20px;
+}
+
+.partner-logo {
+    min-height: 80px;
+}
+
+.partner-name {
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.rg-ClickableContainer:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.collapse.show {
+    display: block !important;
+}
+
+/* Filter controls styling */
+.filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+    #partners-grid {
+        grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

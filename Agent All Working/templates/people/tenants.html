@@ -1,0 +1,96 @@
+<!-- templates/tenants.html -->
+{% extends "base.html" %}
+
+{% block title %}Tenants - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('tenants') }}" class="tab-nav-item active">Tenants</a>
+        <a href="{{ url_for('owners') }}" class="tab-nav-item">Owners</a>
+        <a href="{{ url_for('vendors') }}" class="tab-nav-item">Vendors</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Tenants</h1>
+
+<div class="alphabet-filter">
+    <a href="#">A</a>
+    <a href="#">B</a>
+    <a href="#">C</a>
+    <a href="#">D</a>
+    <a href="#">E</a>
+    <a href="#">F</a>
+    <a href="#">G</a>
+    <a href="#">H</a>
+    <a href="#">I</a>
+    <a href="#">J</a>
+    <a href="#">K</a>
+    <a href="#">L</a>
+    <a href="#">M</a>
+    <a href="#">N</a>
+    <a href="#">O</a>
+    <a href="#">P</a>
+    <a href="#">Q</a>
+    <a href="#">R</a>
+    <a href="#">S</a>
+    <a href="#">T</a>
+    <a href="#">U</a>
+    <a href="#">V</a>
+    <a href="#">W</a>
+    <a href="#">X</a>
+    <a href="#">Y</a>
+    <a href="#">Z</a>
+    <a href="#" class="active">All</a>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name <span style="font-size: 10px; color: #6c757d;">↕</span></th>
+                <th>Status <span style="font-size: 10px; color: #6c757d;">↕</span></th>
+                <th>Property</th>
+                <th>Unit</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tenant in tenants %}
+            <tr>
+                <td style="color: #0056b3; cursor: pointer;">{{ tenant.name }}</td>
+                <td>{{ tenant.status }}</td>
+                <td>{{ tenant.property }}</td>
+                <td>{{ tenant.unit }}</td>
+                <td>{{ tenant.phone }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasks()">×</button>
+        <span class="support-icon">⚙️</span>
+        <span class="assistant-icon">💬</span>
+    </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item" style="color: #0056b3;">Move In Tenant</div>
+        <div class="task-item">New Owner</div>
+        <div class="task-item">New Vendor</div>
+        <div class="task-item">Email All Tenants</div>
+        
+        <div class="task-section-title">📊 Reports</div>
+        <div class="task-item">Rent Roll</div>
+        <div class="task-item">Tenant Ledger</div>
+        <div class="task-item">Tenant Insurance Coverage</div>
+    </div>
+</div>
+{% endblock %}

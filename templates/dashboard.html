@@ -1,586 +1,1338 @@
+
 {% extends 'base.html' %}
 
-{% block title %}Dashboard - AIVIIZN{% endblock %}
+{% block title %}Dashboard - AppFolio Property Manager{% endblock %}
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+<style>
+:root {
+  --aiviizn-primary: #2563eb;
+  --aiviizn-secondary: #64748b;
+  --aiviizn-success: #10b981;
+  --aiviizn-warning: #f59e0b;
+  --aiviizn-danger: #ef4444;
+  --aiviizn-info: #3b82f6;
+  --aiviizn-light: #f8fafc;
+  --aiviizn-dark: #1e293b;
+  --aiviizn-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--aiviizn-light);
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, var(--aiviizn-primary) 0%, #1d4ed8 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+  animation: slideInDown 0.8s ease-out;
+}
+
+.dashboard-header__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-header__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-select, .form-control {
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: var(--aiviizn-primary);
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn {
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: var(--aiviizn-gradient);
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+  background: var(--aiviizn-secondary);
+  border: none;
+  color: white;
+}
+
+.btn-link {
+  color: var(--aiviizn-primary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+}
+
+.btn-link:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--aiviizn-primary);
+  text-decoration: none;
+}
+
+.dashboard-widget {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.dashboard-widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--aiviizn-gradient);
+}
+
+.dashboard-widget:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: none;
+  padding: 1.5rem;
+  border-radius: 20px 20px 0 0;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--aiviizn-dark);
+  margin: 0;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.alert {
+  border: none;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: var(--aiviizn-info);
+  border-left: 4px solid var(--aiviizn-info);
+}
+
+.alert--with-icon {
+  padding-left: 4rem;
+}
+
+.alert--with-icon::before {
+  content: '\f05a';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--aiviizn-info);
+}
+
+.feature-banner {
+  background: var(--aiviizn-gradient);
+  color: white;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  animation: pulse 2s infinite;
+}
+
+.table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-bottom: 0;
+}
+
+.table th {
+  background: var(--aiviizn-gradient);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.table th:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+}
+
+.table td {
+  padding: 1rem;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: scale(1.01);
+}
+
+.ai-enhanced {
+  position: relative;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.ai-enhanced::before {
+  content: '🤖 AI Enhanced';
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: var(--aiviizn-success);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.ai-enhanced:hover {
+  border-color: var(--aiviizn-success);
+  box-shadow: 0 5px 20px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+.loading-state {
+  display: none;
+  text-align: center;
+  padding: 3rem;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--aiviizn-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.search-input {
+  padding-left: 3rem;
+  border-radius: 25px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: var(--aiviizn-primary);
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--aiviizn-secondary);
+  z-index: 10;
+}
+
+.sort-icon {
+  margin-left: 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.sort-icon:hover {
+  opacity: 1;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  gap: 0.5rem;
+}
+
+.page-link {
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  color: var(--aiviizn-primary);
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover {
+  background: var(--aiviizn-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+  background: var(--aiviizn-gradient);
+  border-color: var(--aiviizn-primary);
+}
+
+.text-danger {
+  color: var(--aiviizn-danger) !important;
+  font-weight: 600;
+}
+
+.text-success {
+  color: var(--aiviizn-success) !important;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: var(--aiviizn-warning) !important;
+  font-weight: 600;
+}
+
+.balance-positive {
+  color: var(--aiviizn-success);
+  font-weight: 700;
+}
+
+.balance-negative {
+  color: var(--aiviizn-danger);
+  font-weight: 700;
+}
+
+.balance-zero {
+  color: var(--aiviizn-secondary);
+  font-weight: 600;
+}
+
+.filter-container {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.column-customizer {
+  position: relative;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  border-radius: 15px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--aiviizn-primary);
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-active {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--aiviizn-success);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--aiviizn-danger);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--aiviizn-warning);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  background: var(--aiviizn-light);
+  padding: 2rem 0;
+}
+
+.main-container {
+  max-width: 1400px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header__title {
+    font-size: 2rem;
+  }
+  
+  .dashboard-header__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .table-responsive {
+    border-radius: 15px;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="content-header">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>Dashboard</h2>
-        <div class="d-flex gap-2">
-            <select class="form-select form-select-sm" style="width: auto;">
-                <option>View By: All</option>
-                <option>View By: Property</option>
-                <option>View By: Portfolio</option>
-            </select>
-            <button class="btn btn-sm btn-primary">
-                <i class="fas fa-cog"></i> Customize
+<div id="content" class="content-wrapper position-fixed bottom-0 overflow-y-auto js-main-page dashboard index">
+  <main class="main-container mx-auto px-3 w-100">
+    <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+      
+      <div id="site-subtabs" class="full-screen-hide"></div>
+      
+      <div id="flash_messages"></div>
+
+      <div id="customizable-dashboard" class="js-customizable-dashboard animate-fade-in">
+        <header class="js-dashboard-header dashboard-header page-title">
+          <div class="container-fluid">
+            <h1 class="dashboard-header__title">Dashboard<span class="dashboard-header__status-flag"></span></h1>
+            <div class="dashboard-header__actions">
+              <div class="dashboard-header__view-actions d-flex align-items-center gap-3">
+                <label for="property_list" class="text-white-50 mb-0">View By:</label>
+                <select name="property_list" id="property_list" class="js-no-autofocus js-dashboard-view-by-select form-select ai-enhanced" data-update-url="{{ url_for('dashboard.update_page') }}" style="width: 200px;">
+                  <option selected="selected" value="">All Properties</option>
+                  <option value="35">Bill Gluek Properties</option>
+                  <option value="27">Blue Valley Apts</option>
+                  <option value="47">BRANCATO</option>
+                  <option value="38">Brandmeyer Props</option>
+                  <option value="25">Brentwood Apts</option>
+                  <option value="2">BRM</option>
+                  <option value="49">Chris M</option>
+                  <option value="23">Gary Stache</option>
+                  <option value="41">Gene Fields Apartments</option>
+                  <option value="50">Grandview 17</option>
+                  <option value="44">Greg Sweat</option>
+                  <option value="42">JOMAR Props</option>
+                  <option value="46">Kaanapali</option>
+                  <option value="43">Manheim</option>
+                  <option value="17">Marcin's Properties</option>
+                  <option value="37">Michael Sullivan Flats</option>
+                  <option value="6">MIDTOWN</option>
+                  <option value="31">Mur Len</option>
+                  <option value="32">Quail Creek Apts</option>
+                  <option value="40">Randall Court</option>
+                  <option value="33">Rock Ridge Ranch Apts</option>
+                  <option value="48">Ron's Properties</option>
+                  <option value="45">RRR Jonathan Barr</option>
+                  <option value="52">Stanion Properties</option>
+                  <option value="39">STB</option>
+                  <option value="30">Terry Moran</option>
+                  <option value="51">Walnut Ridge</option>
+                  <option value="34">Westheights-KC LL / Mik Kaminsk</option>
+                </select>
+                <button class="js-customize-dashboard js-no-autofocus btn btn-outline-light">
+                  <i class="fa-solid fa-gear me-2"></i>Customize
+                </button>
+              </div>
+              <div class="dashboard-header__edit-actions d-none">
+                <button class="js-save-customization js-no-autofocus btn btn-success" data-disable-with="Saving...">
+                  <i class="fa-solid fa-save me-2"></i>Save
+                </button>
+                <button class="js-cancel-customization js-no-autofocus btn btn-secondary">
+                  <i class="fa-solid fa-times me-2"></i>Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loading-state">
+          <div class="loading-spinner"></div>
+          <p class="text-muted">Loading dashboard data...</p>
+        </div>
+
+        <!-- Financial Health Alert -->
+        <div class="js-accounting-health-alert js-hideable-alert alert alert-info alert--with-icon animate-slide-up">
+          <h5 class="fw-bold mb-2">Financial Health Check</h5>
+          <p class="mb-3">Have you checked your Financial Diagnostics Page recently?</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-info btn-sm" href="{{ url_for('accounting.financial_diagnostics') }}">
+              <i class="fa-solid fa-chart-line me-1"></i>Check Financial Health
+            </a>
+            <button class="btn btn-outline-info btn-sm js-alert-hide" data-alert-type="accounting_health">
+              <i class="fa-solid fa-clock me-1"></i>Remind me in 7 days
             </button>
+            <button class="btn btn-outline-secondary btn-sm js-alert-hide" data-hide-forever="true" data-alert-type="accounting_health">
+              <i class="fa-solid fa-times me-1"></i>Don't show again
+            </button>
+          </div>
         </div>
-    </div>
-</div>
 
-<div class="content-body" style="padding: 15px; background: #f8f9fa;">
-    <!-- Move Ins Section -->
-    <div class="dashboard-section mb-4">
-        <div class="card">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">
-                    <span class="badge bg-success me-2">NEW</span>
-                    Move Ins Updated
-                    <small class="text-muted ms-2">We've added some key information to help track the progress of your move-ins.</small>
-                </h6>
-                <button class="btn btn-sm btn-outline-primary">FEEDBACK</button>
-            </div>
+        <!-- Move Ins Widget -->
+        <section class="js-dashboard-widget dashboard-widget card js-expandable-section expandable-section is-expanded animate-slide-up" data-id="move_ins" data-initial-state="expanded" data-url="{{ url_for('dashboard.move_ins') }}" data-hidden="false">
+          <header class="expandable-section__title expandable-section__trigger card-header d-flex align-items-center" role="button">
+            <h2 class="card-title w-100">
+              <i class="fa-solid fa-home me-2 text-primary"></i>Move Ins
+              <span class="badge bg-primary ms-2">10</span>
+            </h2>
+            <i class="fa-solid fa-chevron-down sort-icon"></i>
+          </header>
+
+          <section class="expandable-section__body">
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Future Tenant</th>
-                                <th>Property - Unit</th>
-                                <th>Lease</th>
-                                <th>Portal</th>
-                                <th>Balance</th>
-                                <th>Insurance</th>
-                                <th>Move In Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for movein in recent_moveins %}
-                            <tr>
-                                <td>{{ movein.tenant }}</td>
-                                <td>{{ movein.property }}</td>
-                                <td><span class="badge bg-success">{{ movein.lease }}</span></td>
-                                <td><span class="badge bg-success">Active</span></td>
-                                <td>${{ "%.2f"|format(movein.balance) }}</td>
-                                <td>
-                                    {% if movein.insurance == "Covered" %}
-                                    <span class="badge bg-success">Covered</span>
-                                    {% else %}
-                                    <span class="badge bg-warning">Not Covered</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ movein.move_date }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+              <!-- Feature Banner -->
+              <div id="feature-banner" class="js-feature-banner alert feature-banner mb-4">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="fw-bold text-uppercase mb-0">New</h3>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h4 class="mb-1">Move Ins Updated</h4>
+                    <p class="mb-0">We've added key information to help track the progress of your move-ins. What additional information would you like to see?</p>
+                  </div>
+                  <div class="ms-3">
+                    <button class="js-move-in-flow-feedback btn btn-outline-light">
+                      <i class="fa-solid fa-envelope me-2"></i>Feedback
+                    </button>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </div>
+              </div>
 
-    <!-- Key Metrics Row -->
-    <div class="row mb-4">
-        <!-- Delinquencies Card -->
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Delinquencies</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-around text-center">
-                        <div>
-                            <h2 class="text-primary">{{ stats.delinquencies['0_30'] }}</h2>
-                            <small class="text-muted">0-30 DAYS</small>
-                        </div>
-                        <div>
-                            <h2 class="text-warning">{{ stats.delinquencies['31_60'] }}</h2>
-                            <small class="text-muted">31-60 DAYS</small>
-                        </div>
-                        <div>
-                            <h2 class="text-danger">{{ stats.delinquencies['61_plus'] }}</h2>
-                            <small class="text-muted">61+ DAYS</small>
-                        </div>
+              <!-- Filters -->
+              <div class="filter-container mb-4">
+                <div class="row g-3 align-items-end">
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Search Properties/Units</label>
+                    <div class="search-container">
+                      <i class="fa-solid fa-search search-icon"></i>
+                      <input type="text" class="form-control search-input ai-enhanced" placeholder="Search by property, unit or group">
                     </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label fw-semibold">Lease Status</label>
+                    <select class="form-select ai-enhanced">
+                      <option value="">All Statuses</option>
+                      <option value="fully_executed">Fully Executed</option>
+                      <option value="out_for_signing">Out for Signing</option>
+                      <option value="ready_to_countersign">Ready to Countersign</option>
+                      <option value="canceled">Canceled</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary">
+                      <i class="fa-solid fa-cogs me-2"></i>Customize Columns
+                    </button>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="showFinished" checked>
+                      <label class="form-check-label fw-semibold" for="showFinished">
+                        Show Finished Move Ins
+                      </label>
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </div>
+              </div>
 
-        <!-- Online Payments Card -->
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Online Payments</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6 text-center">
-                            <h2 class="text-primary">{{ stats.online_payments.percentage }}%</h2>
-                            <small class="text-muted">Payments Collected Online</small>
-                        </div>
-                        <div class="col-6 text-center">
-                            <h2 class="text-success">{{ stats.online_payments.units_paid }}%</h2>
-                            <small class="text-muted">Units Paid Online</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Notifications Card -->
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Notifications</h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-2">
-                        <strong>Activities</strong>
-                        <div class="d-flex justify-content-between">
-                            <span>{{ stats.notifications.activities }} Due in the next 7 days</span>
-                            <span class="text-danger">10667 Overdue</span>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Bills</strong>
-                        <div>{{ stats.notifications.bills }} Pending approval</div>
-                    </div>
-                    <div>
-                        <strong>Purchase Orders</strong>
-                        <div>{{ stats.notifications.purchase_orders }} Pending approval</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="row mb-4">
-        <!-- Leasing Activity -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Leasing Activity (Last 30 Days)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <canvas id="guestCardsChart" style="max-height: 150px;"></canvas>
-                            <div class="text-center mt-2">
-                                <h4>{{ stats.leasing.guest_cards }}</h4>
-                                <small class="text-muted">TOTAL GUEST CARDS</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <canvas id="applicationsChart" style="max-height: 150px;"></canvas>
-                            <div class="text-center mt-2">
-                                <h4>{{ stats.leasing.applications }}</h4>
-                                <small class="text-muted">TOTAL APPLICATIONS</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-3">
-                            <h5 class="text-primary">{{ stats.leasing.out_for_signing }}</h5>
-                            <small>Out for Signing</small>
-                        </div>
-                        <div class="col-3">
-                            <h5 class="text-info">{{ stats.leasing.ready_to_countersign }}</h5>
-                            <small>Ready to Countersign</small>
-                        </div>
-                        <div class="col-3">
-                            <h5 class="text-success">{{ stats.leasing.executed }}</h5>
-                            <small>Fully Executed</small>
-                        </div>
-                        <div class="col-3">
-                            <h5 class="text-warning">{{ stats.leasing.average_turnover }}</h5>
-                            <small>days Average Turnover Time</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Key Performance Metrics -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Key Performance Metrics</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center mb-3">
-                        <div class="col-4">
-                            <h4 class="text-primary">${{ "{:,.2f}".format(stats.financials.total_income) }}</h4>
-                            <small>Total Income</small>
-                        </div>
-                        <div class="col-4">
-                            <h4 class="text-danger">${{ "{:,.2f}".format(stats.financials.total_expense) }}</h4>
-                            <small>Total Expense</small>
-                        </div>
-                        <div class="col-4">
-                            <h4 class="text-success">${{ "{:,.2f}".format(stats.financials.market_rent) }}</h4>
-                            <small>Total Market Rent</small>
-                        </div>
-                    </div>
-                    <canvas id="performanceChart" style="max-height: 200px;"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Maintenance and Insurance Row -->
-    <div class="row mb-4">
-        <!-- Maintenance -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Maintenance</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <canvas id="workOrdersChart" style="max-height: 150px;"></canvas>
-                            <div class="text-center mt-2">
-                                <h4>{{ stats.maintenance.work_orders.new + stats.maintenance.work_orders.assigned + stats.maintenance.work_orders.completed }}</h4>
-                                <small class="text-muted">TOTAL WORK ORDERS</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mt-4">
-                                <div class="mb-2">
-                                    <strong>{{ stats.maintenance.work_orders.new }}</strong> New
-                                </div>
-                                <div class="mb-2">
-                                    <strong>{{ stats.maintenance.work_orders.assigned }}</strong> Assigned
-                                </div>
-                                <div class="mb-2">
-                                    <strong>0</strong> Estimate Requested
-                                </div>
-                                <div class="mb-2">
-                                    <strong>5</strong> Scheduled
-                                </div>
-                                <div class="mb-2">
-                                    <strong>15</strong> Waiting
-                                </div>
-                                <div class="mb-2">
-                                    <strong>21</strong> Work Done, Unbilled in Last 60 Days
-                                </div>
-                                <div class="mb-2">
-                                    <strong>0</strong> Ready to Bill
-                                </div>
-                                <div>
-                                    <strong>{{ stats.maintenance.work_orders.completed }}</strong> Completed, Unbilled in Last 60 Days
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Insurance Coverage -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Insurance Coverage</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <canvas id="insuranceChart" style="max-height: 150px;"></canvas>
-                            <div class="text-center mt-2">
-                                <h4>1437</h4>
-                                <small class="text-muted">TOTAL UNITS</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mt-4">
-                                <div class="mb-2">
-                                    <strong>{{ stats.insurance.renters }}</strong> Renters Insurance
-                                </div>
-                                <div class="mb-2">
-                                    <strong>{{ stats.insurance.liability }}</strong> Liability to Landlord Insurance
-                                </div>
-                                <div class="mb-2">
-                                    <strong>0</strong> Both Renters and Liability to Landlord Insurance
-                                </div>
-                                <div class="mb-2">
-                                    <strong>22</strong> Policy Expiring in Next 30 Days
-                                </div>
-                                <div>
-                                    <strong>105</strong> No Insurance
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row text-center mt-3 pt-3 border-top">
-                        <div class="col-4">
-                            <h5 class="text-info">{{ stats.insurance.total_coverage }}</h5>
-                            <small>TOTAL COVERAGE</small>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="text-info">34.86%</h5>
-                            <small>RENTERS INSURANCE COVERAGE</small>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="text-info">57.41%</h5>
-                            <small>LIABILITY TO LANDLORD COVERAGE</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Portfolio Summary -->
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h6 class="mb-0">Portfolio Summary</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Beds</th>
-                            <th>Units</th>
-                            <th>Rented</th>
-                            <th>Available</th>
-                            <th>Vacant Unrented</th>
-                            <th>Avg Days Vacant</th>
-                            <th>Move Ins</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>0</td>
-                            <td>7</td>
-                            <td>7</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0.00</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>56</td>
-                            <td>47</td>
-                            <td>11</td>
-                            <td>9</td>
-                            <td>80.44</td>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>307</td>
-                            <td>278</td>
-                            <td>40</td>
-                            <td>29</td>
-                            <td>254.52</td>
-                            <td>7</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>749</td>
-                            <td>699</td>
-                            <td>71</td>
-                            <td>50</td>
-                            <td>109.42</td>
-                            <td>10</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>94</td>
-                            <td>87</td>
-                            <td>9</td>
-                            <td>7</td>
-                            <td>231.43</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0.00</td>
-                            <td>0</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="fw-bold">
-                            <td>Total</td>
-                            <td>1214</td>
-                            <td>1119</td>
-                            <td>131</td>
-                            <td>95</td>
-                            <td></td>
-                            <td>20</td>
-                        </tr>
-                    </tfoot>
+              <!-- Move Ins Table -->
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover" id="moveInsTable">
+                  <thead>
+                    <tr>
+                      <th class="sortable" data-column="tenant">
+                        Future Tenant
+                        <i class="fa-solid fa-sort sort-icon"></i>
+                      </th>
+                      <th class="sortable" data-column="unit">
+                        Property - Unit
+                        <i class="fa-solid fa-sort sort-icon"></i>
+                      </th>
+                      <th class="sortable" data-column="lease">
+                        Lease
+                        <i class="fa-solid fa-sort sort-icon"></i>
+                      </th>
+                      <th class="sortable" data-column="portal">
+                        Portal
+                        <i class="fa-solid fa-sort sort-icon"></i>
+                      </th>
+                      <th class="sortable" data-column="balance">
+                        Balance
+                        <i class="fa-solid fa-sort sort-icon"></i>
+                      </th>
+                      <th>Insurance</th>
+                      <th class="sortable" data-column="date">
+                        Move In Date
+                        <i class="fa-solid fa-caret-up sort-icon"></i>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="moveInsTableBody">
+                    <tr>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49740) }}" class="btn btn-link p-0 text-start fw-semibold">
+                          Sainge, Samuel
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49740) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-muted">-</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11053) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-muted">-</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11053) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-active">Active</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('reports.tenant_ledger', party_ids='t_11053') }}" class="btn btn-link p-0 text-end">
+                          <span class="balance-positive">$400.00</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11053) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-inactive">Not Covered</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49740) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-danger fw-bold">07/25/2025</span>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49727) }}" class="btn btn-link p-0 text-start fw-semibold">
+                          Bell, Telia R.
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49727) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-muted">-</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11039) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-muted">-</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11039) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-active">Active</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('reports.tenant_ledger', party_ids='t_11039') }}" class="btn btn-link p-0 text-end">
+                          <span class="balance-zero">$0.00</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11039) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-inactive">Not Covered</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49727) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-warning fw-bold">08/01/2025</span>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49728) }}" class="btn btn-link p-0 text-start fw-semibold">
+                          Hannon, LeAndrae E.
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49728) }}" class="btn btn-link p-0 text-start">
+                          Walnut Ridge Apts - 6108-A
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11040) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-inactive">Canceled</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11040) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-active">Active</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('reports.tenant_ledger', party_ids='t_11040') }}" class="btn btn-link p-0 text-end">
+                          <span class="balance-zero">$0.00</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('occupancies.show', id=11040) }}" class="btn btn-link p-0 text-start">
+                          <span class="status-badge status-pending">Pending</span>
+                        </a>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('move_in_flow.profiles_edit', web_flow_id=49728) }}" class="btn btn-link p-0 text-start">
+                          <span class="text-warning fw-bold">08/11/2025</span>
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
+              </div>
+
+              <!-- Pagination -->
+              <div class="pagination-container">
+                <nav aria-label="Move ins pagination">
+                  <ul class="pagination mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                        <i class="fa-solid fa-chevron-left"></i>
+                      </a>
+                    </li>
+                    <li class="page-item active">
+                      <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">
+                        <i class="fa-solid fa-chevron-right"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
+          </section>
+        </section>
+
+        <!-- Financial Summary Widget -->
+        <section class="dashboard-widget card animate-slide-up" style="animation-delay: 0.2s;">
+          <header class="card-header">
+            <h2 class="card-title">
+              <i class="fa-solid fa-chart-bar me-2 text-success"></i>Financial Summary
+            </h2>
+          </header>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th class="text-end">Total Income</th>
+                    <th class="text-end">Total Expense</th>
+                    <th class="text-end">Net</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="fw-semibold">Aug 2025</td>
+                    <td class="text-end balance-positive">$979,212.93</td>
+                    <td class="text-end balance-negative">$520,496.07</td>
+                    <td class="text-end balance-positive fw-bold">$458,716.86</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-semibold">Jul 2025</td>
+                    <td class="text-end balance-positive">$1,016,214.13</td>
+                    <td class="text-end balance-negative">$628,564.34</td>
+                    <td class="text-end balance-positive fw-bold">$387,649.79</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-semibold">Jun 2025</td>
+                    <td class="text-end balance-positive">$993,797.72</td>
+                    <td class="text-end balance-negative">$883,381.29</td>
+                    <td class="text-end balance-positive fw-bold">$110,416.43</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Profile Switch Form -->
+        <section class="dashboard-widget card animate-slide-up" style="animation-delay: 0.4s;">
+          <header class="card-header">
+            <h2 class="card-title">
+              <i class="fa-solid fa-user-cog me-2 text-info"></i>Profile Settings
+            </h2>
+          </header>
+          <div class="card-body">
+            <form action="{{ url_for('user_profiles.switch') }}" method="post" class="ai-enhanced">
+              <input type="hidden" name="_method" value="put">
+              <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="from_page_action" value="dashboard-index">
+              
+              <div class="row align-items-end">
+                <div class="col-md-6">
+                  <label for="profile_profile_name" class="form-label fw-semibold">Profile Type</label>
+                  <select class="form-select" name="profile[profile_name]" id="profile_profile_name">
+                    <option value="property_management" selected>Property Management</option>
+                    <option value="association_management">Association Management</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex gap-2">
+                    <button type="submit" id="switch_profile_button" class="btn btn-primary">
+                      <i class="fa-solid fa-sync-alt me-2"></i>Switch Profile
+                    </button>
+                    <button type="button" class="btn btn-secondary">
+                      <i class="fa-solid fa-times me-2"></i>Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- No Widgets Message -->
+        <div class="dashboard-no-visible-widgets text-center py-5" style="display: none;">
+          <div class="alert alert-info">
+            <i class="fa-solid fa-info-circle me-2"></i>
+            Looks like you've hidden all the dashboard widgets. If you want them back, 
+            <a class="js-customize-dashboard fw-bold" href="#">Customize your Dashboard</a>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="feedbackModalLabel">Move Ins Feedback</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="feedbackForm" action="{{ url_for('dashboard.update_feed_settings') }}" method="post">
+          <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+          
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Overall, how satisfied are you with the information currently provided on the dashboard?</label>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted small">Not satisfied at all</span>
+              <div class="rating-container d-flex gap-2">
+                <input type="radio" class="btn-check" name="rating" id="rating1" value="1">
+                <label class="btn btn-outline-primary" for="rating1">1</label>
+                <input type="radio" class="btn-check" name="rating" id="rating2" value="2">
+                <label class="btn btn-outline-primary" for="rating2">2</label>
+                <input type="radio" class="btn-check" name="rating" id="rating3" value="3">
+                <label class="btn btn-outline-primary" for="rating3">3</label>
+                <input type="radio" class="btn-check" name="rating" id="rating4" value="4">
+                <label class="btn btn-outline-primary" for="rating4">4</label>
+                <input type="radio" class="btn-check" name="rating" id="rating5" value="5">
+                <label class="btn btn-outline-primary" for="rating5">5</label>
+              </div>
+              <span class="text-muted small">Very Satisfied</span>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="comments" class="form-label fw-semibold">How could we improve move-in oversight for you?</label>
+            <textarea class="form-control" id="comments" name="comments" rows="4" placeholder="Please give us as much detail as you can. Thanks!"></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <h6 class="fw-semibold mb-3">Notification Categories</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[activity_due]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[activity_due]" id="categories_activity_due" value="1">
+                  <label class="form-check-label" for="categories_activity_due">Activity Due</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[rental_application_creation]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[rental_application_creation]" id="categories_rental_application_creation" value="1">
+                  <label class="form-check-label" for="categories_rental_application_creation">Rental Applications</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[service_request_creation]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[service_request_creation]" id="categories_service_request_creation" value="1">
+                  <label class="form-check-label" for="categories_service_request_creation">Service Requests</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[tenant_birthday]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[tenant_birthday]" id="categories_tenant_birthday" value="1">
+                  <label class="form-check-label" for="categories_tenant_birthday">Tenant Birthdays</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[architectural_review_creation]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[architectural_review_creation]" id="categories_architectural_review_creation" value="1">
+                  <label class="form-check-label" for="categories_architectural_review_creation">Architectural Reviews</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[tenant_insurance_expiration]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[tenant_insurance_expiration]" id="categories_tenant_insurance_expiration" value="1">
+                  <label class="form-check-label" for="categories_tenant_insurance_expiration">Tenant Insurance</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="hidden" name="categories[vendor_insurance_expiration]" value="0">
+                  <input class="form-check-input" type="checkbox" name="categories[vendor_insurance_expiration]" id="categories_vendor_insurance_expiration" value="1">
+                  <label class="form-check-label" for="categories_vendor_insurance_expiration">Vendor Insurance</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-times me-2"></i>Cancel
+        </button>
+        <button type="submit" form="feedbackForm" id="save_button" class="btn btn-primary">
+          <i class="fa-solid fa-save me-2"></i>Save Feedback
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Dashboard functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Color palette matching original
-    const colors = {
-        primary: '#3B82F6',
-        success: '#10B981',
-        warning: '#F59E0B',
-        danger: '#EF4444',
-        info: '#06B6D4',
-        gray: '#6B7280',
-        lightGray: '#E5E7EB'
-    };
-
-    // Guest Cards Chart
-    const guestCardsCtx = document.getElementById('guestCardsChart');
-    if (guestCardsCtx) {
-        new Chart(guestCardsCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Active', 'Pre-Qualified', 'Inactive', 'Waitlisted', 'Application Completed', 'Cold'],
-                datasets: [{
-                    data: [250, 30, 50, 20, 15, 6],
-                    backgroundColor: [colors.success, colors.primary, colors.gray, colors.warning, colors.info, colors.lightGray],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-
-    // Applications Chart
-    const applicationsCtx = document.getElementById('applicationsChart');
-    if (applicationsCtx) {
-        new Chart(applicationsCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['New', 'Approved', 'Denied', 'Decision Pending', 'Canceled'],
-                datasets: [{
-                    data: [5, 30, 10, 15, 4],
-                    backgroundColor: [colors.primary, colors.success, colors.danger, colors.warning, colors.gray],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-
-    // Work Orders Chart
-    const workOrdersCtx = document.getElementById('workOrdersChart');
-    if (workOrdersCtx) {
-        new Chart(workOrdersCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['New', 'Assigned', 'Scheduled', 'Waiting', 'Completed'],
-                datasets: [{
-                    data: [220, 122, 5, 15, 1066],
-                    backgroundColor: [colors.primary, colors.info, colors.warning, colors.gray, colors.success],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-
-    // Insurance Chart
-    const insuranceCtx = document.getElementById('insuranceChart');
-    if (insuranceCtx) {
-        new Chart(insuranceCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Renters Insurance', 'Liability to Landlord', 'No Insurance'],
-                datasets: [{
-                    data: [501, 825, 105],
-                    backgroundColor: [colors.success, colors.primary, colors.danger],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-
-    // Performance Chart (Line Graph)
-    const performanceCtx = document.getElementById('performanceChart');
-    if (performanceCtx) {
-        new Chart(performanceCtx, {
-            type: 'line',
-            data: {
-                labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-                datasets: [{
-                    label: 'Income',
-                    data: [1000000, 1020000, 1015000, 1030000, 1025000, 1040000, 1045000, 1055000, 1065000, 1070000, 1060000, 1040000, 842569],
-                    borderColor: colors.primary,
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Expense',
-                    data: [750000, 620000, 680000, 640000, 600000, 850000, 750000, 780000, 740000, 800000, 950000, 600000, 231078],
-                    borderColor: colors.danger,
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 15
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + (value / 1000000).toFixed(1) + 'M';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
+  // Initialize dashboard
+  initializeDashboard();
+  
+  // Property filter change
+  document.getElementById('property_list').addEventListener('change', function() {
+    filterData();
+  });
+  
+  // Search functionality
+  document.querySelector('.search-input').addEventListener('input', function() {
+    searchTable(this.value);
+  });
+  
+  // Table sorting
+  document.querySelectorAll('.sortable').forEach(function(header) {
+    header.addEventListener('click', function() {
+      sortTable(this.dataset.column);
+    });
+  });
+  
+  // Expandable sections
+  document.querySelectorAll('.expandable-section__trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function() {
+      toggleSection(this.closest('.expandable-section'));
+    });
+  });
+  
+  // Customize dashboard
+  document.querySelector('.js-customize-dashboard').addEventListener('click', function() {
+    toggleCustomizeMode();
+  });
+  
+  // Alert dismissal
+  document.querySelectorAll('.js-alert-hide').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      dismissAlert(this.closest('.alert'), this.dataset.alertType, this.dataset.hideForevor);
+    });
+  });
+  
+  // Feedback modal
+  document.querySelector('.js-move-in-flow-feedback').addEventListener('click', function() {
+    openFeedbackModal();
+  });
+  
+  // Show finished move-ins toggle
+  document.getElementById('showFinished').addEventListener('change', function() {
+    toggleFinishedMoveIns(this.checked);
+  });
 });
+
+function initializeDashboard() {
+  // Show loading state
+  showLoading(true);
+  
+  // Simulate data loading
+  setTimeout(function() {
+    showLoading(false);
+    animateWidgets();
+  }, 1000);
+}
+
+function showLoading(show) {
+  const loadingState = document.getElementById('loading-state');
+  const dashboard = document.getElementById('customizable-dashboard');
+  
+  if (show) {
+    loadingState.style.display = 'block';
+    dashboard.style.opacity = '0.5';
+  } else {
+    loadingState.style.display = 'none';
+    dashboard.style.opacity = '1';
+  }
+}
+
+function animateWidgets() {
+  const widgets = document.querySelectorAll('.dashboard-widget');
+  widgets.forEach(function(widget, index) {
+    widget.style.animationDelay = (index * 0.1) + 's';
+    widget.classList.add('animate-slide-up');
+  });
+}
+
+function filterData() {
+  const selectedProperty = document.getElementById('property_list').value;
+  // Implement property filtering logic
+  console.log('Filtering by property:', selectedProperty);
+}
+
+function searchTable(query) {
+  const tbody = document.getElementById('moveInsTableBody');
+  const rows = tbody.querySelectorAll('tr');
+  
+  rows.forEach(function(row) {
+    const text = row.textContent.toLowerCase();
+    if (text.includes(query.toLowerCase()) || query === '') {
+      row.style.display = '';
+      row.style.animation = 'fadeIn 0.3s ease-in';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+function sortTable(column) {
+  const tbody = document.getElementById('moveInsTableBody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  // Update sort icons
+  document.querySelectorAll('.sort-icon').forEach(function(icon) {
+    icon.className = 'fa-solid fa-sort sort-icon';
+  });
+  
+  const header = document.querySelector(`[data-column="${column}"] .sort-icon`);
+  header.className = 'fa-solid fa-caret-up sort-icon';
+  
+  // Sort rows (simplified sorting logic)
+  rows.sort(function(a, b) {
+    const aText = a.children[getColumnIndex(column)].textContent.trim();
+    const bText = b.children[getColumnIndex(column)].textContent.trim();
+    return aText.localeCompare(bText);
+  });
+  
+  // Re-append sorted rows
+  rows.forEach(function(row) {
+    tbody.appendChild(row);
+  });
+  
+  // Animate sorted rows
+  rows.forEach(function(row, index) {
+    row.style.animation = `slideInUp 0.3s ease-out ${index * 0.05}s both`;
+  });
+}
+
+function getColumnIndex(column) {
+  const columnMap = {
+    'tenant': 0,
+    'unit': 1,
+    'lease': 2,
+    'portal': 3,
+    'balance': 4,
+    'date': 6
+  };
+  return columnMap[column] || 0;
+}
+
+function toggleSection(section) {
+  const body = section.querySelector('.expandable-section__body');
+  const icon = section.querySelector('.sort-icon');
+  
+  if (section.classList.contains('is-expanded')) {
+    section.classList.remove('is-expanded');
+    body.style.display = 'none';
+    icon.className = 'fa-solid fa-chevron-right sort-icon';
+  } else {
+    section.classList.add('is-expanded');
+    body.style.display = 'block';
+    icon.className = 'fa-solid fa-chevron-down sort-icon';
+  }
+}
+
+function toggleCustomizeMode() {
+  const viewActions = document.querySelector('.dashboard-header__view-actions');
+  const editActions = document.querySelector('.dashboard-header__edit-actions');
+  
+  if (viewActions.style.display !== 'none') {
+    viewActions.style.display = 'none';
+    editActions.classList.remove('d-none');
+    enableCustomizationMode();
+  } else {
+    viewActions.style.display = 'flex';
+    editActions.classList.add('d-none');
+    disableCustomizationMode();
+  }
+}
+
+function enableCustomizationMode() {
+  // Add customization UI
+  document.querySelectorAll('.dashboard-widget').forEach(function(widget) {
+    const controls = document.createElement('div');
+    controls.className = 'customization-controls position-absolute top-0 end-0 m-2';
+    controls.innerHTML = `
+      <button class="btn btn-sm btn-outline-secondary me-1" onclick="moveWidget(this, 'up')">
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-secondary me-1" onclick="moveWidget(this, 'down')">
+        <i class="fa-solid fa-arrow-down"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-danger" onclick="hideWidget(this)">
+        <i class="fa-solid fa-eye-slash"></i>
+      </button>
+    `;
+    widget.style.position = 'relative';
+    widget.appendChild(controls);
+  });
+}
+
+function disableCustomizationMode() {
+  document.querySelectorAll('.customization-controls').forEach(function(controls) {
+    controls.remove();
+  });
+}
+
+function dismissAlert(alert, type, hideForevor) {
+  alert.style.animation = 'fadeOut 0.3s ease-out forwards';
+  setTimeout(function() {
+    alert.remove();
+  }, 300);
+  
+  // Store preference if hiding forever
+  if (hideForevor) {
+    localStorage.setItem(`alert_${type}_dismissed`, 'true');
+  }
+}
+
+function openFeedbackModal() {
+  const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+  modal.show();
+}
+
+function toggleFinishedMoveIns(show) {
+  // Implementation for showing/hiding finished move-ins
+  const finishedRows = document.querySelectorAll('tr[data-status="finished"]');
+  finishedRows.forEach(function(row) {
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// Supabase integration
+async function loadDashboardData() {
+  try {
+    // Example Supabase query
+    const { data, error } = await supabase
+      .from('move_ins')
+      .select('*')
+      .order('move_in_date', { ascending: true });
+    
+    if (error) throw error;
+    
+    updateMoveInsTable(data);
+  } catch (error) {
+    console.error('Error loading dashboard data:', error);
+    showErrorMessage('Failed to load dashboard data');
+  }
+}
+
+function updateMoveInsTable(data) {
+  const tbody = document.getElementById('moveInsTableBody');
+  tbody.innerHTML = '';
+  
+  data.forEach(function(item) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><a href="/move_in_flow/profiles/edit?web_flow_id=${item.web_flow_id}" class="btn btn-link p-0 text-start fw-semibold">${item.tenant_name}</a></td>
+      <td><a href="/move_in_flow/profiles/edit?web_flow_id=${item.web_flow_id}" class="btn btn-link p-0 text-start">${item.property_unit || '-'}</a></td>
+      <td><a href="/occupancies/${item.occupancy_id}" class="btn btn-link p-0 text-start"><span class="status-badge status-${item.lease_status.toLowerCase().replace(' ', '-')}">${item.lease_status}</span></a></td>
+      <td><a href="/occupancies/${item.occupancy_id}" class="btn btn-link p-0 text-start"><span class="status-badge status-${item.portal_status.toLowerCase()}">${item.portal_status}</span></a></td>
+      <td><a href="/reports/tenant_ledger?party_ids=t_${item.occupancy_id}" class="btn btn-link p-0 text-end"><span class="balance-${item.balance >= 0 ? 'positive' : 'negative'}">${formatCurrency(item.balance)}</span></a></td>
+      <td><a href="/occupancies/${item.occupancy_id}" class="btn btn-link p-0 text-start"><span class="status-badge status-${item.insurance_status.toLowerCase().replace(' ', '-')}">${item.insurance_status}</span></a></td>
+      <td><a href="/move_in_flow/profiles/edit?web_flow_id=${item.web_flow_id}" class="btn btn-link p-0 text-start"><span class="${getDateClass(item.move_in_date)} fw-bold">${formatDate(item.move_in_date)}</span></a></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(amount);
+}
+
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric'
+  });
+}
+
+function getDateClass(dateString) {
+  const date = new Date(dateString);
+  const today = new Date();
+  const diffTime = date - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return 'text-danger';
+  if (diffDays <= 7) return 'text-warning';
+  return 'text-success';
+}
+
+function showErrorMessage(message) {
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-danger alert-dismissible fade show';
+  alert.innerHTML = `
+    <i class="fa-solid fa-exclamation-triangle me-2"></i>
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  
+  const container = document.querySelector('.page-content-body');
+  container.insertBefore(alert, container.firstChild);
+}
+
+// Load dashboard data on page load
+// loadDashboardData();
 </script>
 {% endblock %}

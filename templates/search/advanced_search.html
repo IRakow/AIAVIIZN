@@ -1,0 +1,797 @@
+
+{% extends 'base.html' %}
+
+{% block title %}AppFolio Property Manager - Advanced Search{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --aiviizn-primary: #6366f1;
+        --aiviizn-secondary: #8b5cf6;
+        --aiviizn-accent: #06b6d4;
+        --aiviizn-success: #10b981;
+        --aiviizn-warning: #f59e0b;
+        --aiviizn-danger: #ef4444;
+        --aiviizn-dark: #1e293b;
+        --aiviizn-light: #f8fafc;
+        --aiviizn-gradient: linear-gradient(135deg, var(--aiviizn-primary) 0%, var(--aiviizn-secondary) 100%);
+    }
+
+    .content-wrapper {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+    }
+
+    .main-container {
+        max-width: 1400px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .page-title {
+        background: var(--aiviizn-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .search-container {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .advanced-search-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        box-shadow: inset 2px 2px 5px #e2e8f0, inset -2px -2px 5px #ffffff;
+    }
+
+    .advanced-search-input:focus {
+        border-color: var(--aiviizn-primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .input-group-text {
+        background: var(--aiviizn-gradient);
+        border: none;
+        color: white;
+        border-radius: 0 12px 12px 0;
+        transition: all 0.3s ease;
+    }
+
+    .input-group:hover .input-group-text {
+        transform: scale(1.05);
+    }
+
+    .form-check {
+        background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+        border-radius: 10px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-check:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--aiviizn-primary);
+        border-color: var(--aiviizn-primary);
+    }
+
+    .category-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .category-label {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--aiviizn-dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .category-label::before {
+        content: '';
+        width: 4px;
+        height: 24px;
+        background: var(--aiviizn-gradient);
+        border-radius: 2px;
+        margin-right: 12px;
+    }
+
+    .dropdown .form-control {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown .form-control:focus {
+        border-color: var(--aiviizn-primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-secondary {
+        background: var(--aiviizn-gradient);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-menu {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        margin: 2px 8px;
+    }
+
+    .dropdown-item:hover {
+        background: var(--aiviizn-gradient);
+        color: white;
+        transform: translateX(4px);
+    }
+
+    .dropdown-item.active {
+        background: var(--aiviizn-primary);
+        color: white;
+    }
+
+    .footer-hr {
+        border: none;
+        height: 2px;
+        background: var(--aiviizn-gradient);
+        opacity: 0.3;
+    }
+
+    #main-footer {
+        background: white;
+        border-radius: 15px;
+        margin: 2rem 0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    #main-footer a {
+        color: var(--aiviizn-primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    #main-footer a:hover {
+        color: var(--aiviizn-secondary);
+        transform: translateY(-1px);
+    }
+
+    #main-footer a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background: var(--aiviizn-gradient);
+        transition: width 0.3s ease;
+    }
+
+    #main-footer a:hover::after {
+        width: 100%;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid var(--aiviizn-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 8px;
+    }
+
+    .ai-enhanced {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ai-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+        animation: aiSweep 3s infinite;
+        z-index: 1;
+    }
+
+    .ai-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--aiviizn-gradient);
+        color: white;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+        z-index: 10;
+        animation: pulse 2s infinite;
+    }
+
+    .calculation-card {
+        background: linear-gradient(145deg, #f8fafc, #ffffff);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-left: 4px solid var(--aiviizn-accent);
+        animation: fadeInLeft 0.8s ease-out;
+    }
+
+    .calculation-title {
+        color: var(--aiviizn-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .calculation-formula {
+        font-family: 'Courier New', monospace;
+        background: #1e293b;
+        color: #64ffda;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    @keyframes aiSweep {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            margin: 1rem;
+            padding: 1rem;
+            border-radius: 15px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .search-container,
+        .category-section {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content-wrapper position-fixed bottom-0 overflow-y-auto js-main-page advanced_search advanced_search">
+    <main class="main-container mx-auto px-3 w-100">
+        <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+            
+            <div id="site-subtabs" class="full-screen-hide"></div>
+            
+            <div id="flash_messages">
+                <!-- Flash messages will be handled by base template -->
+            </div>
+
+            <div id="advanced_search_main">
+                <div>
+                    <h1 class="page-title grid grid--no-gutters">
+                        <div class="grid__9 js-welcome">Advanced Search</div>
+                    </h1>
+                    
+                    <div class="search-container">
+                        <div class="input-group ai-enhanced">
+                            <div class="ai-badge">AI</div>
+                            <input placeholder="Search AppFolio" 
+                                   id="advanced-search-input" 
+                                   aria-label="Advanced Search" 
+                                   type="search" 
+                                   class="col-6 form-control advanced-search-input" 
+                                   value="">
+                            <span class="input-group-text">
+                                <i aria-hidden="true" class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <div class="pt-2 ms-3 form-group form-check">
+                                <input id="checkbox-boolean-input-0" type="checkbox" class="form-check-input">
+                                <label for="checkbox-boolean-input-0" class="form-check-label">Show Hidden Items</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="category-label">Category</div>
+                            </div>
+                        </div>
+                        <div class="mt-1 row">
+                            <div class="col-6 col-sm-4">
+                                <div data-testid="react-gears-combobox-dropdown" class="dropdown ai-enhanced">
+                                    <div class="ai-badge">AI</div>
+                                    <div aria-haspopup="true" class="" aria-expanded="false">
+                                        <div class="input-group">
+                                            <input data-testid="react-gears-combobox-input" 
+                                                   aria-label="Category" 
+                                                   type="search" 
+                                                   class="form-control" 
+                                                   value="All" 
+                                                   id="category-search">
+                                            <button type="button" 
+                                                    data-testid="react-gears-combobox-button" 
+                                                    aria-disabled="false" 
+                                                    class="px-2 btn btn-secondary" 
+                                                    aria-label="Toggle options menu"
+                                                    id="category-dropdown-btn">
+                                                <i aria-hidden="true" class="fa-solid fa-caret-down fa-fw"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div tabindex="-1" 
+                                         role="listbox" 
+                                         data-testid="react-gears-combobox-dropdownmenu" 
+                                         aria-hidden="true" 
+                                         class="p-0 w-100 dropdown-menu" 
+                                         data-bs-popper="static" 
+                                         aria-activedescendant="option-all" 
+                                         style="max-height: 12rem; overflow-y: auto;"
+                                         id="category-dropdown">
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-all" 
+                                                role="menuitem" 
+                                                aria-selected="true" 
+                                                tabindex="0" 
+                                                class="dropdown-item active"
+                                                data-value="">All</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-bank_accounts" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="bank_accounts">Bank Accounts</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-help_articles" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="help_articles">Help Articles</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-in_progress" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="in_progress">In Progress</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-key_infos" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="key_infos">Keys</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-pages" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="pages">Pages</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-people" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="people">People</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-property" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="property">Properties</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-purchase_orders" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="purchase_orders">Purchase Orders</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-reports" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="reports">Reports</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-saved_reports" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="saved_reports">Saved Reports</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-tasks" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="tasks">Tasks</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-transactions" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="transactions">Transactions</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-units" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="units">Units</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-unit_turns" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="unit_turns">Unit Turns</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-violations" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="violations">Violations</button>
+                                        <button data-testid="react-gears-combobox-dropdownitem-options" 
+                                                id="option-work_orders" 
+                                                role="menuitem" 
+                                                aria-selected="false" 
+                                                tabindex="0" 
+                                                class="dropdown-item"
+                                                data-value="work_orders">Work Orders</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Switch Form -->
+                    <div class="mt-4">
+                        <form id="new_profile" action="{{ url_for('user_profiles.switch') }}" method="post" class="ai-enhanced">
+                            <div class="ai-badge">AI</div>
+                            <input type="hidden" name="_method" value="put">
+                            <input type="hidden" name="authenticity_token" value="{{ csrf_token() }}">
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="profile_profile_name" class="form-label category-label">Profile Type</label>
+                                    <select name="profile[profile_name]" id="profile_profile_name" class="form-select">
+                                        <option value="property_management" selected>Property Management</option>
+                                        <option value="association_management">Association Management</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="from_page_action" id="from_page_action" value="advanced_search-advanced_search">
+                            
+                            <div class="mt-3">
+                                <button type="submit" name="commit" id="switch_profile_button" class="btn btn-primary me-2" value="Switch Profile">
+                                    Switch Profile
+                                    <span class="loading-spinner d-none"></span>
+                                </button>
+                                <button type="button" class="btn btn-secondary">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- AI Calculations Display -->
+                    <div class="mt-4">
+                        <h3 class="category-label">AI-Enhanced Calculations</h3>
+                        
+                        <div class="calculation-card">
+                            <div class="calculation-title">Session Replay Sample Rate</div>
+                            <p>Calculates the percentage of user sessions to be recorded for replay.</p>
+                            <div class="calculation-formula">sessionReplaySampleRate = 10.0</div>
+                            <small class="text-muted">Current rate: <strong>10%</strong> of sessions recorded</small>
+                        </div>
+
+                        <div class="calculation-card">
+                            <div class="calculation-title">Session Sample Rate</div>
+                            <p>Determines the percentage of user sessions to be sampled for performance monitoring.</p>
+                            <div class="calculation-formula">sessionSampleRate = 10</div>
+                            <small class="text-muted">Performance monitoring: <strong>10%</strong> of sessions</small>
+                        </div>
+
+                        <div class="calculation-card">
+                            <div class="calculation-title">Trace Sample Rate</div>
+                            <p>Sets the percentage of traces to be collected for distributed tracing.</p>
+                            <div class="calculation-formula">traceSampleRate = 100</div>
+                            <small class="text-muted">Tracing coverage: <strong>100%</strong> of requests</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div id="main-footer" class="d-print-none js-footer full-screen-hide">
+            <hr class="m-0 footer-hr">
+            <div class="p-2">
+                <a target="_blank" id="privacy_link" rel="noopener" href="{{ url_for('main.privacy') }}">Privacy</a>
+                <span class="mx-1">|</span>
+                <a target="_blank" id="help_and_training_link" rel="noopener" href="{{ url_for('help.login') }}">Help &amp; Training</a>
+                <span class="mx-1">|</span>
+                <a target="_blank" id="suggestion_link" rel="noopener" href="{{ url_for('help.suggestions') }}">Make a Suggestion »</a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dropdown functionality
+    const dropdownBtn = document.getElementById('category-dropdown-btn');
+    const dropdown = document.getElementById('category-dropdown');
+    const searchInput = document.getElementById('category-search');
+    
+    dropdownBtn.addEventListener('click', function() {
+        const isExpanded = dropdown.getAttribute('aria-hidden') === 'false';
+        dropdown.setAttribute('aria-hidden', !isExpanded);
+        dropdownBtn.setAttribute('aria-expanded', !isExpanded);
+        dropdown.classList.toggle('show');
+    });
+
+    // Dropdown item selection
+    dropdown.addEventListener('click', function(e) {
+        if (e.target.classList.contains('dropdown-item')) {
+            // Remove active from all items
+            dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.remove('active');
+                item.setAttribute('aria-selected', 'false');
+            });
+            
+            // Add active to clicked item
+            e.target.classList.add('active');
+            e.target.setAttribute('aria-selected', 'true');
+            
+            // Update input value
+            searchInput.value = e.target.textContent;
+            
+            // Close dropdown
+            dropdown.setAttribute('aria-hidden', 'true');
+            dropdownBtn.setAttribute('aria-expanded', 'false');
+            dropdown.classList.remove('show');
+            
+            // Trigger search with new category
+            performSearch();
+        }
+    });
+
+    // Search functionality
+    const searchInput2 = document.getElementById('advanced-search-input');
+    const showHiddenCheckbox = document.getElementById('checkbox-boolean-input-0');
+    
+    function performSearch() {
+        const searchTerm = searchInput2.value;
+        const category = searchInput.value;
+        const showHidden = showHiddenCheckbox.checked;
+        
+        // Show loading state
+        searchInput2.classList.add('loading');
+        
+        // Simulate search API call
+        setTimeout(() => {
+            searchInput2.classList.remove('loading');
+            console.log('Searching:', { searchTerm, category, showHidden });
+            
+            // Here you would make actual API calls to Supabase
+            // supabase.from('search_results').select('*').ilike('title', `%${searchTerm}%`)
+        }, 1000);
+    }
+
+    // Debounced search
+    let searchTimeout;
+    searchInput2.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500);
+    });
+
+    showHiddenCheckbox.addEventListener('change', performSearch);
+
+    // Form submission with validation
+    const profileForm = document.getElementById('new_profile');
+    const submitBtn = document.getElementById('switch_profile_button');
+    const loadingSpinner = submitBtn.querySelector('.loading-spinner');
+
+    profileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        loadingSpinner.classList.remove('d-none');
+        
+        // Simulate form submission
+        setTimeout(() => {
+            // Here you would make actual API call
+            const formData = new FormData(profileForm);
+            console.log('Form submitted:', Object.fromEntries(formData));
+            
+            // Reset loading state
+            submitBtn.disabled = false;
+            loadingSpinner.classList.add('d-none');
+            
+            // Show success message
+            showNotification('Profile switched successfully!', 'success');
+        }, 2000);
+    });
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+        notification.style.zIndex = '9999';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && !dropdownBtn.contains(e.target)) {
+            dropdown.setAttribute('aria-hidden', 'true');
+            dropdownBtn.setAttribute('aria-expanded', 'false');
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // Keyboard navigation for dropdown
+    dropdown.addEventListener('keydown', function(e) {
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        const currentIndex = Array.from(items).findIndex(item => item === document.activeElement);
+        
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                items[nextIndex].focus();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                items[prevIndex].focus();
+                break;
+            case 'Enter':
+            case ' ':
+                e.preventDefault();
+                document.activeElement.click();
+                break;
+            case 'Escape':
+                dropdown.setAttribute('aria-hidden', 'true');
+                dropdownBtn.setAttribute('aria-expanded', 'false');
+                dropdown.classList.remove('show');
+                dropdownBtn.focus();
+                break;
+        }
+    });
+
+    // Initialize tooltips and other Bootstrap components
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

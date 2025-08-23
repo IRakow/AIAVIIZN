@@ -1,0 +1,778 @@
+{% extends "base.html" %}
+
+{% block title %}Vacancies - Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Vacancies</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="vacancies-container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <input type="text" class="search-bar" placeholder="Click here to search" id="searchInput">
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <span class="sort-label">Sort By:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="days_vacant">Days Vacant</option>
+                <option value="rent_low">Rent: Low to High</option>
+                <option value="rent_high">Rent: High to Low</option>
+                <option value="unit">Unit Number</option>
+                <option value="sqft">Square Footage</option>
+            </select>
+        </div>
+
+        <!-- Vacancy Grid -->
+        <div class="vacancy-grid" id="vacancyGrid">
+            <!-- Vacancy Cards will be dynamically generated here -->
+        </div>
+    </div>
+</div>
+
+<style>
+    .vacancies-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
+    .search-section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    .search-bar {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid #0B5394;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s;
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .search-bar:focus {
+        box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+        text-align: left;
+        color: #212529;
+    }
+
+    .filter-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sort-label {
+        font-size: 14px;
+        color: #6c757d;
+        margin-right: 5px;
+    }
+
+    .sort-select {
+        padding: 8px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .vacancy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(900px, 1fr));
+        gap: 20px;
+    }
+
+    .vacancy-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.3s;
+    }
+
+    .vacancy-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .vacancy-header {
+        background: #dc3545;
+        color: white;
+        padding: 8px 15px;
+        font-weight: 600;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .vacancy-content {
+        display: flex;
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .property-image-section {
+        flex-shrink: 0;
+        text-align: center;
+    }
+
+    .property-image {
+        width: 200px;
+        height: 140px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
+
+    .property-icon {
+        font-size: 48px;
+        color: #adb5bd;
+    }
+
+    .photo-count {
+        margin-top: 5px;
+        font-size: 11px;
+        color: #6c757d;
+    }
+
+    .property-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .property-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0B5394;
+        margin-bottom: 5px;
+        text-decoration: none;
+    }
+
+    .property-title:hover {
+        text-decoration: underline;
+    }
+
+    .property-address {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .property-info-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 10px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #212529;
+        font-weight: 500;
+    }
+
+    .property-status {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        min-width: 180px;
+    }
+
+    .status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    .status-label {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .status-value {
+        color: #6c757d;
+    }
+
+    .status-value.posted {
+        color: #28a745;
+        font-weight: 500;
+    }
+
+    .property-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 15px;
+        min-width: 150px;
+    }
+
+    .action-row {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .action-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-align: center;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-post {
+        background: #0B5394;
+        color: white;
+    }
+
+    .btn-post:hover {
+        background: #073763;
+    }
+
+    .btn-activate {
+        background: #0B5394;
+        color: white;
+    }
+
+    .btn-activate:hover {
+        background: #073763;
+    }
+
+    .btn-posted {
+        background: #28a745;
+        color: white;
+        cursor: default;
+    }
+
+    .actions-dropdown {
+        position: relative;
+        margin-top: 10px;
+    }
+
+    .btn-actions {
+        width: 100%;
+        padding: 6px 12px;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-actions:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+        min-width: 180px;
+        margin-top: 2px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 8px 15px;
+        font-size: 13px;
+        color: #212529;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .no-vacancies {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .no-vacancies-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+
+    .no-vacancies-text {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .no-vacancies-subtext {
+        font-size: 14px;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+</style>
+
+<script>
+// Sample vacancy data - in production this would come from the backend
+const vacancies = [
+    {
+        id: 1,
+        property: "Gene Field Apts / DW Gene Field LLC / Ryan Deutsch",
+        unit: "10-02",
+        address: "3515 Gene Field Rd. - 10-02, St. Joseph, MO 64506",
+        bedrooms: 1,
+        bathrooms: 1,
+        sqft: 731,
+        rent: 546,
+        available: "Now",
+        vacantDays: 1052,
+        website: false,
+        internet: false,
+        premium: false,
+        photos: 0
+    },
+    {
+        id: 2,
+        property: "Gene Field Apts / DW Gene Field LLC / Ryan Deutsch",
+        unit: "10-04",
+        address: "3515 Gene Field Rd. - 10-04, St. Joseph, MO 64506",
+        bedrooms: 1,
+        bathrooms: 1,
+        sqft: 731,
+        rent: 546,
+        available: "Now",
+        vacantDays: 896,
+        website: false,
+        internet: false,
+        premium: false,
+        photos: 0
+    },
+    {
+        id: 3,
+        property: "Gene Field Apts / DW Gene Field LLC / Ryan Deutsch",
+        unit: "10-05",
+        address: "3515 Gene Field Rd. - 10-05, St. Joseph, MO 64506",
+        bedrooms: 1,
+        bathrooms: 1,
+        sqft: 731,
+        rent: 546,
+        available: "Now",
+        vacantDays: 804,
+        website: false,
+        internet: false,
+        premium: false,
+        photos: 0
+    },
+    {
+        id: 4,
+        property: "Gene Field Apts / DW Gene Field LLC / Ryan Deutsch",
+        unit: "10-01",
+        address: "3515 Gene Field Rd. - 10-01, St. Joseph, MO 64506",
+        bedrooms: 1,
+        bathrooms: 1,
+        sqft: 731,
+        rent: 573,
+        available: "Now",
+        vacantDays: 753,
+        website: false,
+        internet: false,
+        premium: false,
+        photos: 0
+    }
+];
+
+// Function to create vacancy card HTML
+function createVacancyCard(vacancy) {
+    return `
+        <div class="vacancy-card" data-id="${vacancy.id}">
+            <div class="vacancy-header">
+                Vacant For: ${vacancy.vacantDays} days
+            </div>
+            <div class="vacancy-content">
+                <!-- Property Image Section -->
+                <div class="property-image-section">
+                    <div class="property-image">
+                        <div class="property-icon">🏠</div>
+                    </div>
+                    <div class="photo-count">${vacancy.photos} Photos</div>
+                </div>
+
+                <!-- Property Details -->
+                <div class="property-details">
+                    <a href="#" class="property-title">${vacancy.property}</a>
+                    <div class="property-address">${vacancy.address}</div>
+                    
+                    <div class="property-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">BD/BA</span>
+                            <span class="info-value">${vacancy.bedrooms}/${vacancy.bathrooms}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">SQ. FT.</span>
+                            <span class="info-value">${vacancy.sqft}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">RENT</span>
+                            <span class="info-value">$${vacancy.rent}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">AVAILABLE</span>
+                            <span class="info-value">${vacancy.available}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Status -->
+                <div class="property-status">
+                    <div class="status-row">
+                        <span class="status-label">Website</span>
+                        <span class="status-value ${vacancy.website ? 'posted' : ''}">
+                            ${vacancy.website ? 'Posted' : 'Not Posted'}
+                        </span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Internet</span>
+                        <span class="status-value ${vacancy.internet ? 'posted' : ''}">
+                            ${vacancy.internet ? 'Posted' : 'Not Posted'}
+                        </span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Premium</span>
+                        <span class="status-value">${vacancy.premium ? 'On' : 'Off'}</span>
+                    </div>
+                </div>
+
+                <!-- Property Actions -->
+                <div class="property-actions">
+                    <div class="action-row">
+                        ${!vacancy.website ? 
+                            '<button class="btn-action btn-post" onclick="postToWebsite(' + vacancy.id + ')">Post</button>' : 
+                            '<button class="btn-action btn-posted">Posted</button>'
+                        }
+                    </div>
+                    <div class="action-row">
+                        ${!vacancy.internet ? 
+                            '<button class="btn-action btn-post" onclick="postToInternet(' + vacancy.id + ')">Post</button>' : 
+                            '<button class="btn-action btn-posted">Posted</button>'
+                        }
+                    </div>
+                    <div class="action-row">
+                        ${!vacancy.premium ? 
+                            '<button class="btn-action btn-activate" onclick="activatePremium(' + vacancy.id + ')">Activate</button>' : 
+                            '<button class="btn-action btn-posted">Active</button>'
+                        }
+                    </div>
+                    
+                    <div class="actions-dropdown">
+                        <button class="btn-actions" onclick="toggleDropdown(${vacancy.id})">
+                            Actions <span>⋯</span>
+                        </button>
+                        <div class="dropdown-menu" id="dropdown-${vacancy.id}">
+                            <div class="dropdown-item" onclick="editVacancy(${vacancy.id})">Edit Unit</div>
+                            <div class="dropdown-item" onclick="viewDetails(${vacancy.id})">View Details</div>
+                            <div class="dropdown-item" onclick="uploadPhotos(${vacancy.id})">Upload Photos</div>
+                            <div class="dropdown-item" onclick="printFlyer(${vacancy.id})">Print Flyer</div>
+                            <div class="dropdown-item" onclick="scheduleShowing(${vacancy.id})">Schedule Showing</div>
+                            <div class="dropdown-item" onclick="markAsRented(${vacancy.id})">Mark as Rented</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Render all vacancy cards
+function renderVacancies(vacanciesToRender = vacancies) {
+    const grid = document.getElementById('vacancyGrid');
+    
+    if (vacanciesToRender.length === 0) {
+        grid.innerHTML = `
+            <div class="no-vacancies">
+                <div class="no-vacancies-icon">🏠</div>
+                <div class="no-vacancies-text">No Vacancies Found</div>
+                <div class="no-vacancies-subtext">All units are currently occupied or try adjusting your search filters.</div>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = vacanciesToRender.map(vacancy => createVacancyCard(vacancy)).join('');
+}
+
+// Action functions
+function postToWebsite(id) {
+    const vacancy = vacancies.find(v => v.id === id);
+    if (vacancy) {
+        vacancy.website = true;
+        renderVacancies();
+        showNotification('Unit posted to website successfully');
+    }
+}
+
+function postToInternet(id) {
+    const vacancy = vacancies.find(v => v.id === id);
+    if (vacancy) {
+        vacancy.internet = true;
+        renderVacancies();
+        showNotification('Unit posted to internet listings successfully');
+    }
+}
+
+function activatePremium(id) {
+    const vacancy = vacancies.find(v => v.id === id);
+    if (vacancy) {
+        vacancy.premium = true;
+        renderVacancies();
+        showNotification('Premium listing activated successfully');
+    }
+}
+
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(`dropdown-${id}`);
+    const allDropdowns = document.querySelectorAll('.dropdown-menu');
+    
+    // Close all other dropdowns
+    allDropdowns.forEach(d => {
+        if (d !== dropdown) {
+            d.classList.remove('show');
+        }
+    });
+    
+    // Toggle current dropdown
+    dropdown.classList.toggle('show');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.actions-dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(d => {
+            d.classList.remove('show');
+        });
+    }
+});
+
+// Action menu functions
+function editVacancy(id) {
+    console.log('Edit vacancy:', id);
+}
+
+function viewDetails(id) {
+    console.log('View details:', id);
+}
+
+function uploadPhotos(id) {
+    console.log('Upload photos:', id);
+}
+
+function printFlyer(id) {
+    console.log('Print flyer:', id);
+}
+
+function scheduleShowing(id) {
+    console.log('Schedule showing:', id);
+}
+
+function markAsRented(id) {
+    const index = vacancies.findIndex(v => v.id === id);
+    if (index > -1) {
+        vacancies.splice(index, 1);
+        renderVacancies();
+        showNotification('Unit marked as rented');
+    }
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 60px;
+        right: 400px;
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const filtered = vacancies.filter(v => 
+        v.property.toLowerCase().includes(searchTerm) ||
+        v.address.toLowerCase().includes(searchTerm) ||
+        v.unit.toLowerCase().includes(searchTerm)
+    );
+    renderVacancies(filtered);
+});
+
+// Sort functionality
+document.getElementById('sortSelect').addEventListener('change', function(e) {
+    const sortBy = e.target.value;
+    let sorted = [...vacancies];
+    
+    switch(sortBy) {
+        case 'days_vacant':
+            sorted.sort((a, b) => b.vacantDays - a.vacantDays);
+            break;
+        case 'rent_low':
+            sorted.sort((a, b) => a.rent - b.rent);
+            break;
+        case 'rent_high':
+            sorted.sort((a, b) => b.rent - a.rent);
+            break;
+        case 'unit':
+            sorted.sort((a, b) => a.unit.localeCompare(b.unit));
+            break;
+        case 'sqft':
+            sorted.sort((a, b) => b.sqft - a.sqft);
+            break;
+    }
+    
+    renderVacancies(sorted);
+});
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Initial render
+renderVacancies();
+</script>
+{% endblock %}

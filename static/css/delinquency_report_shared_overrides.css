@@ -1,0 +1,1 @@
+{"shared_elements": [{"element_name": "total_monthly_rent", "element_type": "calculation", "data_category": "financial", "current_value": {"amount": 12500, "currency": "USD"}, "formula_expression": "SUM(unit_rent_amounts)", "display_label": "Total Monthly Rent"}]}

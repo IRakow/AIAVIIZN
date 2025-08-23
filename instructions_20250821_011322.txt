@@ -1,0 +1,29 @@
+
+🤖 AIVIIZN MCP Agent Instructions
+
+Process this AppFolio page using your MCP servers:
+
+**Target URL:** https://celticprop.appfolio.com/stack
+
+**Using MCP Servers:**
+1. **Playwright MCP** - Navigate to URL, capture screenshots
+2. **Supabase MCP** - Store page data and analysis
+3. **Filesystem MCP** - Save templates and files
+
+**Tasks:**
+1. Navigate to: https://celticprop.appfolio.com/stack
+2. Take full page screenshot
+3. Extract all calculations and formulas
+4. Analyze page functionality and design
+5. Generate AIVIIZN template in /templates/ directory
+6. Store analysis in Supabase
+7. Discover and record all AppFolio links
+8. Validate calculations with multiple AI services
+
+**Template Structure:**
+- Replace "AppFolio" with "AIVIIZN"
+- Replace "Celtic Property" with "AIVIIZN"
+- Keep exact layout and functionality
+- Store in appropriate /templates/ subdirectory
+
+**Return:** Confirmation of completion and discovered links

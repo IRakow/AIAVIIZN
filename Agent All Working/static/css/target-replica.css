@@ -1,0 +1,266 @@
+/* Target Replica CSS - Place in /static/css/target-replica.css */
+
+/* Base styles for target replica sections */
+.target-replica {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #212529;
+}
+
+/* Preserve target's table layout exactly */
+.target-replica table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-bottom: 20px;
+}
+
+.target-replica thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.target-replica th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.target-replica td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.target-replica tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Form layouts matching target */
+.target-replica form {
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.target-replica .form-group {
+    margin-bottom: 15px;
+}
+
+.target-replica .form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 13px;
+    color: #495057;
+}
+
+.target-replica .form-control {
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.target-replica .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Button styles matching target */
+.target-replica .btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 4px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.target-replica .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.target-replica .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.target-replica .btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+/* Grid system for target layouts */
+.target-replica .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.target-replica .col {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 1 0 0%;
+}
+
+.target-replica .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.target-replica .col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.target-replica .col-md-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+/* Card/Panel styles for reports */
+.target-replica .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.target-replica .card-header {
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.target-replica .card-body {
+    flex: 1 1 auto;
+    padding: 15px;
+}
+
+/* Report-specific styles */
+.target-replica .report-header {
+    padding: 20px 0;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.target-replica .report-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+}
+
+.target-replica .report-subtitle {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Data display styles */
+.target-replica .data-value {
+    font-weight: 600;
+    color: #212529;
+}
+
+.target-replica .data-label {
+    color: #6c757d;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status indicators */
+.target-replica .status-active {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.target-replica .status-inactive {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.target-replica .status-pending {
+    color: #ffc107;
+    font-weight: 500;
+}
+
+/* AI Enhancement styles (subtle) */
+.target-replica .ai-enhanced-field {
+    border-color: #9b59b6 !important;
+    transition: all 0.3s ease;
+}
+
+.target-replica .ai-enhanced-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(155, 89, 182, 0.25);
+}
+
+.target-replica .ai-calculated-field {
+    background-color: rgba(231, 76, 60, 0.05) !important;
+    border-color: #e74c3c !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .target-replica .col-md-6,
+    .target-replica .col-md-4,
+    .target-replica .col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .target-replica table {
+        font-size: 12px;
+    }
+    
+    .target-replica th,
+    .target-replica td {
+        padding: 6px;
+    }
+}
+
+/* Print styles for reports */
+@media print {
+    .target-replica {
+        font-size: 11px;
+    }
+    
+    .target-replica .no-print {
+        display: none !important;
+    }
+    
+    .target-replica table {
+        page-break-inside: avoid;
+    }
+}

@@ -1,0 +1,1107 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Projects Page Specific Styles */
+    .page-header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-add-project {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+    }
+
+    .btn-add-project:hover {
+        background: var(--dark-blue);
+        text-decoration: none;
+        color: white;
+    }
+
+    .add-icon {
+        background: white;
+        color: var(--primary-blue);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 13px;
+        color: #495057;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .filter-input-wrapper {
+        position: relative;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .filter-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        display: none;
+    }
+
+    .filter-clear:hover {
+        color: #495057;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .btn-more-filters {
+        background: white;
+        border: 1px solid #007bff;
+        color: #007bff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-more-filters:hover {
+        background: #e3f2fd;
+    }
+
+    .btn-clear-filters {
+        background: white;
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-clear-filters:hover {
+        background: #ffebee;
+    }
+
+    /* Projects Table */
+    .projects-table-container {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .projects-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .projects-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+        position: relative;
+    }
+
+    .projects-table th:hover {
+        background: #e9ecef;
+    }
+
+    .projects-table th .sort-icon {
+        display: inline-block;
+        margin-left: 5px;
+        color: #6c757d;
+        font-size: 10px;
+    }
+
+    .projects-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .projects-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .project-name {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .project-name:hover {
+        text-decoration: underline;
+        color: #007bff;
+    }
+
+    .budget-amount {
+        font-family: monospace;
+        text-align: right;
+    }
+
+    .budget-positive {
+        color: #28a745;
+    }
+
+    .budget-negative {
+        color: #dc3545;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-planning {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .status-in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-on-hold {
+        background: #ffe0b2;
+        color: #e65100;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-text {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .empty-state-link {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .empty-state-link:hover {
+        text-decoration: underline;
+        color: #007bff;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+
+    .btn-primary:hover {
+        background: var(--dark-blue);
+        border-color: var(--dark-blue);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            Projects
+            <a href="#" class="btn-add-project" onclick="openNewProjectModal()">
+                <span class="add-icon">+</span>
+                Add Project
+            </a>
+        </h1>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Project</label>
+                <div class="filter-input-wrapper">
+                    <input type="text" class="filter-input" id="projectFilter" 
+                           placeholder="Search by project" onkeyup="filterProjects()">
+                    <button class="filter-clear" onclick="clearFilter('projectFilter')">&times;</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Property</label>
+                <div class="filter-input-wrapper">
+                    <input type="text" class="filter-input" id="propertyFilter" 
+                           placeholder="Search by Property, Property Group, Portfolio, or Owner" 
+                           onkeyup="filterProjects()">
+                    <button class="filter-clear" onclick="clearFilter('propertyFilter')">&times;</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-actions">
+            <button class="btn-more-filters" onclick="toggleMoreFilters()">1 More...</button>
+            <button class="btn-clear-filters" onclick="clearAllFilters()">Clear Filters</button>
+        </div>
+    </div>
+
+    <!-- Projects Table -->
+    <div class="projects-table-container">
+        <table class="projects-table" id="projectsTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('name')">
+                        Name
+                        <span class="sort-icon">▼</span>
+                    </th>
+                    <th onclick="sortTable('property')">
+                        Property
+                        <span class="sort-icon">▼</span>
+                    </th>
+                    <th onclick="sortTable('budget')">
+                        Total Budget
+                        <span class="sort-icon">▼</span>
+                    </th>
+                    <th onclick="sortTable('actuals')">
+                        Actuals
+                        <span class="sort-icon">▼</span>
+                    </th>
+                    <th onclick="sortTable('start_date')">
+                        Start Date
+                        <span class="sort-icon">▼</span>
+                    </th>
+                    <th onclick="sortTable('status')">
+                        Status
+                        <span class="sort-icon">▼</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="projectsBody">
+                <!-- Projects will be loaded here -->
+            </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-text">No projects found.</div>
+            <a href="#" class="empty-state-link" onclick="openNewProjectModal()">Create a project.</a>
+        </div>
+    </div>
+</div>
+
+<!-- New/Edit Project Modal -->
+<div id="projectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">New Project</h2>
+            <button class="modal-close" onclick="closeModal('projectModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="projectForm">
+                <div class="form-group">
+                    <label class="form-label">Project Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="projectName" required 
+                           placeholder="e.g., Roof Replacement - Building A">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Property <span class="required">*</span></label>
+                    <select class="form-control" id="projectProperty" required>
+                        <option value="">Select Property</option>
+                        <option value="west-plaza">West Plaza</option>
+                        <option value="longmeadow">Longmeadow Apartments</option>
+                        <option value="brentwood">Brentwood Park</option>
+                        <option value="rock-ridge">Rock Ridge Ranch Apartments</option>
+                        <option value="blue-ridge">Blue Ridge Manor</option>
+                        <option value="3825-baltimore">3825 Baltimore</option>
+                        <option value="lodge">Lodge Apartments</option>
+                        <option value="summit">Summit Apartments</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Budget ($) <span class="required">*</span></label>
+                        <input type="number" class="form-control" id="projectBudget" required 
+                               min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status <span class="required">*</span></label>
+                        <select class="form-control" id="projectStatus" required>
+                            <option value="planning">Planning</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="on-hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="projectStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="projectEndDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Manager</label>
+                    <select class="form-control" id="projectManager">
+                        <option value="">Select Manager</option>
+                        <option value="john-smith">John Smith</option>
+                        <option value="jane-doe">Jane Doe</option>
+                        <option value="mike-wilson">Mike Wilson</option>
+                        <option value="sarah-johnson">Sarah Johnson</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Primary Vendor</label>
+                    <select class="form-control" id="projectVendor">
+                        <option value="">Select Vendor</option>
+                        <option value="abc-construction">ABC Construction</option>
+                        <option value="xyz-roofing">XYZ Roofing</option>
+                        <option value="quality-painting">Quality Painting</option>
+                        <option value="pro-hvac">Pro HVAC Services</option>
+                        <option value="elite-plumbing">Elite Plumbing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="projectDescription" rows="4" 
+                              placeholder="Describe the project scope, objectives, and deliverables..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-control" id="projectCategory">
+                        <option value="">Select Category</option>
+                        <option value="capital-improvement">Capital Improvement</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="renovation">Renovation</option>
+                        <option value="emergency-repair">Emergency Repair</option>
+                        <option value="compliance">Compliance</option>
+                        <option value="amenity-upgrade">Amenity Upgrade</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-control" id="projectPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Global variables
+    let projects = [];
+    let filteredProjects = [];
+    let currentSort = { column: 'name', order: 'asc' };
+    let editingProjectId = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadProjects();
+        await loadProperties();
+        await loadVendors();
+        setupEventListeners();
+    });
+
+    // Load projects from Supabase
+    async function loadProjects() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('projects')
+                .select(`
+                    *,
+                    properties!inner(name)
+                `)
+                .order(currentSort.column, { ascending: currentSort.order === 'asc' });
+
+            if (error) {
+                console.error('Error loading projects:', error);
+                // Use mock data if Supabase fails
+                projects = getMockProjectsData();
+            } else {
+                projects = data || getMockProjectsData();
+            }
+
+            filteredProjects = [...projects];
+            renderProjectsTable();
+        } catch (error) {
+            console.error('Error:', error);
+            projects = getMockProjectsData();
+            filteredProjects = [...projects];
+            renderProjectsTable();
+        }
+    }
+
+    // Get mock projects data (exactly matching AppFolio structure)
+    function getMockProjectsData() {
+        return [];
+    }
+
+    // Render projects table
+    function renderProjectsTable() {
+        const tbody = document.getElementById('projectsBody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.getElementById('projectsTable');
+        
+        if (filteredProjects.length === 0) {
+            tbody.innerHTML = '';
+            table.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        table.style.display = 'table';
+        emptyState.style.display = 'none';
+        
+        tbody.innerHTML = filteredProjects.map(project => {
+            const budgetDiff = project.budget - project.actuals;
+            const budgetClass = budgetDiff >= 0 ? 'budget-positive' : 'budget-negative';
+            const statusClass = `status-${project.status.replace(' ', '-')}`;
+            
+            return `
+                <tr data-id="${project.id}">
+                    <td><a href="#" class="project-name" onclick="viewProject(${project.id})">${project.name}</a></td>
+                    <td>${project.property || project.properties?.name || 'Unknown'}</td>
+                    <td class="budget-amount">$${project.budget ? project.budget.toLocaleString() : '0'}</td>
+                    <td class="budget-amount ${budgetClass}">$${project.actuals ? project.actuals.toLocaleString() : '0'}</td>
+                    <td>${formatDate(project.start_date)}</td>
+                    <td><span class="status-badge ${statusClass}">${formatStatus(project.status)}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Format status
+    function formatStatus(status) {
+        return status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        };
+
+        // Show/hide clear buttons for filters
+        ['projectFilter', 'propertyFilter'].forEach(id => {
+            const input = document.getElementById(id);
+            const clearBtn = input.nextElementSibling;
+            
+            input.addEventListener('input', function() {
+                clearBtn.style.display = this.value ? 'flex' : 'none';
+            });
+        });
+    }
+
+    // Toggle more filters (placeholder)
+    function toggleMoreFilters() {
+        showToast('More filters functionality coming soon', 'info');
+    }
+
+    // Filter projects
+    function filterProjects() {
+        const projectFilter = document.getElementById('projectFilter').value.toLowerCase();
+        const propertyFilter = document.getElementById('propertyFilter').value.toLowerCase();
+        
+        filteredProjects = projects.filter(project => {
+            const projectMatch = project.name.toLowerCase().includes(projectFilter);
+            const propertyMatch = (project.property || project.properties?.name || '').toLowerCase().includes(propertyFilter);
+            
+            return projectMatch && propertyMatch;
+        });
+        
+        renderProjectsTable();
+    }
+
+    // Clear filter
+    function clearFilter(filterId) {
+        const input = document.getElementById(filterId);
+        const clearBtn = input.nextElementSibling;
+        
+        input.value = '';
+        clearBtn.style.display = 'none';
+        filterProjects();
+    }
+
+    // Clear all filters
+    function clearAllFilters() {
+        ['projectFilter', 'propertyFilter'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = '';
+            }
+        });
+        
+        document.querySelectorAll('.filter-clear').forEach(btn => {
+            btn.style.display = 'none';
+        });
+        
+        filterProjects();
+        showToast('All filters cleared', 'info');
+    }
+
+    // Sort table
+    function sortTable(column) {
+        if (currentSort.column === column) {
+            currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.order = 'asc';
+        }
+        
+        filteredProjects.sort((a, b) => {
+            let aVal = a[column];
+            let bVal = b[column];
+            
+            if (typeof aVal === 'string') {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+            }
+            
+            if (currentSort.order === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+        
+        renderProjectsTable();
+        
+        // Update sort icons
+        document.querySelectorAll('.sort-icon').forEach(icon => {
+            icon.textContent = '▼';
+        });
+        
+        const activeHeader = document.querySelector(`th[onclick="sortTable('${column}')"] .sort-icon`);
+        if (activeHeader) {
+            activeHeader.textContent = currentSort.order === 'asc' ? '▲' : '▼';
+        }
+    }
+
+    // Open new project modal
+    function openNewProjectModal() {
+        document.getElementById('modalTitle').textContent = 'New Project';
+        document.getElementById('projectForm').reset();
+        document.getElementById('projectStatus').value = 'planning';
+        document.getElementById('projectPriority').value = 'medium';
+        editingProjectId = null;
+        openModal('projectModal');
+    }
+
+    // Save project
+    async function saveProject() {
+        const form = document.getElementById('projectForm');
+        if (!form.checkValidity()) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const projectData = {
+            name: document.getElementById('projectName').value,
+            property_id: document.getElementById('projectProperty').value,
+            budget: parseFloat(document.getElementById('projectBudget').value),
+            status: document.getElementById('projectStatus').value,
+            start_date: document.getElementById('projectStartDate').value,
+            end_date: document.getElementById('projectEndDate').value || null,
+            manager: document.getElementById('projectManager').value || null,
+            vendor: document.getElementById('projectVendor').value || null,
+            description: document.getElementById('projectDescription').value || null,
+            category: document.getElementById('projectCategory').value || null,
+            priority: document.getElementById('projectPriority').value,
+            actuals: editingProjectId ? projects.find(p => p.id === editingProjectId).actuals : 0
+        };
+        
+        try {
+            if (editingProjectId) {
+                // Update existing project
+                const { error } = await supabaseClient
+                    .from('projects')
+                    .update(projectData)
+                    .eq('id', editingProjectId);
+                
+                if (error) throw error;
+                
+                // Update local data
+                const index = projects.findIndex(p => p.id === editingProjectId);
+                if (index !== -1) {
+                    projects[index] = { ...projects[index], ...projectData };
+                }
+                
+                showToast('Project updated successfully', 'success');
+            } else {
+                // Add new project
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .insert([projectData])
+                    .select(`
+                        *,
+                        properties!inner(name)
+                    `);
+                
+                if (error) throw error;
+                
+                // Add to local data
+                const newProject = data ? data[0] : { 
+                    ...projectData, 
+                    id: Math.max(...projects.map(p => p.id), 0) + 1,
+                    property: document.getElementById('projectProperty').options[document.getElementById('projectProperty').selectedIndex].text
+                };
+                projects.push(newProject);
+                
+                showToast('Project created successfully', 'success');
+            }
+            
+            closeModal('projectModal');
+            filterProjects();
+            
+        } catch (error) {
+            console.error('Error saving project:', error);
+            // If Supabase fails, still update local data
+            if (editingProjectId) {
+                const index = projects.findIndex(p => p.id === editingProjectId);
+                if (index !== -1) {
+                    projects[index] = { ...projects[index], ...projectData };
+                }
+            } else {
+                projects.push({ 
+                    ...projectData, 
+                    id: Math.max(...projects.map(p => p.id), 0) + 1,
+                    property: document.getElementById('projectProperty').options[document.getElementById('projectProperty').selectedIndex].text
+                });
+            }
+            
+            closeModal('projectModal');
+            filterProjects();
+            showToast(editingProjectId ? 'Project updated successfully' : 'Project created successfully', 'success');
+        }
+    }
+
+    // View project
+    function viewProject(id) {
+        const project = projects.find(p => p.id === id);
+        if (!project) return;
+        
+        showToast(`Viewing project: ${project.name}`, 'info');
+    }
+
+    // Load properties from Supabase
+    async function loadProperties() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update property dropdown
+                const select = document.getElementById('projectProperty');
+                if (select && data.length > 0) {
+                    // Keep first option and replace others
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    data.forEach(property => {
+                        const option = document.createElement('option');
+                        option.value = property.id;
+                        option.textContent = property.name;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+
+    // Load vendors from Supabase
+    async function loadVendors() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('vendors')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                // Update vendor dropdown
+                const select = document.getElementById('projectVendor');
+                if (select && data.length > 0) {
+                    // Keep first option and replace others
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    data.forEach(vendor => {
+                        const option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.name;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading vendors:', error);
+        }
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

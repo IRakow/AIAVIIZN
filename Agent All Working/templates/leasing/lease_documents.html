@@ -1,0 +1,2385 @@
+{% extends "base.html" %}
+
+{% block title %}Lease Documents - AIVIIZN Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Lease Documents</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('vacancies') }}">Vacancies</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('guest_cards') }}">Guest Cards</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('rental_applications') }}">Rental Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('leases') }}">Leases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('renewals') }}">Renewals</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('leasing_metrics') }}">Metrics</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signals') }}">Signals</a>
+        </li>
+    </ul>
+
+    <div class="lease-documents-container">
+        <!-- Page Header with Actions -->
+        <div class="page-header">
+            <div class="header-left">
+                <h3 class="page-title">Lease Documents</h3>
+                <p class="page-subtitle">Manage lease generation, signing, and printing workflow</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline-primary" onclick="bulkDownload()">
+                    <i class="fas fa-download"></i> Bulk Download
+                </button>
+                <button class="btn btn-outline-primary" onclick="exportDocuments()">
+                    <i class="fas fa-file-export"></i> Export List
+                </button>
+                <button class="btn btn-primary" onclick="generateNewLease()">
+                    <i class="fas fa-plus"></i> Generate Lease
+                </button>
+            </div>
+        </div>
+
+        <!-- Document Status Filter Tabs -->
+        <div class="status-filter-tabs">
+            <div class="tab-row">
+                <button class="status-tab active" onclick="filterDocuments('all')" id="tab-all">
+                    All Documents <span class="tab-count">24</span>
+                </button>
+                <button class="status-tab" onclick="filterDocuments('ready')" id="tab-ready">
+                    Ready to Countersign <span class="tab-count">6</span>
+                </button>
+                <button class="status-tab" onclick="filterDocuments('out-for-signing')" id="tab-out">
+                    Out for Signing <span class="tab-count">8</span>
+                </button>
+                <button class="status-tab" onclick="filterDocuments('printed')" id="tab-printed">
+                    Printed <span class="tab-count">10</span>
+                </button>
+                <button class="status-tab" onclick="filterDocuments('completed')" id="tab-completed">
+                    Completed <span class="tab-count">15</span>
+                </button>
+                <button class="status-tab urgent" onclick="filterDocuments('issues')" id="tab-issues">
+                    Needs Attention <span class="tab-count">3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter Panel -->
+        <div class="search-filter-panel">
+            <!-- Search Box -->
+            <div class="search-box-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="documentSearch" placeholder="Search by tenant name, property, or unit..." 
+                           onkeyup="performDocumentSearch()">
+                    <button class="btn-search-clear" onclick="clearDocumentSearch()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label>Property:</label>
+                    <select id="propertyFilter" onchange="applyDocumentFilters()">
+                        <option value="all">All Properties</option>
+                        <option value="sunset-apts">Sunset Apartments</option>
+                        <option value="oak-grove">Oak Grove Complex</option>
+                        <option value="city-view">City View Towers</option>
+                        <option value="pine-ridge">Pine Ridge Manor</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Date Range:</label>
+                    <div class="date-range-inputs">
+                        <input type="date" id="dateFrom" onchange="applyDocumentFilters()">
+                        <span>to</span>
+                        <input type="date" id="dateTo" onchange="applyDocumentFilters()">
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Document Type:</label>
+                    <select id="documentTypeFilter" onchange="applyDocumentFilters()">
+                        <option value="all">All Types</option>
+                        <option value="new-lease">New Lease</option>
+                        <option value="renewal">Lease Renewal</option>
+                        <option value="amendment">Amendment</option>
+                        <option value="addendum">Addendum</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Sort by:</label>
+                    <select id="sortBy" onchange="applySorting()">
+                        <option value="date-desc" selected>Generation Date (Newest)</option>
+                        <option value="date-asc">Generation Date (Oldest)</option>
+                        <option value="tenant">Tenant Name</option>
+                        <option value="property">Property</option>
+                        <option value="status">Status</option>
+                        <option value="expiration">Expiration Date</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Summary Stats -->
+        <div class="document-summary">
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-icon ready">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Ready to Countersign</div>
+                        <div class="stat-action">
+                            <button onclick="bulkCountersign()">Process All</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon out">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Awaiting Signatures</div>
+                        <div class="stat-action">
+                            <button onclick="sendReminders()">Send Reminders</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon printed">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">10</div>
+                        <div class="stat-label">Printed Documents</div>
+                        <div class="stat-action">
+                            <button onclick="viewPrintQueue()">View Queue</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card urgent">
+                    <div class="stat-icon issues">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Need Attention</div>
+                        <div class="stat-action">
+                            <button onclick="reviewIssues()">Review Issues</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions Bar -->
+        <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
+            <div class="bulk-info">
+                <span id="selectedDocCount">0</span> documents selected
+            </div>
+            <div class="bulk-buttons">
+                <button class="btn-bulk" onclick="bulkCountersignSelected()">
+                    <i class="fas fa-pen-fancy"></i> Countersign Selected
+                </button>
+                <button class="btn-bulk" onclick="bulkSendForSigning()">
+                    <i class="fas fa-envelope"></i> Send for Signing
+                </button>
+                <button class="btn-bulk" onclick="bulkPrintSelected()">
+                    <i class="fas fa-print"></i> Print Selected
+                </button>
+                <button class="btn-bulk" onclick="bulkDownloadSelected()">
+                    <i class="fas fa-download"></i> Download Selected
+                </button>
+                <button class="btn-bulk" onclick="bulkDeleteSelected()">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+            </div>
+            <button class="btn-clear-selection" onclick="clearDocumentSelection()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Documents Table -->
+        <div class="data-table">
+            <div class="table-controls">
+                <div class="view-options">
+                    <label>View:</label>
+                    <select id="viewMode" onchange="changeDocumentView()">
+                        <option value="detailed" selected>Detailed View</option>
+                        <option value="compact">Compact View</option>
+                        <option value="timeline">Timeline View</option>
+                    </select>
+                    
+                    <label style="margin-left: 20px;">Show:</label>
+                    <select id="showCount" onchange="changeShowCount()">
+                        <option value="25" selected>25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                
+                <div class="table-actions">
+                    <button class="btn-toggle" onclick="toggleSelectAllDocs()">
+                        <i class="fas fa-check-square"></i> Select All
+                    </button>
+                    <button class="btn-toggle" onclick="refreshDocuments()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <table id="documentsTable">
+                <thead>
+                    <tr>
+                        <th class="checkbox-col">
+                            <input type="checkbox" id="selectAllDocsCheckbox" onchange="handleSelectAllDocs()">
+                        </th>
+                        <th class="sortable" data-sort="tenant">
+                            Tenant(s) <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="property">
+                            Property / Unit <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="type">
+                            Document Type <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="generation-date">
+                            Generation Date <i class="fas fa-sort-down"></i>
+                        </th>
+                        <th class="sortable" data-sort="status">
+                            Status <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="progress">
+                            Progress <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="documentsTableBody">
+                    <!-- Ready to Countersign Documents -->
+                    <tr class="document-row ready-to-countersign" data-id="1" data-status="ready">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="1" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Chris Minear</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> chris.minear@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 234-5678</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,350/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Gene Field Apartments</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">01-02</span>
+                                    <span class="property-group">DW Gene Field LLC</span>
+                                </div>
+                                <div class="property-manager">
+                                    <small>Manager: Ryan Deutsch</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge new-lease">New Lease</span>
+                                <div class="template-info">
+                                    <small>Standard Lease Template v2.1</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Mar 12, 2025</strong>
+                                <div class="time-info">10:06 AM</div>
+                                <div class="days-ago">5 months ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-ready">Ready to Countersign</span>
+                                <div class="status-details">
+                                    <small>Tenant signed digitally</small>
+                                    <div class="signed-date">Signed: Mar 10, 2025</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step completed">Tenant Signed</div>
+                                    <div class="step current">Awaiting Countersign</div>
+                                    <div class="step">Complete</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-countersign" onclick="countersignDocument(1)" title="Countersign">
+                                    <i class="fas fa-pen-fancy"></i>
+                                </button>
+                                <button class="btn-action btn-view" onclick="viewDocument(1)" title="View Document">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-download" onclick="downloadDocument(1)" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(1)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu1">
+                                        <a href="#" onclick="previewDocument(1)">Preview Document</a>
+                                        <a href="#" onclick="printDocument(1)">Print Document</a>
+                                        <a href="#" onclick="sendCopy(1)">Email Copy</a>
+                                        <a href="#" onclick="addDocumentNote(1)">Add Note</a>
+                                        <a href="#" onclick="regenerateDocument(1)">Regenerate</a>
+                                        <a href="#" onclick="deleteDocument(1)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr class="document-row ready-to-countersign" data-id="2" data-status="ready">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="2" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Kianna I. Evans</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> kianna.evans@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 345-6789</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,450/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Castle Row Apartments</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">#5B</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge new-lease">New Lease</span>
+                                <div class="template-info">
+                                    <small>Standard Lease Template v2.1</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Aug 01, 2025</strong>
+                                <div class="time-info">4:48 PM</div>
+                                <div class="days-ago">17 days ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-ready">Ready to Countersign</span>
+                                <div class="status-details">
+                                    <small>Tenant signed digitally</small>
+                                    <div class="signed-date">Signed: Jul 30, 2025</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step completed">Tenant Signed</div>
+                                    <div class="step current">Awaiting Countersign</div>
+                                    <div class="step">Complete</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-countersign" onclick="countersignDocument(2)">
+                                    <i class="fas fa-pen-fancy"></i>
+                                </button>
+                                <button class="btn-action btn-view" onclick="viewDocument(2)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-download" onclick="downloadDocument(2)">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(2)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu2">
+                                        <a href="#" onclick="previewDocument(2)">Preview Document</a>
+                                        <a href="#" onclick="printDocument(2)">Print Document</a>
+                                        <a href="#" onclick="sendCopy(2)">Email Copy</a>
+                                        <a href="#" onclick="addDocumentNote(2)">Add Note</a>
+                                        <a href="#" onclick="regenerateDocument(2)">Regenerate</a>
+                                        <a href="#" onclick="deleteDocument(2)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Out for Signing Documents -->
+                    <tr class="document-row out-for-signing" data-id="3" data-status="out-for-signing" style="display: none;">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="3" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Madysen M. Almond</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> madysen.almond@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 456-7890</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,200/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Villas of Mur-Len</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">215 P</span>
+                                    <span class="property-group">TSI Villas of Mur-Len</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge renewal">Lease Renewal</span>
+                                <div class="template-info">
+                                    <small>Renewal Template v1.3</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Dec 30, 2024</strong>
+                                <div class="time-info">10:46 AM</div>
+                                <div class="days-ago">7 months ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-out">Out for Signing</span>
+                                <div class="status-details">
+                                    <small>Sent to tenant</small>
+                                    <div class="sent-date">Sent: Jan 2, 2025</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 50%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step current">Awaiting Tenant Signature</div>
+                                    <div class="step">Countersign</div>
+                                    <div class="step">Complete</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-remind" onclick="sendSigningReminder(3)" title="Send Reminder">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                                <button class="btn-action btn-view" onclick="viewDocument(3)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-track" onclick="trackSigning(3)" title="Track Progress">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(3)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu3">
+                                        <a href="#" onclick="resendForSigning(3)">Resend for Signing</a>
+                                        <a href="#" onclick="cancelSigning(3)">Cancel Signing</a>
+                                        <a href="#" onclick="printDocument(3)">Print for Manual Signing</a>
+                                        <a href="#" onclick="addDocumentNote(3)">Add Note</a>
+                                        <a href="#" onclick="deleteDocument(3)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Printed Documents -->
+                    <tr class="document-row printed" data-id="4" data-status="printed" style="display: none;">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="4" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Carlos R. Johnson</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> carlos.johnson@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 567-8901</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,600/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Blue Ridge Manor</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">3811 2</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge new-lease">New Lease</span>
+                                <div class="template-info">
+                                    <small>Standard Lease Template v2.0</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Sep 10, 2021</strong>
+                                <div class="time-info">11:21 AM</div>
+                                <div class="days-ago">4 years ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-printed">Printed</span>
+                                <div class="status-details">
+                                    <small>Physical document</small>
+                                    <div class="print-date">Printed: Sep 15, 2021</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step completed">Printed</div>
+                                    <div class="step completed">Manually Signed</div>
+                                    <div class="step current">Filing</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewDocument(4)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-scan" onclick="scanDocument(4)" title="Scan Signed Copy">
+                                    <i class="fas fa-scanner"></i>
+                                </button>
+                                <button class="btn-action btn-archive" onclick="archiveDocument(4)" title="Archive">
+                                    <i class="fas fa-archive"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(4)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu4">
+                                        <a href="#" onclick="reprintDocument(4)">Reprint Document</a>
+                                        <a href="#" onclick="uploadSignedCopy(4)">Upload Signed Copy</a>
+                                        <a href="#" onclick="markAsExecuted(4)">Mark as Executed</a>
+                                        <a href="#" onclick="addDocumentNote(4)">Add Note</a>
+                                        <a href="#" onclick="deleteDocument(4)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Completed Documents -->
+                    <tr class="document-row completed" data-id="5" data-status="completed" style="display: none;">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="5" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Jennifer L. Smith</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> jennifer.smith@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 678-9012</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,400/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Sunset Apartments</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">A-301</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge new-lease">New Lease</span>
+                                <div class="template-info">
+                                    <small>Standard Lease Template v2.1</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Jul 15, 2025</strong>
+                                <div class="time-info">2:30 PM</div>
+                                <div class="days-ago">1 month ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-completed">Completed</span>
+                                <div class="status-details">
+                                    <small>Fully executed</small>
+                                    <div class="completion-date">Completed: Jul 20, 2025</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill completed" style="width: 100%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step completed">Tenant Signed</div>
+                                    <div class="step completed">Countersigned</div>
+                                    <div class="step completed">Complete</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewDocument(5)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-download" onclick="downloadDocument(5)">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="btn-action btn-archive" onclick="archiveDocument(5)">
+                                    <i class="fas fa-archive"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(5)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu5">
+                                        <a href="#" onclick="createAddendum(5)">Create Addendum</a>
+                                        <a href="#" onclick="emailCopy(5)">Email Copy</a>
+                                        <a href="#" onclick="duplicateDocument(5)">Duplicate</a>
+                                        <a href="#" onclick="addDocumentNote(5)">Add Note</a>
+                                        <a href="#" onclick="viewHistory(5)">View History</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Documents with Issues -->
+                    <tr class="document-row issues urgent" data-id="6" data-status="issues" style="display: none;">
+                        <td><input type="checkbox" class="doc-row-checkbox" value="6" onchange="updateDocumentSelection()"></td>
+                        <td>
+                            <div class="tenant-info">
+                                <strong>Robert Martinez</strong>
+                                <div class="tenant-details">
+                                    <span><i class="fas fa-envelope"></i> robert.martinez@email.com</span>
+                                    <span><i class="fas fa-phone"></i> (555) 789-0123</span>
+                                </div>
+                                <div class="lease-details">
+                                    <small>12-month lease • $1,300/mo</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="property-info">
+                                <strong>Oak Grove Complex</strong>
+                                <div class="unit-info">
+                                    <span class="unit-number">B-15</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="document-type">
+                                <span class="type-badge amendment">Amendment</span>
+                                <div class="template-info">
+                                    <small>Lease Amendment Template v1.1</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-info">
+                                <strong>Aug 10, 2025</strong>
+                                <div class="time-info">3:15 PM</div>
+                                <div class="days-ago">8 days ago</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge status-issues">Signature Error</span>
+                                <div class="status-details">
+                                    <small class="error-text">Invalid signature detected</small>
+                                    <div class="error-date">Error: Aug 12, 2025</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill error" style="width: 60%"></div>
+                                </div>
+                                <div class="progress-steps">
+                                    <div class="step completed">Generated</div>
+                                    <div class="step error">Signing Error</div>
+                                    <div class="step">Countersign</div>
+                                    <div class="step">Complete</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="btn-action btn-fix" onclick="resolveIssue(6)" title="Resolve Issue">
+                                    <i class="fas fa-wrench"></i>
+                                </button>
+                                <button class="btn-action btn-view" onclick="viewDocument(6)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-regenerate" onclick="regenerateDocument(6)" title="Regenerate">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <div class="action-dropdown">
+                                    <button class="btn-action btn-more" onclick="toggleDocActionMenu(6)">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" id="docActionMenu6">
+                                        <a href="#" onclick="resetSigning(6)">Reset Signing Process</a>
+                                        <a href="#" onclick="contactTenant(6)">Contact Tenant</a>
+                                        <a href="#" onclick="manualReview(6)">Request Manual Review</a>
+                                        <a href="#" onclick="addDocumentNote(6)">Add Note</a>
+                                        <a href="#" onclick="deleteDocument(6)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing 1-6 of 24 documents
+            </div>
+            <div class="pagination-controls">
+                <button class="btn-page" disabled><i class="fas fa-chevron-left"></i></button>
+                <button class="btn-page active">1</button>
+                <button class="btn-page">2</button>
+                <button class="btn-page">3</button>
+                <button class="btn-page">4</button>
+                <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="footer-links">
+            <a href="/privacy">Privacy</a>
+            <span class="divider">|</span>
+            <a href="/help">Help & Training</a>
+            <span class="divider">|</span>
+            <a href="/suggestions">Make a Suggestion »</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .lease-documents-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .header-left .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #212529;
+        margin: 0 0 5px 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .header-left .page-subtitle {
+        color: #6c757d;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #073763;
+    }
+
+    .btn-outline-primary {
+        background-color: transparent;
+        color: #0B5394;
+        border: 1px solid #0B5394;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    /* Status Filter Tabs */
+    .status-filter-tabs {
+        margin-bottom: 20px;
+    }
+
+    .tab-row {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid #dee2e6;
+        overflow-x: auto;
+    }
+
+    .status-tab {
+        background: none;
+        border: none;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #6c757d;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-tab:hover {
+        color: #495057;
+        background-color: #f8f9fa;
+    }
+
+    .status-tab.active {
+        color: #0B5394;
+        border-bottom-color: #0B5394;
+        background-color: white;
+    }
+
+    .status-tab.urgent {
+        color: #dc3545;
+    }
+
+    .status-tab.urgent.active {
+        color: #dc3545;
+        border-bottom-color: #dc3545;
+    }
+
+    .tab-count {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .status-tab.active .tab-count {
+        background-color: rgba(11, 83, 148, 0.1);
+        color: #0B5394;
+    }
+
+    .status-tab.urgent .tab-count {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    /* Search and Filter Panel */
+    .search-filter-panel {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .search-box-container {
+        margin-bottom: 15px;
+    }
+
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        color: #6c757d;
+        font-size: 14px;
+        z-index: 2;
+    }
+
+    #documentSearch {
+        width: 100%;
+        padding: 12px 40px 12px 40px;
+        border: 2px solid #0B5394;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: white;
+        transition: all 0.3s;
+    }
+
+    #documentSearch:focus {
+        outline: none;
+        border-color: #073763;
+        box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+    }
+
+    .btn-search-clear {
+        position: absolute;
+        right: 8px;
+        background: none;
+        border: none;
+        color: #6c757d;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .btn-search-clear:hover {
+        background-color: #e9ecef;
+    }
+
+    .filter-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+        background-color: white;
+    }
+
+    .date-range-inputs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .date-range-inputs input {
+        flex: 1;
+    }
+
+    .date-range-inputs span {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    /* Document Summary */
+    .document-summary {
+        margin-bottom: 20px;
+    }
+
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-card.urgent {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .stat-icon.ready {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .stat-icon.out {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .stat-icon.printed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .stat-icon.issues {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #6c757d;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .stat-action button {
+        padding: 4px 12px;
+        background-color: #0B5394;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .stat-action button:hover {
+        background-color: #073763;
+    }
+
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+        background-color: #e3f2fd;
+        border: 1px solid #90caf9;
+        border-radius: 6px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bulk-info {
+        font-weight: 600;
+        color: #0B5394;
+    }
+
+    .bulk-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        background-color: #0B5394;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-bulk:hover {
+        background-color: #073763;
+    }
+
+    .btn-clear-selection {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+    .btn-clear-selection:hover {
+        background-color: rgba(0,0,0,0.1);
+    }
+
+    /* Table Controls */
+    .table-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .view-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+    }
+
+    .view-options label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .view-options select {
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-toggle {
+        padding: 6px 12px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-toggle:hover {
+        background-color: #5a6268;
+    }
+
+    /* Data Table */
+    .data-table {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    #documentsTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+    }
+
+    #documentsTable th {
+        background-color: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+
+    #documentsTable th.sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    #documentsTable th.sortable:hover {
+        background-color: #e9ecef;
+    }
+
+    #documentsTable th i {
+        float: right;
+        color: #adb5bd;
+        font-size: 10px;
+        margin-top: 2px;
+    }
+
+    #documentsTable th.checkbox-col {
+        width: 40px;
+        text-align: center;
+    }
+
+    #documentsTable td {
+        padding: 15px 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: top;
+    }
+
+    #documentsTable tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    #documentsTable tr.urgent {
+        background-color: #fff5f5;
+    }
+
+    /* Tenant Info Styles */
+    .tenant-info {
+        min-width: 200px;
+    }
+
+    .tenant-info strong {
+        display: block;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 6px;
+    }
+
+    .tenant-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 6px;
+    }
+
+    .tenant-details span {
+        font-size: 11px;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tenant-details i {
+        width: 12px;
+        text-align: center;
+    }
+
+    .lease-details {
+        font-size: 11px;
+        color: #6c757d;
+        background-color: #f8f9fa;
+        padding: 3px 6px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    /* Property Info Styles */
+    .property-info {
+        min-width: 180px;
+    }
+
+    .property-info strong {
+        display: block;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .unit-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .unit-number {
+        background-color: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: 600;
+        font-size: 11px;
+    }
+
+    .property-group {
+        font-size: 11px;
+        color: #6c757d;
+    }
+
+    .property-manager {
+        font-size: 11px;
+        color: #6c757d;
+    }
+
+    /* Document Type Styles */
+    .document-type {
+        text-align: center;
+        min-width: 120px;
+    }
+
+    .type-badge {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .type-badge.new-lease {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .type-badge.renewal {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .type-badge.amendment {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .type-badge.addendum {
+        background-color: #f3e5f5;
+        color: #6f42c1;
+    }
+
+    .template-info {
+        font-size: 10px;
+        color: #6c757d;
+    }
+
+    /* Date Info Styles */
+    .date-info strong {
+        display: block;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 2px;
+    }
+
+    .time-info {
+        font-size: 11px;
+        color: #6c757d;
+        margin-bottom: 2px;
+    }
+
+    .days-ago {
+        font-size: 11px;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    /* Status Container Styles */
+    .status-container {
+        text-align: center;
+        min-width: 140px;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .status-ready {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-out {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-printed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-completed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-issues {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-details {
+        font-size: 10px;
+        color: #6c757d;
+    }
+
+    .signed-date,
+    .sent-date,
+    .print-date,
+    .completion-date,
+    .error-date {
+        font-size: 10px;
+        color: #6c757d;
+    }
+
+    .error-text {
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+
+    /* Progress Container Styles */
+    .progress-container {
+        min-width: 160px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background-color: #28a745;
+        transition: width 0.3s;
+    }
+
+    .progress-fill.completed {
+        background-color: #28a745;
+    }
+
+    .progress-fill.error {
+        background-color: #dc3545;
+    }
+
+    .progress-steps {
+        font-size: 9px;
+        color: #6c757d;
+    }
+
+    .step {
+        margin-bottom: 1px;
+        padding: 1px 0;
+    }
+
+    .step.completed {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .step.current {
+        color: #0B5394;
+        font-weight: 600;
+    }
+
+    .step.error {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    /* Action Buttons */
+    .actions-cell {
+        width: 140px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 4px;
+        position: relative;
+        justify-content: center;
+    }
+
+    .btn-action {
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        transition: all 0.2s;
+    }
+
+    .btn-view {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-countersign {
+        background-color: #0B5394;
+        color: white;
+    }
+
+    .btn-download {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-remind {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-track {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-scan {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    .btn-archive {
+        background-color: #fd7e14;
+        color: white;
+    }
+
+    .btn-fix {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-regenerate {
+        background-color: #20c997;
+        color: white;
+    }
+
+    .btn-more {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+
+    .btn-action:hover {
+        transform: scale(1.1);
+    }
+
+    /* Action Dropdown */
+    .action-dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        min-width: 150px;
+        z-index: 1000;
+        display: none;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-menu a {
+        display: block;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #495057;
+        text-decoration: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f8f9fa;
+        color: #0B5394;
+    }
+
+    .dropdown-menu a:last-child {
+        border-bottom: none;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-page {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #dee2e6;
+        background: white;
+        color: #495057;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-page:hover:not(:disabled) {
+        background-color: #e9ecef;
+    }
+
+    .btn-page.active {
+        background-color: #0B5394;
+        color: white;
+        border-color: #0B5394;
+    }
+
+    .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Footer Links */
+    .footer-links {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .footer-links a {
+        color: #0B5394;
+        text-decoration: none;
+        margin: 0 5px;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-links .divider {
+        color: #6c757d;
+        margin: 0 5px;
+    }
+
+    /* Override base.html nav-tabs styles for sub-navigation */
+    .content-body .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .content-body .nav-tabs .nav-link {
+        color: #495057;
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        font-size: 13px;
+        padding: 8px 16px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .content-body .nav-tabs .nav-link:hover {
+        border-color: #e9ecef #e9ecef #dee2e6;
+        background: #f8f9fa;
+    }
+
+    .content-body .nav-tabs .nav-link.active {
+        color: #495057;
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+        font-weight: 500;
+    }
+</style>
+
+<script>
+// Global variables
+let selectedDocuments = new Set();
+let currentDocumentFilter = 'ready'; // Default to ready to countersign
+
+// Filter Functions
+function filterDocuments(status) {
+    // Update active tab
+    document.querySelectorAll('.status-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.getElementById(`tab-${status}`).classList.add('active');
+    
+    currentDocumentFilter = status;
+    
+    // Show/hide rows based on status
+    const allRows = document.querySelectorAll('.document-row');
+    
+    if (status === 'all') {
+        allRows.forEach(row => {
+            row.style.display = 'table-row';
+        });
+    } else {
+        allRows.forEach(row => {
+            if (row.classList.contains(status) || row.dataset.status === status) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    console.log('Filtering documents by status:', status);
+    updateVisibleCounts();
+}
+
+function performDocumentSearch() {
+    const searchTerm = document.getElementById('documentSearch').value.toLowerCase();
+    console.log('Searching documents for:', searchTerm);
+    // In production, this would filter the table data
+    showNotification('Search applied: ' + searchTerm);
+}
+
+function clearDocumentSearch() {
+    document.getElementById('documentSearch').value = '';
+    performDocumentSearch();
+}
+
+function applyDocumentFilters() {
+    const property = document.getElementById('propertyFilter').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const docType = document.getElementById('documentTypeFilter').value;
+    
+    console.log('Applying document filters:', { property, dateFrom, dateTo, docType });
+    showNotification('Document filters applied');
+}
+
+function applySorting() {
+    const sortBy = document.getElementById('sortBy').value;
+    console.log('Sorting documents by:', sortBy);
+    showNotification('Documents sorted by ' + sortBy);
+}
+
+// Document Selection Functions
+function toggleSelectAllDocs() {
+    const allCheckboxes = document.querySelectorAll('.doc-row-checkbox:not([style*="display: none"])');
+    const selectAllCheckbox = document.getElementById('selectAllDocsCheckbox');
+    const shouldCheck = !selectAllCheckbox.checked;
+    
+    selectAllCheckbox.checked = shouldCheck;
+    allCheckboxes.forEach(checkbox => {
+        checkbox.checked = shouldCheck;
+        if (shouldCheck) {
+            selectedDocuments.add(checkbox.value);
+        } else {
+            selectedDocuments.delete(checkbox.value);
+        }
+    });
+    
+    updateBulkDocumentsBar();
+}
+
+function handleSelectAllDocs() {
+    const selectAllCheckbox = document.getElementById('selectAllDocsCheckbox');
+    const visibleCheckboxes = document.querySelectorAll('.doc-row-checkbox:not([style*="display: none"])');
+    
+    visibleCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+        if (selectAllCheckbox.checked) {
+            selectedDocuments.add(checkbox.value);
+        } else {
+            selectedDocuments.delete(checkbox.value);
+        }
+    });
+    
+    updateBulkDocumentsBar();
+}
+
+function updateDocumentSelection() {
+    const checkbox = event.target;
+    if (checkbox.checked) {
+        selectedDocuments.add(checkbox.value);
+    } else {
+        selectedDocuments.delete(checkbox.value);
+    }
+    
+    // Update select all checkbox
+    const allVisibleCheckboxes = document.querySelectorAll('.doc-row-checkbox:not([style*="display: none"])');
+    const checkedCheckboxes = document.querySelectorAll('.doc-row-checkbox:checked:not([style*="display: none"])');
+    const selectAllCheckbox = document.getElementById('selectAllDocsCheckbox');
+    selectAllCheckbox.checked = checkedCheckboxes.length === allVisibleCheckboxes.length && allVisibleCheckboxes.length > 0;
+    
+    updateBulkDocumentsBar();
+}
+
+function updateBulkDocumentsBar() {
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const selectedCount = document.getElementById('selectedDocCount');
+    
+    if (selectedDocuments.size > 0) {
+        bulkBar.style.display = 'flex';
+        selectedCount.textContent = selectedDocuments.size;
+    } else {
+        bulkBar.style.display = 'none';
+    }
+}
+
+function clearDocumentSelection() {
+    selectedDocuments.clear();
+    document.querySelectorAll('.doc-row-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('selectAllDocsCheckbox').checked = false;
+    updateBulkDocumentsBar();
+}
+
+// Bulk Action Functions
+function bulkCountersignSelected() {
+    if (selectedDocuments.size === 0) return;
+    
+    if (confirm(`Countersign ${selectedDocuments.size} document(s)?`)) {
+        console.log('Bulk countersigning documents:', Array.from(selectedDocuments));
+        showNotification(`${selectedDocuments.size} document(s) countersigned`);
+        clearDocumentSelection();
+    }
+}
+
+function bulkSendForSigning() {
+    if (selectedDocuments.size === 0) return;
+    
+    console.log('Sending documents for signing:', Array.from(selectedDocuments));
+    showNotification(`${selectedDocuments.size} document(s) sent for signing`);
+}
+
+function bulkPrintSelected() {
+    if (selectedDocuments.size === 0) return;
+    
+    console.log('Printing selected documents:', Array.from(selectedDocuments));
+    showNotification(`Printing ${selectedDocuments.size} document(s)`);
+}
+
+function bulkDownloadSelected() {
+    if (selectedDocuments.size === 0) return;
+    
+    console.log('Downloading selected documents:', Array.from(selectedDocuments));
+    showNotification(`Downloading ${selectedDocuments.size} document(s)`);
+}
+
+function bulkDeleteSelected() {
+    if (selectedDocuments.size === 0) return;
+    
+    if (confirm(`Delete ${selectedDocuments.size} document(s)? This cannot be undone.`)) {
+        console.log('Deleting selected documents:', Array.from(selectedDocuments));
+        showNotification(`${selectedDocuments.size} document(s) deleted`);
+        clearDocumentSelection();
+    }
+}
+
+// Individual Document Actions
+function countersignDocument(id) {
+    if (confirm('Countersign this lease document?')) {
+        console.log('Countersigning document:', id);
+        showNotification('Document countersigned successfully');
+        // In production, this would update the document status
+        updateDocumentStatus(id, 'completed');
+    }
+}
+
+function viewDocument(id) {
+    console.log('Viewing document:', id);
+    window.open(`/documents/view/${id}`, '_blank');
+}
+
+function downloadDocument(id) {
+    console.log('Downloading document:', id);
+    window.location.href = `/documents/download/${id}`;
+}
+
+function printDocument(id) {
+    console.log('Printing document:', id);
+    window.open(`/documents/print/${id}`, '_blank');
+}
+
+function sendSigningReminder(id) {
+    if (confirm('Send signing reminder to tenant?')) {
+        console.log('Sending signing reminder for document:', id);
+        showNotification('Signing reminder sent');
+    }
+}
+
+function trackSigning(id) {
+    console.log('Tracking signing progress for document:', id);
+    window.location.href = `/documents/track/${id}`;
+}
+
+function scanDocument(id) {
+    console.log('Scanning document:', id);
+    window.location.href = `/documents/scan/${id}`;
+}
+
+function archiveDocument(id) {
+    if (confirm('Archive this document?')) {
+        console.log('Archiving document:', id);
+        showNotification('Document archived');
+    }
+}
+
+function resolveIssue(id) {
+    console.log('Resolving issue for document:', id);
+    window.location.href = `/documents/resolve-issue/${id}`;
+}
+
+function regenerateDocument(id) {
+    if (confirm('Regenerate this document? This will create a new version.')) {
+        console.log('Regenerating document:', id);
+        showNotification('Document regenerated');
+    }
+}
+
+// Action Menu Functions
+function toggleDocActionMenu(id) {
+    // Close all other menus first
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu.id !== `docActionMenu${id}`) {
+            menu.classList.remove('show');
+        }
+    });
+    
+    // Toggle current menu
+    const menu = document.getElementById(`docActionMenu${id}`);
+    menu.classList.toggle('show');
+}
+
+// Close action menus when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Dropdown Action Functions
+function previewDocument(id) {
+    console.log('Previewing document:', id);
+    window.open(`/documents/preview/${id}`, '_blank');
+}
+
+function sendCopy(id) {
+    const email = prompt('Enter email address:');
+    if (email) {
+        console.log('Sending copy of document:', id, 'to:', email);
+        showNotification('Document copy sent to ' + email);
+    }
+}
+
+function addDocumentNote(id) {
+    const note = prompt('Enter note:');
+    if (note) {
+        console.log('Adding note to document:', id, 'Note:', note);
+        showNotification('Note added to document');
+    }
+}
+
+function deleteDocument(id) {
+    if (confirm('Delete this document? This cannot be undone.')) {
+        console.log('Deleting document:', id);
+        showNotification('Document deleted');
+        // Remove row from table
+        document.querySelector(`tr[data-id="${id}"]`).remove();
+    }
+}
+
+function resendForSigning(id) {
+    if (confirm('Resend this document for signing?')) {
+        console.log('Resending document for signing:', id);
+        showNotification('Document resent for signing');
+    }
+}
+
+function cancelSigning(id) {
+    if (confirm('Cancel the signing process for this document?')) {
+        console.log('Canceling signing for document:', id);
+        showNotification('Signing process canceled');
+    }
+}
+
+function reprintDocument(id) {
+    console.log('Reprinting document:', id);
+    window.open(`/documents/print/${id}`, '_blank');
+}
+
+function uploadSignedCopy(id) {
+    console.log('Uploading signed copy for document:', id);
+    window.location.href = `/documents/upload-signed/${id}`;
+}
+
+function markAsExecuted(id) {
+    if (confirm('Mark this document as fully executed?')) {
+        console.log('Marking document as executed:', id);
+        showNotification('Document marked as executed');
+        updateDocumentStatus(id, 'completed');
+    }
+}
+
+function createAddendum(id) {
+    console.log('Creating addendum for document:', id);
+    window.location.href = `/documents/create-addendum/${id}`;
+}
+
+function emailCopy(id) {
+    const email = prompt('Enter email address:');
+    if (email) {
+        console.log('Emailing copy of document:', id, 'to:', email);
+        showNotification('Document copy emailed to ' + email);
+    }
+}
+
+function duplicateDocument(id) {
+    console.log('Duplicating document:', id);
+    window.location.href = `/documents/duplicate/${id}`;
+}
+
+function viewHistory(id) {
+    console.log('Viewing history for document:', id);
+    window.location.href = `/documents/history/${id}`;
+}
+
+function resetSigning(id) {
+    if (confirm('Reset the signing process for this document?')) {
+        console.log('Resetting signing process for document:', id);
+        showNotification('Signing process reset');
+        updateDocumentStatus(id, 'ready');
+    }
+}
+
+function contactTenant(id) {
+    console.log('Contacting tenant for document:', id);
+    window.location.href = `/documents/contact-tenant/${id}`;
+}
+
+function manualReview(id) {
+    console.log('Requesting manual review for document:', id);
+    showNotification('Manual review requested');
+}
+
+// Header Action Functions
+function generateNewLease() {
+    console.log('Generating new lease');
+    window.location.href = '/documents/generate';
+}
+
+function bulkDownload() {
+    console.log('Starting bulk download');
+    showNotification('Bulk download started');
+}
+
+function exportDocuments() {
+    console.log('Exporting document list');
+    showNotification('Export started - you will receive an email when complete');
+}
+
+// Summary Stat Actions
+function bulkCountersign() {
+    if (confirm('Process all documents ready for countersigning?')) {
+        console.log('Processing all ready documents');
+        showNotification('Processing all ready documents');
+    }
+}
+
+function sendReminders() {
+    if (confirm('Send reminders to all tenants with pending signatures?')) {
+        console.log('Sending signing reminders');
+        showNotification('Signing reminders sent');
+    }
+}
+
+function viewPrintQueue() {
+    console.log('Viewing print queue');
+    window.location.href = '/documents/print-queue';
+}
+
+function reviewIssues() {
+    console.log('Reviewing document issues');
+    filterDocuments('issues');
+}
+
+// View Functions
+function changeDocumentView() {
+    const viewMode = document.getElementById('viewMode').value;
+    console.log('Changing document view mode to:', viewMode);
+    showNotification('View mode changed to ' + viewMode);
+}
+
+function changeShowCount() {
+    const showCount = document.getElementById('showCount').value;
+    console.log('Changing show count to:', showCount);
+    showNotification('Showing ' + showCount + ' documents per page');
+}
+
+function refreshDocuments() {
+    console.log('Refreshing documents');
+    location.reload();
+}
+
+// Utility Functions
+function updateDocumentStatus(id, status) {
+    // In production, this would make an API call
+    console.log('Updating document status:', id, 'to', status);
+    
+    // Update the row visually
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    if (row) {
+        row.dataset.status = status;
+        const statusBadge = row.querySelector('.status-badge');
+        statusBadge.className = `status-badge status-${status}`;
+        statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        
+        // Update progress if needed
+        if (status === 'completed') {
+            const progressFill = row.querySelector('.progress-fill');
+            progressFill.style.width = '100%';
+            progressFill.classList.add('completed');
+        }
+    }
+}
+
+function updateVisibleCounts() {
+    // In production, this would update the tab counts based on filtered results
+    console.log('Updating visible document counts');
+}
+
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default filter to "Ready to Countersign"
+    filterDocuments('ready');
+    updateBulkDocumentsBar();
+    
+    // Set up sortable headers
+    document.querySelectorAll('th.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const sortKey = this.dataset.sort;
+            console.log('Sorting by:', sortKey);
+            // Update sort icons and apply sorting
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block contextsidebar %}
+<h5><i class="fas fa-file-contract"></i> Lease Documents</h5>
+<div class="menu-item starred-item">Tasks</div>
+<div class="menu-item">Generate New Lease</div>
+<div class="menu-item">Bulk Countersign</div>
+<div class="menu-item">Send for Signing</div>
+<div class="menu-item">Print Documents</div>
+<div class="menu-item">Upload Signed Copies</div>
+
+<div class="task-section">
+    <div class="task-section-title">Templates</div>
+    <div class="menu-item">Standard Lease Template</div>
+    <div class="menu-item">Renewal Template</div>
+    <div class="menu-item">Amendment Template</div>
+    <div class="menu-item">Addendum Template</div>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Workflow</div>
+    <div class="menu-item">Signing Queue</div>
+    <div class="menu-item">Print Queue</div>
+    <div class="menu-item">Archive Documents</div>
+    <div class="menu-item">Document History</div>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Reports</div>
+    <div class="menu-item">Document Status Report</div>
+    <div class="menu-item">Signing Performance</div>
+    <div class="menu-item">Template Usage</div>
+    <div class="menu-item">Turnaround Time</div>
+</div>
+
+<div class="support-section">
+    <h5><i class="fas fa-question-circle"></i> Help Topics</h5>
+    <div class="menu-item">Document Generation Guide</div>
+    <div class="menu-item">Digital Signing Process</div>
+</div>
+{% endblock %}
+
+{% block taskssidebar %}
+<h5><i class="fas fa-tasks"></i> Document Actions</h5>
+
+<div class="task-item starred-item">Tasks</div>
+
+<div class="task-section">
+    <div class="task-section-title">Quick Actions</div>
+    <a href="#" onclick="generateNewLease()" class="task-item">Generate New Lease</a>
+    <a href="#" onclick="bulkCountersign()" class="task-item">Bulk Countersign</a>
+    <a href="#" onclick="bulkDownload()" class="task-item">Bulk Download</a>
+    <a href="#" onclick="sendReminders()" class="task-item">Send Signing Reminders</a>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Templates</div>
+    <a href="#" class="task-item">Standard Lease Template</a>
+    <a href="#" class="task-item">Renewal Template</a>
+    <a href="#" class="task-item">Amendment Template</a>
+    <a href="#" class="task-item">Addendum Template</a>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Workflow</div>
+    <a href="#" onclick="viewPrintQueue()" class="task-item">View Print Queue</a>
+    <a href="#" onclick="reviewIssues()" class="task-item">Review Issues</a>
+    <a href="#" class="task-item">Archive Documents</a>
+    <a href="#" class="task-item">Upload Signed Copies</a>
+</div>
+
+<div class="task-section">
+    <div class="task-section-title">Reports</div>
+    <a href="{{ url_for('reports') }}" class="task-item">Document Status Report</a>
+    <a href="{{ url_for('reports') }}" class="task-item">Signing Performance</a>
+    <a href="{{ url_for('reports') }}" class="task-item">Template Usage Report</a>
+</div>
+
+<div class="support-section">
+    <h5><i class="fas fa-life-ring"></i> Support</h5>
+    <div class="task-item">Document Generation Guide</div>
+    <div class="task-item">Contact Support</div>
+</div>
+{% endblock %}

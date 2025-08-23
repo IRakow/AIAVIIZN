@@ -1,0 +1,8 @@
+# Core requirements - minimal conflicts
+playwright
+anthropic  
+supabase
+beautifulsoup4
+python-dotenv
+wolframalpha
+openpyxl

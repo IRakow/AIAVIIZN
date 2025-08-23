@@ -1,0 +1,743 @@
+<!-- AIVIIZN Template: User Settings -->
+<!-- Generated from: https://celticprop.appfolio.com/users/669/edit#reports_display_settings -->
+<!-- Timestamp: 2025-08-21T07:59:54.811Z -->
+
+{% extends "base.html" %}
+
+{% block title %}My Settings - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="aiviizn-page user-settings">
+    <div class="container-fluid">
+        <h1 class="page-title">My Settings</h1>
+        
+        <!-- Profile Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Profile</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user_settings.update_profile') }}">
+                    {{ csrf_token() }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ current_user.email }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ current_user.first_name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ current_user.last_name }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reports Global Display Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Reports Global Display Settings</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    The reports global display settings allow you to control the default appearance of the reports you view. 
+                    For example, if you turn on "Alternating Row Color," then any new report you open will have this setting enabled. 
+                    You can manually adjust any of these settings while in the report, but that will be specific to that single report viewing.
+                </p>
+                
+                <form method="POST" action="{{ url_for('user_settings.update_reports_settings') }}">
+                    {{ csrf_token() }}
+                    <div class="row">
+                        <!-- Font Size -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Font Size</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="font_size" id="font_compact" value="compact" 
+                                       {{ 'checked' if user_settings.font_size == 'compact' else '' }}>
+                                <label class="btn btn-outline-primary" for="font_compact">Compact</label>
+                                
+                                <input type="radio" class="btn-check" name="font_size" id="font_normal" value="normal" 
+                                       {{ 'checked' if user_settings.font_size == 'normal' or not user_settings.font_size else '' }}>
+                                <label class="btn btn-outline-primary" for="font_normal">Normal</label>
+                                
+                                <input type="radio" class="btn-check" name="font_size" id="font_large" value="large" 
+                                       {{ 'checked' if user_settings.font_size == 'large' else '' }}>
+                                <label class="btn btn-outline-primary" for="font_large">Large</label>
+                            </div>
+                        </div>
+
+                        <!-- Row Height -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Row Height</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="row_height" id="row_compact" value="compact" 
+                                       {{ 'checked' if user_settings.row_height == 'compact' else '' }}>
+                                <label class="btn btn-outline-primary" for="row_compact">Compact</label>
+                                
+                                <input type="radio" class="btn-check" name="row_height" id="row_normal" value="normal" 
+                                       {{ 'checked' if user_settings.row_height == 'normal' or not user_settings.row_height else '' }}>
+                                <label class="btn btn-outline-primary" for="row_normal">Normal</label>
+                                
+                                <input type="radio" class="btn-check" name="row_height" id="row_large" value="large" 
+                                       {{ 'checked' if user_settings.row_height == 'large' else '' }}>
+                                <label class="btn btn-outline-primary" for="row_large">Large</label>
+                            </div>
+                        </div>
+
+                        <!-- Expand Side Panel -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expand Side Panel</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="side_panel" id="panel_expanded" value="true" 
+                                       {{ 'checked' if user_settings.side_panel_expanded else '' }}>
+                                <label class="btn btn-outline-primary" for="panel_expanded">Expanded</label>
+                                
+                                <input type="radio" class="btn-check" name="side_panel" id="panel_collapsed" value="false" 
+                                       {{ 'checked' if not user_settings.side_panel_expanded else '' }}>
+                                <label class="btn btn-outline-primary" for="panel_collapsed">Collapsed</label>
+                            </div>
+                        </div>
+
+                        <!-- Alternating Row Color -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="alternating_rows" id="alternating_rows" 
+                                       value="true" {{ 'checked' if user_settings.alternating_rows else '' }}>
+                                <label class="form-check-label" for="alternating_rows">
+                                    Alternating Row Color
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Resize Columns -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Resize Columns to Fit</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="resize_columns" id="resize_default" value="false" 
+                                       {{ 'checked' if not user_settings.resize_columns_to_fit else '' }}>
+                                <label class="btn btn-outline-primary" for="resize_default">Default</label>
+                                
+                                <input type="radio" class="btn-check" name="resize_columns" id="resize_fit" value="true" 
+                                       {{ 'checked' if user_settings.resize_columns_to_fit else '' }}>
+                                <label class="btn btn-outline-primary" for="resize_fit">Fit to Width</label>
+                            </div>
+                        </div>
+
+                        <!-- Report Details Header -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Report Details Header</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="details_header" id="header_shown" value="true" 
+                                       {{ 'checked' if user_settings.show_details_header else '' }}>
+                                <label class="btn btn-outline-primary" for="header_shown">Shown</label>
+                                
+                                <input type="radio" class="btn-check" name="details_header" id="header_hidden" value="false" 
+                                       {{ 'checked' if not user_settings.show_details_header else '' }}>
+                                <label class="btn btn-outline-primary" for="header_hidden">Hidden</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title w-100">
+                    <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#notificationsCollapse">
+                        Notifications
+                    </button>
+                </h2>
+            </div>
+            <div class="collapse show" id="notificationsCollapse">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('user_settings.update_notifications') }}">
+                        {{ csrf_token() }}
+                        
+                        <!-- Leasing Notifications -->
+                        <div class="mb-4">
+                            <h4>Leasing</h4>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Email</th>
+                                            <th>Mobile Push</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>New rental applications are received</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="new_rental_application_email" 
+                                                     {{ 'checked' if notifications.new_rental_application_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Online leases are ready for countersigning</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="lease_countersign_email" 
+                                                     {{ 'checked' if notifications.lease_countersign_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>A showing I'm assigned to is created, updated, or canceled</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="showing_assigned_email" 
+                                                     {{ 'checked' if notifications.showing_assigned_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>New guest card interests are received</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="guest_card_email" 
+                                                     {{ 'checked' if notifications.guest_card_email else '' }}></td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="guest_card_mobile" 
+                                                     {{ 'checked' if notifications.guest_card_mobile else '' }}></td>
+                                        </tr>
+                                        <tr>
+                                            <td>A prospective tenant completes a pre-qualification questionnaire</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="prequal_email" 
+                                                     {{ 'checked' if notifications.prequal_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Screening reports are completed</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="screening_completed_email" 
+                                                     {{ 'checked' if notifications.screening_completed_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Income reports are completed</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="income_completed_email" 
+                                                     {{ 'checked' if notifications.income_completed_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Notifications -->
+                        <div class="mb-4">
+                            <h4>Maintenance</h4>
+                            
+                            <!-- General Maintenance -->
+                            <h6>General</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>General</th>
+                                            <th>Email</th>
+                                            <th>Mobile Push</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>I am assigned to a work order</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="work_order_assigned_email" 
+                                                     {{ 'checked' if notifications.work_order_assigned_email else '' }}></td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="work_order_assigned_mobile" 
+                                                     {{ 'checked' if notifications.work_order_assigned_mobile else '' }}></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Follow-up date has been reached on a work order that I am tracking</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="work_order_followup_email" 
+                                                     {{ 'checked' if notifications.work_order_followup_email else '' }}></td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="work_order_followup_mobile" 
+                                                     {{ 'checked' if notifications.work_order_followup_mobile else '' }}></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Inventory items reach their reorder quantity</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="inventory_reorder_email" 
+                                                     {{ 'checked' if notifications.inventory_reorder_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Communication Notifications -->
+                        <div class="mb-4">
+                            <h4>Communication</h4>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Email</th>
+                                            <th>Mobile Push</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>A new text is received from someone whom I was the last person to text</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="new_text_email" 
+                                                     {{ 'checked' if notifications.new_text_email else '' }}></td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="new_text_mobile" 
+                                                     {{ 'checked' if notifications.new_text_mobile else '' }}></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Resident forms are ready for countersigning</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="resident_form_countersign_email" 
+                                                     {{ 'checked' if notifications.resident_form_countersign_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Owner forms are ready for countersigning</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="owner_form_countersign_email" 
+                                                     {{ 'checked' if notifications.owner_form_countersign_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Online management agreements are ready for countersigning</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="mgmt_agreement_countersign_email" 
+                                                     {{ 'checked' if notifications.mgmt_agreement_countersign_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Payments and Accounting -->
+                        <div class="mb-4">
+                            <h4>Payments and Accounting</h4>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Email</th>
+                                            <th>Mobile Push</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Tenant online payments are rejected</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="payment_rejection_email" 
+                                                     {{ 'checked' if notifications.payment_rejection_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Owner contribution notifications</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="owner_contribution_email" 
+                                                     {{ 'checked' if notifications.owner_contribution_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>New Smart Bill Entry emailed invoices are received</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="smart_bill_email" 
+                                                     {{ 'checked' if notifications.smart_bill_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Notifications of new transactions for Bank Feed every:
+                                                <select name="bank_feed_frequency" class="mx-2">
+                                                    <option value="weekday" {{ 'selected' if notifications.bank_feed_frequency == 'weekday' else '' }}>Weekday</option>
+                                                    <option value="Monday" {{ 'selected' if notifications.bank_feed_frequency == 'Monday' else '' }}>Monday</option>
+                                                    <option value="Tuesday" {{ 'selected' if notifications.bank_feed_frequency == 'Tuesday' else '' }}>Tuesday</option>
+                                                    <option value="Wednesday" {{ 'selected' if notifications.bank_feed_frequency == 'Wednesday' else '' }}>Wednesday</option>
+                                                    <option value="Thursday" {{ 'selected' if notifications.bank_feed_frequency == 'Thursday' else '' }}>Thursday</option>
+                                                    <option value="Friday" {{ 'selected' if notifications.bank_feed_frequency == 'Friday' else '' }}>Friday</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="bank_feed_email" 
+                                                     {{ 'checked' if notifications.bank_feed_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Client Experience -->
+                        <div class="mb-4">
+                            <h4>Client Experience</h4>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Email</th>
+                                            <th>Mobile Push</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Someone tries to activate an online portal account with unrecognized info</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="portal_activation_email" 
+                                                     {{ 'checked' if notifications.portal_activation_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Move out notices or finalize move outs are submitted</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="move_out_email" 
+                                                     {{ 'checked' if notifications.move_out_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Residents purchase a renters insurance policy or upload insurance details</td>
+                                            <td><input type="checkbox" class="form-check-input m-0" name="insurance_email" 
+                                                     {{ 'checked' if notifications.insurance_email else '' }}></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Email Settings</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user_settings.update_email_settings') }}">
+                    {{ csrf_token() }}
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="use_custom_signature" id="use_custom_signature" 
+                                   value="true" {{ 'checked' if email_settings.use_custom_signature else '' }}>
+                            <label class="form-check-label" for="use_custom_signature">
+                                Use custom email signature
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email_signature" class="form-label">Signature</label>
+                        <textarea class="form-control" id="email_signature" name="email_signature" rows="4">{{ email_settings.signature or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reply_email" class="form-label">Send Replies To This Email</label>
+                        <input type="email" class="form-control" id="reply_email" name="reply_email" 
+                               value="{{ email_settings.reply_email or '' }}">
+                        <div class="form-text">
+                            Replies to emails sent from the Tenant, Guest Card, Owner, Unit, and Property pages will go to this email address. 
+                            If left blank, email replies will go to the email address associated with your AIVIIZN account.
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Texting Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Texting Settings</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user_settings.update_texting_settings') }}">
+                    {{ csrf_token() }}
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="use_custom_text_signature" id="use_custom_text_signature" 
+                                   value="true" {{ 'checked' if texting_settings.use_custom_signature else '' }}>
+                            <label class="form-check-label" for="use_custom_text_signature">
+                                Use custom text message signature
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="enable_unread_count" id="enable_unread_count" 
+                                   value="true" {{ 'checked' if texting_settings.enable_unread_count else '' }}>
+                            <label class="form-check-label" for="enable_unread_count">
+                                Enable text message unread count in menu bar
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="enable_suggested_responses" id="enable_suggested_responses" 
+                                   value="true" {{ 'checked' if texting_settings.enable_suggested_responses else '' }}>
+                            <label class="form-check-label" for="enable_suggested_responses">
+                                Show AI-powered suggested responses
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Maintenance Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Maintenance Settings</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user_settings.update_maintenance_settings') }}">
+                    {{ csrf_token() }}
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="track_work_orders_by_default" id="track_work_orders_by_default" 
+                                   value="true" {{ 'checked' if maintenance_settings.track_work_orders_by_default else '' }}>
+                            <label class="form-check-label" for="track_work_orders_by_default">
+                                Track all work orders by default
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenance_language" class="form-label">Maintenance Tech Dashboard Language</label>
+                        <select class="form-select" id="maintenance_language" name="maintenance_language">
+                            <option value="system_default" {{ 'selected' if maintenance_settings.language == 'system_default' else '' }}>
+                                Default System Language
+                            </option>
+                            <option value="english" {{ 'selected' if maintenance_settings.language == 'english' else '' }}>
+                                English
+                            </option>
+                            <option value="spanish" {{ 'selected' if maintenance_settings.language == 'spanish' else '' }}>
+                                Español
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Property Groups and Portfolios -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title d-flex align-items-center gap-2 m-0 my-1 me-auto">Property Groups and Portfolios</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user_settings.update_property_access') }}">
+                    {{ csrf_token() }}
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="property_access_mode" id="access_all" 
+                                   value="all" {{ 'checked' if property_access.mode == 'all' else '' }}>
+                            <label class="form-check-label" for="access_all">
+                                View all Property Groups & Portfolios
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="property_access_mode" id="access_selected" 
+                                   value="selected" {{ 'checked' if property_access.mode == 'selected' else '' }}>
+                            <label class="form-check-label" for="access_selected">
+                                View these Property Groups & Portfolios only:
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="row" id="property_groups_list">
+                        {% for group in property_groups %}
+                        <div class="col-md-6 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="selected_groups[]" 
+                                       id="group_{{ group.id }}" value="{{ group.id }}" 
+                                       {{ 'checked' if group.id in property_access.selected_groups else '' }}
+                                       {{ 'disabled' if property_access.mode == 'all' else '' }}>
+                                <label class="form-check-label" for="group_{{ group.id }}">
+                                    {{ group.name }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('property_groups.new') }}" class="btn btn-outline-primary">
+                            Add New Property Group
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary" onclick="saveAllSettings()">Save</button>
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// AIVIIZN User Settings JavaScript
+function saveAllSettings() {
+    // Collect all form data and submit via AJAX
+    const forms = document.querySelectorAll('form');
+    const formData = new FormData();
+    
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                if (input.checked) {
+                    formData.append(input.name, input.value);
+                }
+            } else {
+                formData.append(input.name, input.value);
+            }
+        });
+    });
+    
+    // Submit settings via AJAX
+    fetch('/user/settings/save', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccessMessage('Settings saved successfully!');
+        } else {
+            showErrorMessage('Error saving settings: ' + data.message);
+        }
+    })
+    .catch(error => {
+        showErrorMessage('Error saving settings');
+        console.error('Error:', error);
+    });
+}
+
+function showSuccessMessage(message) {
+    // Show Bootstrap toast or alert
+    const toast = document.createElement('div');
+    toast.className = 'toast show position-fixed top-0 end-0 m-3';
+    toast.innerHTML = `
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+function showErrorMessage(message) {
+    // Show error toast
+    const toast = document.createElement('div');
+    toast.className = 'toast show position-fixed top-0 end-0 m-3';
+    toast.innerHTML = `
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Error</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+// Property groups access mode handler
+document.addEventListener('DOMContentLoaded', function() {
+    const accessModeRadios = document.querySelectorAll('input[name="property_access_mode"]');
+    const propertyCheckboxes = document.querySelectorAll('#property_groups_list input[type="checkbox"]');
+    
+    accessModeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const isAllMode = this.value === 'all';
+            propertyCheckboxes.forEach(checkbox => {
+                checkbox.disabled = isAllMode;
+                if (isAllMode) {
+                    checkbox.checked = false;
+                }
+            });
+        });
+    });
+    
+    // Initialize state
+    const currentMode = document.querySelector('input[name="property_access_mode"]:checked');
+    if (currentMode && currentMode.value === 'all') {
+        propertyCheckboxes.forEach(checkbox => {
+            checkbox.disabled = true;
+        });
+    }
+});
+
+// Auto-save functionality for real-time updates
+function enableAutoSave() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Debounced auto-save
+            clearTimeout(this.autoSaveTimeout);
+            this.autoSaveTimeout = setTimeout(() => {
+                saveAllSettings();
+            }, 1000);
+        });
+    });
+}
+
+// Initialize auto-save if enabled in user preferences
+if ({{ 'true' if current_user.auto_save_settings else 'false' }}) {
+    enableAutoSave();
+}
+
+// Settings validation
+function validateEmailSettings() {
+    const replyEmail = document.getElementById('reply_email');
+    if (replyEmail.value && !isValidEmail(replyEmail.value)) {
+        showErrorMessage('Please enter a valid reply-to email address');
+        return false;
+    }
+    return true;
+}
+
+function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+}
+
+// Form submission handler
+document.addEventListener('submit', function(e) {
+    if (!validateEmailSettings()) {
+        e.preventDefault();
+    }
+});
+
+// Notification settings helper
+function toggleNotificationSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    section.classList.toggle('show');
+}
+
+// Bulk notification settings
+function enableAllNotifications(category) {
+    const checkboxes = document.querySelectorAll(`input[name*="${category}"]`);
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function disableAllNotifications(category) {
+    const checkboxes = document.querySelectorAll(`input[name*="${category}"]`);
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+</script>
+{% endblock %}

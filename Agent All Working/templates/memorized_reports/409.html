@@ -1,0 +1,1021 @@
+
+{% extends 'base.html' %}
+
+{% block title %}BGKC Rental Applications (Last Week) | AIVIIZN{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://property.cdn.appfolio.com/assets/property/packs/css/7866-10a8e7c0.css">
+<link rel="stylesheet" href="https://public.cdn.appfolio.com/public/icons/font-awesome-custom/reports/fa.6-appf.1/custom-icons.min.css">
+<style>
+:root {
+    --aiviizn-primary: #2563eb;
+    --aiviizn-primary-dark: #1d4ed8;
+    --aiviizn-secondary: #64748b;
+    --aiviizn-accent: #06b6d4;
+    --aiviizn-success: #10b981;
+    --aiviizn-warning: #f59e0b;
+    --aiviizn-danger: #ef4444;
+    --aiviizn-light: #f8fafc;
+    --aiviizn-dark: #1e293b;
+    --aiviizn-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --aiviizn-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    --aiviizn-shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    --ag-header-font-size: 13px;
+    --ag-font-size: 13px;
+    overflow: visible;
+}
+
+.report-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: var(--aiviizn-shadow);
+    margin: 2rem auto;
+    padding: 2rem;
+    max-width: 1400px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.report-container:hover {
+    box-shadow: var(--aiviizn-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.report-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--aiviizn-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    animation: slideInDown 0.6s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report_headers {
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.toggle-description-text {
+    color: var(--aiviizn-primary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.toggle-description-text:hover {
+    background: rgba(37, 99, 235, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--aiviizn-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: var(--aiviizn-secondary);
+    border: 1px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+    background: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    padding: 0.5rem 0;
+    animation: dropdownSlide 0.3s ease-out;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 0 0.5rem;
+}
+
+.dropdown-item:hover {
+    background: var(--aiviizn-light);
+    transform: translateX(5px);
+    color: var(--aiviizn-primary);
+}
+
+.search-filter .form-control {
+    border-radius: 25px;
+    border: 2px solid #e2e8f0;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.9);
+}
+
+.search-filter .form-control:focus {
+    border-color: var(--aiviizn-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: white;
+}
+
+.report-description {
+    background: rgba(255,255,255,0.8);
+    padding: 1.5rem;
+    border-radius: 15px;
+    border-left: 4px solid var(--aiviizn-primary);
+    margin-top: 1rem;
+    animation: slideInLeft 0.6s ease-out 0.4s both;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.report-description > div {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.report-description > div:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.report-description strong {
+    color: var(--aiviizn-dark);
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.ag-theme-custom {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--aiviizn-shadow);
+    animation: slideInUp 0.8s ease-out 0.6s both;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ag-header {
+    background: var(--aiviizn-gradient);
+    border-bottom: none;
+}
+
+.ag-header-cell {
+    background: transparent;
+    color: white;
+    font-weight: 600;
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.ag-header-cell:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.ag-header-cell-text {
+    color: white;
+    font-weight: 600;
+}
+
+.ag-sort-indicator-icon {
+    color: white;
+}
+
+.ag-column-drop-cell {
+    background: rgba(37, 99, 235, 0.1);
+    border: 2px solid var(--aiviizn-primary);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.ag-column-drop-cell:hover {
+    background: rgba(37, 99, 235, 0.2);
+    transform: translateY(-1px);
+}
+
+.control-panel-container {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ai-enhanced {
+    position: relative;
+}
+
+.ai-enhanced::after {
+    content: '✨ AI';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--aiviizn-accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--aiviizn-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--aiviizn-danger);
+    color: var(--aiviizn-danger);
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.success-message {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--aiviizn-success);
+    color: var(--aiviizn-success);
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    animation: slideInDown 0.5s ease-out;
+}
+
+@media (max-width: 768px) {
+    .report-container {
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 15px;
+    }
+    
+    .report-title {
+        font-size: 2rem;
+    }
+    
+    .control-panel-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.fade-in-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInStagger 0.6s ease-out forwards;
+}
+
+.fade-in-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.fade-in-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.fade-in-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.fade-in-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.fade-in-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInStagger {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Google Tag Manager
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/ns.html?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NSCVP9F');
+
+// Supabase Integration
+const SUPABASE_URL = '{{ config.SUPABASE_URL }}';
+const SUPABASE_KEY = '{{ config.SUPABASE_ANON_KEY }}';
+
+class RentalApplicationsManager {
+    constructor() {
+        this.initializeEventListeners();
+        this.loadData();
+        this.setupRealtimeUpdates();
+    }
+
+    initializeEventListeners() {
+        // Search functionality
+        const searchInput = document.querySelector('.search-filter input');
+        if (searchInput) {
+            searchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
+        }
+
+        // Button click handlers
+        document.getElementById('refresh-button')?.addEventListener('click', () => this.refreshData());
+        document.getElementById('customize-button')?.addEventListener('click', () => this.openCustomizeModal());
+        document.getElementById('email-button')?.addEventListener('click', () => this.openEmailModal());
+        
+        // Export handlers
+        document.querySelector('.js-export-excel-button')?.addEventListener('click', () => this.exportToExcel());
+        document.querySelector('.js-export-csv-button')?.addEventListener('click', () => this.exportToCSV());
+        
+        // Print handlers
+        document.querySelector('.js-print-landscape-button')?.addEventListener('click', () => this.printToPDF('landscape'));
+        document.querySelector('.js-print-portrait-button')?.addEventListener('click', () => this.printToPDF('portrait'));
+
+        // Schedule button
+        document.querySelector('.js-schedule-button')?.addEventListener('click', () => this.openScheduleModal());
+
+        // Save layout
+        document.querySelector('.js-save-button')?.addEventListener('click', () => this.saveLayout());
+
+        // Toggle description
+        document.querySelector('.toggle-description-text')?.addEventListener('click', this.toggleDescription.bind(this));
+    }
+
+    async loadData() {
+        this.showLoading();
+        try {
+            const response = await fetch('/api/rental-applications', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load rental applications');
+            }
+
+            const data = await response.json();
+            this.renderApplicationsGrid(data);
+            this.showSuccess('Rental applications loaded successfully!');
+        } catch (error) {
+            this.showError('Failed to load rental applications: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    renderApplicationsGrid(data) {
+        // Initialize AG Grid with the data
+        const gridOptions = {
+            columnDefs: [
+                {
+                    headerName: 'Applicant(s)',
+                    field: 'applicants',
+                    sortable: true,
+                    filter: true,
+                    width: 341,
+                    cellClass: 'ai-enhanced'
+                },
+                {
+                    headerName: 'Received',
+                    field: 'received',
+                    sortable: true,
+                    filter: true,
+                    width: 341,
+                    sort: 'asc',
+                    cellRenderer: this.formatDateCell
+                },
+                {
+                    headerName: 'Status',
+                    field: 'status',
+                    sortable: true,
+                    filter: true,
+                    width: 200,
+                    cellRenderer: this.renderStatusCell
+                },
+                {
+                    headerName: 'Property',
+                    field: 'property',
+                    sortable: true,
+                    filter: true,
+                    width: 250
+                },
+                {
+                    headerName: 'Unit',
+                    field: 'unit',
+                    sortable: true,
+                    filter: true,
+                    width: 150
+                },
+                {
+                    headerName: 'Actions',
+                    field: 'actions',
+                    width: 150,
+                    cellRenderer: this.renderActionsCell
+                }
+            ],
+            rowData: data,
+            defaultColDef: {
+                resizable: true,
+                sortable: true,
+                filter: true
+            },
+            rowGroupPanelShow: 'always',
+            pivotPanelShow: 'always',
+            enableRangeSelection: true,
+            enableCharts: true,
+            animateRows: true,
+            rowSelection: 'multiple',
+            suppressRowClickSelection: true,
+            onGridReady: (params) => {
+                params.api.sizeColumnsToFit();
+                this.gridApi = params.api;
+                this.gridColumnApi = params.columnApi;
+            }
+        };
+
+        const gridDiv = document.querySelector('.ag-theme-custom > div');
+        new agGrid.Grid(gridDiv, gridOptions);
+    }
+
+    formatDateCell(params) {
+        if (!params.value) return '';
+        const date = new Date(params.value);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    renderStatusCell(params) {
+        const status = params.value;
+        const statusClass = status?.toLowerCase().replace(/\s+/g, '-');
+        return `<span class="badge badge-${statusClass}">${status}</span>`;
+    }
+
+    renderActionsCell(params) {
+        return `
+            <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewApplication('${params.data.id}')">
+                    <i class="fa fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="approveApplication('${params.data.id}')">
+                    <i class="fa fa-check"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="rejectApplication('${params.data.id}')">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    handleSearch(event) {
+        const searchTerm = event.target.value.toLowerCase();
+        if (this.gridApi) {
+            this.gridApi.setQuickFilter(searchTerm);
+        }
+    }
+
+    async refreshData() {
+        await this.loadData();
+    }
+
+    async exportToExcel() {
+        this.showLoading();
+        try {
+            if (this.gridApi) {
+                this.gridApi.exportDataAsExcel({
+                    fileName: `BGKC_Rental_Applications_${new Date().toISOString().split('T')[0]}.xlsx`
+                });
+            }
+            this.showSuccess('Excel export completed successfully!');
+        } catch (error) {
+            this.showError('Failed to export to Excel: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async exportToCSV() {
+        this.showLoading();
+        try {
+            if (this.gridApi) {
+                this.gridApi.exportDataAsCsv({
+                    fileName: `BGKC_Rental_Applications_${new Date().toISOString().split('T')[0]}.csv`
+                });
+            }
+            this.showSuccess('CSV export completed successfully!');
+        } catch (error) {
+            this.showError('Failed to export to CSV: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async printToPDF(orientation) {
+        this.showLoading();
+        try {
+            window.print();
+            this.showSuccess(`PDF print initiated in ${orientation} mode!`);
+        } catch (error) {
+            this.showError('Failed to print to PDF: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    toggleDescription() {
+        const description = document.querySelector('.js-report-description');
+        const toggleText = document.querySelector('.toggle-description-text');
+        const icon = toggleText.querySelector('i');
+        
+        if (description.style.display === 'none') {
+            description.style.display = 'block';
+            toggleText.innerHTML = 'Hide Details <i class="fa fa-angle-down"></i>';
+        } else {
+            description.style.display = 'none';
+            toggleText.innerHTML = 'Show Details <i class="fa fa-angle-up"></i>';
+        }
+    }
+
+    openCustomizeModal() {
+        // Implementation for customize modal
+        this.showInfo('Customize panel will open here');
+    }
+
+    openEmailModal() {
+        // Implementation for email modal
+        this.showInfo('Email modal will open here');
+    }
+
+    openScheduleModal() {
+        // Implementation for schedule modal
+        this.showInfo('Schedule modal will open here');
+    }
+
+    async saveLayout() {
+        try {
+            const layoutData = {
+                columnState: this.gridColumnApi?.getColumnState(),
+                filterState: this.gridApi?.getFilterModel(),
+                sortState: this.gridApi?.getSortModel()
+            };
+
+            const response = await fetch('/api/save-layout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                },
+                body: JSON.stringify(layoutData)
+            });
+
+            if (response.ok) {
+                this.showSuccess('Layout saved successfully!');
+            } else {
+                throw new Error('Failed to save layout');
+            }
+        } catch (error) {
+            this.showError('Failed to save layout: ' + error.message);
+        }
+    }
+
+    setupRealtimeUpdates() {
+        // Setup Supabase realtime subscriptions
+        if (typeof supabase !== 'undefined') {
+            supabase
+                .channel('rental_applications')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'rental_applications' }, 
+                    (payload) => {
+                        console.log('Change received!', payload);
+                        this.refreshData();
+                    }
+                )
+                .subscribe();
+        }
+    }
+
+    showLoading() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = '<div class="spinner"></div>';
+        overlay.id = 'loading-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    hideLoading() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+    }
+
+    showError(message) {
+        this.showMessage(message, 'error');
+    }
+
+    showSuccess(message) {
+        this.showMessage(message, 'success');
+    }
+
+    showInfo(message) {
+        this.showMessage(message, 'info');
+    }
+
+    showMessage(message, type) {
+        const messageEl = document.createElement('div');
+        messageEl.className = `${type}-message`;
+        messageEl.textContent = message;
+        
+        const container = document.querySelector('.report-container');
+        container.insertBefore(messageEl, container.firstChild);
+        
+        setTimeout(() => {
+            messageEl.remove();
+        }, 5000);
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+}
+
+// Global functions for grid actions
+window.viewApplication = async (id) => {
+    window.location.href = `/applications/${id}`;
+};
+
+window.approveApplication = async (id) => {
+    if (confirm('Are you sure you want to approve this application?')) {
+        try {
+            const response = await fetch(`/api/applications/${id}/approve`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            
+            if (response.ok) {
+                rentalManager.showSuccess('Application approved successfully!');
+                rentalManager.refreshData();
+            } else {
+                throw new Error('Failed to approve application');
+            }
+        } catch (error) {
+            rentalManager.showError('Failed to approve application: ' + error.message);
+        }
+    }
+};
+
+window.rejectApplication = async (id) => {
+    if (confirm('Are you sure you want to reject this application?')) {
+        try {
+            const response = await fetch(`/api/applications/${id}/reject`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            
+            if (response.ok) {
+                rentalManager.showSuccess('Application rejected successfully!');
+                rentalManager.refreshData();
+            } else {
+                throw new Error('Failed to reject application');
+            }
+        } catch (error) {
+            rentalManager.showError('Failed to reject application: ' + error.message);
+        }
+    }
+};
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.rentalManager = new RentalApplicationsManager();
+});
+
+// Page reload detection
+const pageAccessedByReload = (
+    (window.performance.navigation && window.performance.navigation.type === 1) ||
+    window.performance
+        .getEntriesByType('navigation')
+        .map((nav) => nav.type)
+        .includes('reload')
+);
+
+if (pageAccessedByReload) {
+    console.log('Page was reloaded');
+}
+</script>
+
+<!-- AG Grid -->
+<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+<script src="https://unpkg.com/ag-grid-enterprise/dist/ag-grid-enterprise.min.noStyle.js"></script>
+{% endblock %}
+
+{% block content %}
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSCVP9F" 
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+
+<div id="report-container" class="report-container">
+    <div class="report" style="display: flex; flex-direction: column;">
+        <div class="report_headers pb-2 pt-1 mb-4 fade-in-stagger">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <div class="report-title-container no_selection">
+                    <div class="report-title js-report-title">BGKC Rental Applications (Last Week)</div>
+                    <div class="toggle-description pt-2">
+                        <div class="toggle-description-text u-mobile-hidden" role="button" tabindex="0">
+                            Hide Details <i class="fa fa-angle-down"></i>
+                        </div>
+                        <span class="toggle-description-icon fa fa-info-circle u-desktop-hidden" 
+                              role="button" tabindex="0" aria-label="Hide Details"></span>
+                    </div>
+                </div>
+                
+                <div class="control-panel-container">
+                    <button id="snowplow-ag-grid-view-tour" 
+                            class="pendo-view-ag-grid-fully-migrated-tour-non-treeified btn btn-secondary">
+                        View Tour
+                    </button>
+                    
+                    <span class="d-inline-block search-filter" style="max-height: 35px;">
+                        <div class="form-group row mb-3">
+                            <div class="col-12 col-sm-12">
+                                <div class="input-group">
+                                    <span id="search-disabled-tooltip">
+                                        <input placeholder="Search Report" type="text" class="h-100 form-control" value="">
+                                    </span>
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i aria-label="Search-previous" class="fa fa-chevron-up"></i>
+                                    </button>
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i aria-label="Search-next" class="fa fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                    
+                    <div id="print-to-pdf-button" class="d-inline-block dropdown">
+                        <button type="button" aria-disabled="false" aria-haspopup="true" aria-expanded="false" 
+                                class="dropdown-div__button js-print-to-pdf-dropdown js-dropdown btn btn-secondary dropdown-toggle">
+                            <span class="pe-2">Print to PDF</span>
+                        </button>
+                        <div tabindex="-1" role="menu" aria-hidden="true" class="js-print-dropdown-menu dropdown-menu">
+                            <button type="button" tabindex="0" role="menuitem" class="js-print-landscape-button dropdown-item">
+                                <span class="fa-regular fa-file me-2 landscape-pdf-icon"></span>Landscape
+                            </button>
+                            <button type="button" tabindex="0" role="menuitem" class="js-print-portrait-button dropdown-item">
+                                <span class="fa-regular fa-file me-2 portrait-pdf-icon"></span>Portrait
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown-div d-inline-block js-actions-dropdown dropdown">
+                        <button type="button" aria-haspopup="true" aria-expanded="false" 
+                                class="dropdown-div__button js-dropdown btn btn-secondary dropdown-toggle">
+                            <span class="pe-2">Actions</span>
+                        </button>
+                        <div tabindex="-1" role="menu" aria-hidden="true" class="js-actions-dropdown-menu dropdown-menu">
+                            <button type="button" data-tooltip='{"placement":"left","title":"Save the current layout and filters as the default setting, or as a new report."}' 
+                                    tabindex="0" role="menuitem" class="js-save-button dropdown-item">
+                                <span class="fa-regular fa-files me-2"></span>Save Layout
+                            </button>
+                            <button type="button" data-tooltip='{"placement":"left","title":"Schedule the report to be run and emailed automatically on a recurring basis."}' 
+                                    tabindex="0" role="menuitem" class="js-schedule-button dropdown-item">
+                                <span class="fa-regular fa-calendar me-2"></span>Schedule
+                            </button>
+                            <button type="button" id="email-button" tabindex="0" role="menuitem" class="js-email-button dropdown-item">
+                                <span class="fa-regular fa-envelope me-2"></span>Email…
+                            </button>
+                            <button type="button" tabindex="0" role="menuitem" class="js-export-excel-button dropdown-item">
+                                <span class="fa-regular fa-file-excel me-2"></span>Export as Excel
+                            </button>
+                            <button type="button" tabindex="0" role="menuitem" class="js-export-csv-button dropdown-item">
+                                <span class="fa fa-bar-chart me-2"></span>Export as CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="refresh-button" class="js-refresh-button btn btn-secondary">
+                        <i aria-hidden="true" class="fa-solid fa-refresh fa-fw"></i>
+                        <span class="d-none d-sm-inline d-md-inline">Refresh</span>
+                    </button>
+                    
+                    <button type="button" id="customize-button" class="js-customize-button btn btn-primary">
+                        <i aria-hidden="true" class="fa-solid fa-cogs fa-fw"></i>
+                        <span class="d-none d-sm-inline d-md-inline">Customize</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="js-report-description report-description-container ml-2" style="max-width: 60%;">
+                <div id="detailed_headers_region" class="report-description">
+                    <div>
+                        <strong>Property Groups:</strong> 
+                        <div class="d-inline-flex flex-column align-items-start mw-100">
+                            <div style="display: -webkit-box; max-height: calc(3em); overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                Brandmeyer Props
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Units:</strong> 
+                        <div class="d-inline-flex flex-column align-items-start mw-100">
+                            <div style="display: -webkit-box; max-height: calc(3em); overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                All
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Status:</strong> 
+                        <div class="d-inline-flex flex-column align-items-start mw-100">
+                            <div style="display: -webkit-box; max-height: calc(3em); overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                All
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Filter Date Range By:</strong> 
+                        <div class="d-inline-flex flex-column align-items-start mw-100">
+                            <div style="display: -webkit-box; max-height: calc(3em); overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                Rental Application Received Date
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Date Range:</strong> 
+                        <div class="d-inline-flex flex-column align-items-start mw-100">
+                            <div style="display: -webkit-box; max-height: calc(3em); overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                08/10/2025 to 08/16/2025 (Last Week)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ag-theme-custom" style="width: 100%; height: 600px;">
+            <div style="height: 100%; --ag-line-height: 22px;">
+                <div class="ag-measurement-container">
+                    <div style="width: var(--ag-row-height, 15538px);"></div>
+                    <div style="width: var(--ag-header-height, 15538px);"></div>
+                    <div style="width: var(--ag-list-item-height, 15538px);"></div>
+                </div>
+                <div class="ag-aria-description-container" aria-live="polite" aria-relevant="additions text" aria-atomic="true"></div>
+                <!-- AG Grid will be initialized here by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

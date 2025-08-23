@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Properties{% endblock %}
+
+{% block tabs %}
+<div class="tab-nav">
+    <a href="/properties" class="active">Properties</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .property-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+        padding: 12px;
+        font-size: 13px;
+        color: #212529;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+</style>
+
+<div class="property-header">
+    <h2>Properties</h2>
+    <div class="btn-group">
+        <button class="btn-primary" onclick="addProperty()">+ New Property</button>
+        <button class="btn-info" onclick="addPropertyGroup()">+ New Property Group</button>
+    </div>
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Name ↕</th>
+                <th>Type ↕</th>
+                <th>Units</th>
+                <th>Vacant</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for property in properties %}
+            <tr>
+                <td><strong>{{ property.name }}</strong></td>
+                <td>{{ property.type or 'Multi-Family' }}</td>
+                <td>{{ property.units_count or 0 }}</td>
+                <td>
+                    {% if property.units %}
+                        {% set vacant_list = property.units | selectattr('status', 'equalto', 'vacant') | list %}
+                        {% set vacant_count = vacant_list | length %}
+                    {% else %}
+                        {% set vacant_count = 0 %}
+                    {% endif %}
+                    <span style="color: {% if vacant_count > 0 %}#dc3545{% else %}#28a745{% endif %};">
+                        {{ vacant_count }}
+                    </span>
+                </td>
+                <td>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip }}</td>
+                <td>
+                    <button class="btn-sm btn-primary" onclick="editProperty('{{ property.id }}')">Edit</button>
+                    <button class="btn-sm btn-info" onclick="viewProperty('{{ property.id }}')">View</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No properties found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function addProperty() {
+    window.location.href = '/properties/new';
+}
+
+function addPropertyGroup() {
+    alert('Property Group feature coming soon!');
+}
+
+function editProperty(propertyId) {
+    window.location.href = `/properties/edit/${propertyId}`;
+}
+
+function viewProperty(propertyId) {
+    window.location.href = `/properties/view/${propertyId}`;
+}
+</script>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel" id="tasksPanel">
+    <div class="tasks-header">
+        <h3>Property Actions</h3>
+        <span class="tasks-toggle" onclick="toggleTasksPanel()">✕</span>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Tasks</div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Add Property</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Add Units</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Property Settings</span>
+        </div>
+        <div class="task-item">
+            <span class="task-icon">⭐</span>
+            <span>Upload Photos</span>
+        </div>
+    </div>
+    
+    <div class="tasks-section">
+        <div class="tasks-section-title">Reports</div>
+        <div class="task-item">
+            <span>Property Summary</span>
+        </div>
+        <div class="task-item">
+            <span>Unit List</span>
+        </div>
+        <div class="task-item">
+            <span>Occupancy Report</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

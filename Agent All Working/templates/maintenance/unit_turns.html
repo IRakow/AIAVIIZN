@@ -1,0 +1,1423 @@
+{% extends "base.html" %}
+
+{% block title %}Unit Turns - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Unit Turns Page Specific Styles */
+    .page-header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    /* Key Metrics Section */
+    .key-metrics {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .metrics-header {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .metric-label {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .metric-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary-blue);
+    }
+
+    /* Unit Turn Board Section */
+    .unit-turn-board {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .board-header {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .board-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .board-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-info {
+        background: white;
+        border: 1px solid #17a2b8;
+        color: #17a2b8;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .btn-info:hover {
+        background: #e3f2fd;
+        text-decoration: none;
+        color: #17a2b8;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 2fr;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .filter-input, .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .date-range {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .date-range input {
+        flex: 1;
+    }
+
+    /* List Controls */
+    .list-controls {
+        padding: 15px 20px;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .select-all {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        position: relative;
+    }
+
+    .btn-bulk:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .selected-count {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .sort-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sort-select {
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-sort-direction {
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Unit Turn Cards */
+    .unit-turns-list {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .unit-turn-card {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background 0.2s;
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .unit-turn-card:hover {
+        background: #f8f9fa;
+    }
+
+    .card-checkbox {
+        margin-top: 5px;
+    }
+
+    .card-content {
+        flex: 1;
+    }
+
+    .card-header {
+        margin-bottom: 15px;
+    }
+
+    .property-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--primary-blue);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .property-title:hover {
+        text-decoration: underline;
+        color: var(--primary-blue);
+    }
+
+    .card-details {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 15px;
+        font-size: 13px;
+    }
+
+    .detail-item {
+        color: #666;
+    }
+
+    .detail-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .target-date {
+        margin-top: 5px;
+        font-size: 12px;
+    }
+
+    .overdue-badge {
+        background: #dc3545;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin-left: 5px;
+    }
+
+    /* Task Progress Grid */
+    .task-progress {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .task-item {
+        text-align: center;
+    }
+
+    .task-label {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .task-status {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 3px;
+        display: inline-block;
+        min-width: 40px;
+    }
+
+    .task-status.pending {
+        color: #666;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+    .task-status.done {
+        color: #155724;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+    }
+
+    .card-actions {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .btn-expand {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-divider {
+        height: 0;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+
+    .btn-primary:hover {
+        background: var(--dark-blue);
+        border-color: var(--dark-blue);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #dee2e6;
+    }
+
+    .empty-state-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .empty-state-text {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Unit Turns</h1>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="key-metrics">
+        <h2 class="metrics-header">Key Metrics</h2>
+        <div class="metric-item">
+            <span class="metric-label">Average days on a turn</span>
+            <span class="metric-value" id="avgDaysMetric">65.86 days</span>
+        </div>
+    </div>
+
+    <!-- Unit Turn Board -->
+    <div class="unit-turn-board">
+        <div class="board-header">
+            <h2 class="board-title">
+                Unit Turn Board
+            </h2>
+            <div class="board-actions">
+                <button class="btn-info" onclick="showMoreInfo()">More Info</button>
+                <a href="#" class="btn-info">Settings</a>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                        <option value="">All Statuses</option>
+                        <option value="in-progress" selected>In Progress</option>
+                        <option value="ready">Ready</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Filter by Property</label>
+                    <input type="text" class="filter-input" id="propertyFilter" 
+                           placeholder="Unit, Property, Property Group, or Portfolio"
+                           onkeyup="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Filter by Reference User</label>
+                    <input type="text" class="filter-input" id="referenceUserFilter" 
+                           placeholder="Search by Name or Email"
+                           onkeyup="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Move-out Date Range</label>
+                    <div class="date-range">
+                        <input type="date" class="filter-input" id="startDate" onchange="applyFilters()">
+                        <span>to</span>
+                        <input type="date" class="filter-input" id="endDate" onchange="applyFilters()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- List Controls -->
+        <div class="list-controls">
+            <div class="bulk-actions">
+                <div class="select-all">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <label for="selectAll">Select All</label>
+                </div>
+                <div class="dropdown">
+                    <button class="btn-bulk" id="bulkActionsBtn" disabled onclick="toggleBulkActions()">
+                        Bulk Actions
+                    </button>
+                    <div class="dropdown-menu" id="bulkActionsMenu">
+                        <div class="dropdown-item" onclick="bulkAction('assign')">Assign Tasks</div>
+                        <div class="dropdown-item" onclick="bulkAction('status')">Update Status</div>
+                        <div class="dropdown-item" onclick="bulkAction('schedule')">Schedule Work</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="bulkAction('export')">Export Selected</div>
+                        <div class="dropdown-item" onclick="bulkAction('print')">Print Selected</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="bulkAction('archive')">Archive Completed</div>
+                    </div>
+                </div>
+                <span class="selected-count" id="selectedCount">0 Selected</span>
+            </div>
+            <div class="sort-controls">
+                <span style="color: #666; font-size: 13px;">Sort by</span>
+                <select class="sort-select" id="sortBy" onchange="applySorting()">
+                    <option value="moveOutDate" selected>Move Out</option>
+                    <option value="property">Property</option>
+                    <option value="targetDate">Target Date</option>
+                    <option value="status">Status</option>
+                    <option value="daysVacant">Days Vacant</option>
+                </select>
+                <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                    <span>▼</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Unit Turns List -->
+        <div class="unit-turns-list" id="unitTurnsList">
+            <!-- Unit turns will be dynamically loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🏠</div>
+            <div class="empty-state-title">No unit turns found</div>
+            <div class="empty-state-text">No unit turns match your current filters</div>
+            <button class="btn btn-primary" onclick="clearFilters()">Clear Filters</button>
+        </div>
+    </div>
+</div>
+
+<!-- New Unit Turn Modal -->
+<div id="newUnitTurnModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">New Unit Turn</h2>
+            <button class="modal-close" onclick="closeModal('newUnitTurnModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="newUnitTurnForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Property <span class="required">*</span></label>
+                        <select class="form-control" id="unitTurnProperty" required>
+                            <option value="">Select Property</option>
+                            <option value="west-plaza">West Plaza</option>
+                            <option value="longmeadow">Longmeadow Apartments</option>
+                            <option value="brentwood">Brentwood Park</option>
+                            <option value="rock-ridge">Rock Ridge Ranch Apartments</option>
+                            <option value="blue-ridge">Blue Ridge Manor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="unitTurnUnit" required 
+                               placeholder="Unit number">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Move Out Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="unitTurnMoveOut" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Turnaround Date</label>
+                        <input type="date" class="form-control" id="unitTurnTarget">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Move In Date</label>
+                        <input type="date" class="form-control" id="unitTurnMoveIn">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reference User</label>
+                        <input type="text" class="form-control" id="unitTurnReferenceUser" 
+                               placeholder="Name or email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" id="unitTurnNotes" rows="3" 
+                              placeholder="Additional notes about this unit turn..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('newUnitTurnModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveUnitTurn()">Create Unit Turn</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Unit Turn Modal -->
+<div id="viewUnitTurnModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="viewUnitTurnTitle">Unit Turn Details</h2>
+            <button class="modal-close" onclick="closeModal('viewUnitTurnModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="unitTurnDetails">
+                <!-- Unit turn details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('viewUnitTurnModal')">Close</button>
+            <button class="btn btn-primary" onclick="editCurrentUnitTurn()">Edit Unit Turn</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://sejebqdhcilwcpjpznep.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlamVicWRoY2lsd2NwanB6bmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NTg5NjQsImV4cCI6MjA3MDAzNDk2NH0.vFM0Gr3QZF4MN3vtDGghjyCpnIkyC_mmUOOkVO3ahPQ';
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Global variables
+    let unitTurns = [];
+    let filteredUnitTurns = [];
+    let currentSort = { column: 'moveOutDate', order: 'desc' };
+    let viewingUnitTurnId = null;
+
+    // Task categories for unit turns
+    const taskCategories = [
+        { key: 'maintenance', label: 'Maintenance / Repair' },
+        { key: 'paint', label: 'Paint' },
+        { key: 'appliances', label: 'Appliances' },
+        { key: 'floors', label: 'Floors / Carpets' },
+        { key: 'other', label: 'Other' },
+        { key: 'housekeeping', label: 'Housekeeping' },
+        { key: 'keys', label: 'Keys / Locks' }
+    ];
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadUnitTurns();
+        await loadProperties();
+        setupEventListeners();
+        updateMetrics();
+    });
+
+    // Load unit turns from Supabase
+    async function loadUnitTurns() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('unit_turns')
+                .select(`
+                    *,
+                    properties!inner(name),
+                    unit_turn_tasks(*)
+                `)
+                .order(currentSort.column, { ascending: currentSort.order === 'asc' });
+
+            if (error) {
+                console.error('Error loading unit turns:', error);
+                // Use mock data if Supabase fails
+                unitTurns = getMockUnitTurnsData();
+            } else {
+                unitTurns = data || getMockUnitTurnsData();
+            }
+
+            filteredUnitTurns = [...unitTurns];
+            renderUnitTurns();
+            updateMetrics();
+        } catch (error) {
+            console.error('Error:', error);
+            unitTurns = getMockUnitTurnsData();
+            filteredUnitTurns = [...unitTurns];
+            renderUnitTurns();
+            updateMetrics();
+        }
+    }
+
+    // Get mock unit turns data
+    function getMockUnitTurnsData() {
+        return [
+            {
+                id: 1,
+                property: 'Flats at Walnut / Flats at Walnut LLC',
+                unit: '4231 C - DOWN',
+                moveOutDate: '2021-05-31',
+                moveInDate: null,
+                targetDate: '2021-06-10',
+                referenceUser: null,
+                status: 'in-progress',
+                daysVacant: 1588,
+                notes: '',
+                tasks: {
+                    maintenance: false,
+                    paint: false,
+                    appliances: false,
+                    floors: false,
+                    other: false,
+                    housekeeping: false,
+                    keys: false
+                }
+            },
+            {
+                id: 2,
+                property: 'Flats at Walnut / Flats at Walnut LLC',
+                unit: '4239 D - DOWN',
+                moveOutDate: '2021-05-31',
+                moveInDate: null,
+                targetDate: '2021-06-10',
+                referenceUser: null,
+                status: 'in-progress',
+                daysVacant: 1588,
+                notes: '',
+                tasks: {
+                    maintenance: false,
+                    paint: false,
+                    appliances: false,
+                    floors: false,
+                    other: false,
+                    housekeeping: false,
+                    keys: false
+                }
+            },
+            {
+                id: 3,
+                property: 'Flats at 95 Metcalf / Town and Country OP LLC',
+                unit: '11',
+                moveOutDate: '2021-07-26',
+                moveInDate: null,
+                targetDate: '2021-08-05',
+                referenceUser: null,
+                status: 'in-progress',
+                daysVacant: 1540,
+                notes: '',
+                tasks: {
+                    maintenance: true,
+                    paint: false,
+                    appliances: false,
+                    floors: false,
+                    other: false,
+                    housekeeping: false,
+                    keys: false
+                }
+            },
+            {
+                id: 4,
+                property: 'Shawnee Gardens / Land of Oz LLC',
+                unit: '6013 Apt. A',
+                moveOutDate: '2021-07-31',
+                moveInDate: null,
+                targetDate: '2021-08-10',
+                referenceUser: null,
+                status: 'in-progress',
+                daysVacant: 1535,
+                notes: '',
+                tasks: {
+                    maintenance: true,
+                    paint: false,
+                    appliances: false,
+                    floors: false,
+                    other: false,
+                    housekeeping: false,
+                    keys: false
+                }
+            }
+        ];
+    }
+
+    // Render unit turns
+    function renderUnitTurns() {
+        const container = document.getElementById('unitTurnsList');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (filteredUnitTurns.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        container.innerHTML = filteredUnitTurns.map(unitTurn => {
+            const yearsOverdue = Math.floor((new Date() - new Date(unitTurn.targetDate)) / (365.25 * 24 * 60 * 60 * 1000));
+            
+            return `
+                <div class="unit-turn-card" data-id="${unitTurn.id}">
+                    <div class="card-checkbox">
+                        <input type="checkbox" onchange="updateSelectedCount()">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <a href="#" class="property-title" onclick="viewUnitTurn(${unitTurn.id})">
+                                ${unitTurn.property} - ${unitTurn.unit}
+                            </a>
+                        </div>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <strong>Move Out:</strong> <span class="detail-value">${formatDate(unitTurn.moveOutDate)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <strong>Move In:</strong> <span class="detail-value">${unitTurn.moveInDate ? formatDate(unitTurn.moveInDate) : '--'}</span>
+                            </div>
+                        </div>
+                        <div class="target-date">
+                            <strong>Target Turnaround Date:</strong> ${formatDate(unitTurn.targetDate)}
+                            ${yearsOverdue > 0 ? `<span class="overdue-badge">${yearsOverdue} year${yearsOverdue > 1 ? 's' : ''} ago</span>` : ''}
+                        </div>
+                        <div class="task-progress">
+                            ${taskCategories.map(category => `
+                                <div class="task-item">
+                                    <div class="task-label">${category.label}</div>
+                                    <div class="task-status ${unitTurn.tasks[category.key] ? 'done' : 'pending'}">
+                                        ${unitTurn.tasks[category.key] ? 'Done' : '--'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-expand" onclick="toggleUnitTurnDetails(this)">
+                            <span>Show More</span>
+                            <span>▼</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Close dropdowns when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+            
+            // Close dropdown menus
+            if (!event.target.matches('.btn-bulk')) {
+                document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        };
+
+        // Auto-calculate target date when move out date changes
+        document.getElementById('unitTurnMoveOut').addEventListener('change', function() {
+            const moveOutDate = new Date(this.value);
+            if (moveOutDate) {
+                const targetDate = new Date(moveOutDate);
+                targetDate.setDate(targetDate.getDate() + 10); // 10 days turnaround
+                document.getElementById('unitTurnTarget').value = targetDate.toISOString().split('T')[0];
+            }
+        });
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const propertyFilter = document.getElementById('propertyFilter').value.toLowerCase();
+        const referenceUserFilter = document.getElementById('referenceUserFilter').value.toLowerCase();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        
+        filteredUnitTurns = unitTurns.filter(unitTurn => {
+            const statusMatch = !statusFilter || unitTurn.status === statusFilter;
+            const propertyMatch = !propertyFilter || 
+                unitTurn.property.toLowerCase().includes(propertyFilter) ||
+                unitTurn.unit.toLowerCase().includes(propertyFilter);
+            const referenceUserMatch = !referenceUserFilter || 
+                (unitTurn.referenceUser && unitTurn.referenceUser.toLowerCase().includes(referenceUserFilter));
+            
+            let dateMatch = true;
+            if (startDate && unitTurn.moveOutDate) {
+                dateMatch = unitTurn.moveOutDate >= startDate;
+            }
+            if (endDate && unitTurn.moveOutDate && dateMatch) {
+                dateMatch = unitTurn.moveOutDate <= endDate;
+            }
+            
+            return statusMatch && propertyMatch && referenceUserMatch && dateMatch;
+        });
+        
+        renderUnitTurns();
+        updateMetrics();
+    }
+
+    // Clear filters
+    function clearFilters() {
+        document.getElementById('statusFilter').selectedIndex = 0;
+        document.getElementById('propertyFilter').value = '';
+        document.getElementById('referenceUserFilter').value = '';
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        
+        applyFilters();
+        showToast('Filters cleared', 'info');
+    }
+
+    // Apply sorting
+    function applySorting() {
+        const sortBy = document.getElementById('sortBy').value;
+        currentSort.column = sortBy;
+        
+        filteredUnitTurns.sort((a, b) => {
+            let aVal = a[sortBy];
+            let bVal = b[sortBy];
+            
+            if (typeof aVal === 'string') {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+            }
+            
+            if (currentSort.order === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+        
+        renderUnitTurns();
+    }
+
+    // Toggle sort direction
+    function toggleSortDirection() {
+        currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+        const icon = document.querySelector('#sortDirection span');
+        icon.textContent = currentSort.order === 'asc' ? '▲' : '▼';
+        applySorting();
+    }
+
+    // Toggle select all
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.unit-turn-card input[type="checkbox"]');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+        
+        updateSelectedCount();
+    }
+
+    // Update selected count
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.unit-turn-card input[type="checkbox"]:checked');
+        const count = checkboxes.length;
+        
+        document.getElementById('selectedCount').textContent = `${count} Selected`;
+        document.getElementById('bulkActionsBtn').disabled = count === 0;
+        
+        // Update select all checkbox
+        const allCheckboxes = document.querySelectorAll('.unit-turn-card input[type="checkbox"]');
+        const selectAll = document.getElementById('selectAll');
+        selectAll.checked = count === allCheckboxes.length && count > 0;
+        selectAll.indeterminate = count > 0 && count < allCheckboxes.length;
+    }
+
+    // Toggle bulk actions menu
+    function toggleBulkActions() {
+        document.getElementById('bulkActionsMenu').classList.toggle('show');
+    }
+
+    // Handle bulk actions
+    function bulkAction(action) {
+        const selected = document.querySelectorAll('.unit-turn-card input[type="checkbox"]:checked').length;
+        
+        switch(action) {
+            case 'assign':
+                showToast(`Assigning tasks for ${selected} unit turns...`, 'info');
+                break;
+            case 'status':
+                showToast(`Updating status for ${selected} unit turns...`, 'info');
+                break;
+            case 'schedule':
+                showToast(`Scheduling work for ${selected} unit turns...`, 'info');
+                break;
+            case 'export':
+                showToast(`Exporting ${selected} unit turns...`, 'info');
+                break;
+            case 'print':
+                showToast(`Printing ${selected} unit turns...`, 'info');
+                break;
+            case 'archive':
+                showToast(`Archiving ${selected} completed unit turns...`, 'info');
+                break;
+        }
+        
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    // Toggle unit turn details
+    function toggleUnitTurnDetails(button) {
+        // This could expand to show additional details
+        const isExpanded = button.querySelector('span:first-child').textContent === 'Show Less';
+        
+        if (isExpanded) {
+            button.querySelector('span:first-child').textContent = 'Show More';
+            button.querySelector('span:last-child').textContent = '▼';
+        } else {
+            button.querySelector('span:first-child').textContent = 'Show Less';
+            button.querySelector('span:last-child').textContent = '▲';
+        }
+    }
+
+    // View unit turn details
+    function viewUnitTurn(id) {
+        const unitTurn = unitTurns.find(ut => ut.id === id);
+        if (!unitTurn) return;
+        
+        viewingUnitTurnId = id;
+        
+        document.getElementById('viewUnitTurnTitle').textContent = 
+            `${unitTurn.property} - ${unitTurn.unit}`;
+        
+        document.getElementById('unitTurnDetails').innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <strong>Property:</strong> ${unitTurn.property}<br>
+                    <strong>Unit:</strong> ${unitTurn.unit}<br>
+                    <strong>Status:</strong> ${unitTurn.status.charAt(0).toUpperCase() + unitTurn.status.slice(1)}<br>
+                    <strong>Days Vacant:</strong> ${unitTurn.daysVacant || 0}
+                </div>
+                <div>
+                    <strong>Move Out Date:</strong> ${formatDate(unitTurn.moveOutDate)}<br>
+                    <strong>Move In Date:</strong> ${unitTurn.moveInDate ? formatDate(unitTurn.moveInDate) : 'Not set'}<br>
+                    <strong>Target Date:</strong> ${formatDate(unitTurn.targetDate)}<br>
+                    <strong>Reference User:</strong> ${unitTurn.referenceUser || 'None'}
+                </div>
+            </div>
+            ${unitTurn.notes ? `
+                <div style="margin-top: 20px;">
+                    <strong>Notes:</strong><br>
+                    ${unitTurn.notes}
+                </div>
+            ` : ''}
+            <div style="margin-top: 30px;">
+                <strong>Task Progress:</strong>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
+                    ${taskCategories.map(category => `
+                        <div style="padding: 10px; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <strong>${category.label}:</strong> 
+                            <span style="color: ${unitTurn.tasks[category.key] ? '#155724' : '#666'};">
+                                ${unitTurn.tasks[category.key] ? 'Done' : 'Pending'}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        openModal('viewUnitTurnModal');
+    }
+
+    // Edit current unit turn
+    function editCurrentUnitTurn() {
+        if (viewingUnitTurnId) {
+            closeModal('viewUnitTurnModal');
+            // Open edit modal with pre-filled data
+            showToast('Edit functionality coming soon', 'info');
+        }
+    }
+
+    // Load properties for dropdown
+    async function loadProperties() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .order('name');
+            
+            if (!error && data) {
+                const select = document.getElementById('unitTurnProperty');
+                if (select && data.length > 0) {
+                    // Keep first option and replace others
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    data.forEach(property => {
+                        const option = document.createElement('option');
+                        option.value = property.id;
+                        option.textContent = property.name;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+
+    // Save new unit turn
+    async function saveUnitTurn() {
+        const form = document.getElementById('newUnitTurnForm');
+        if (!form.checkValidity()) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const unitTurnData = {
+            property_id: document.getElementById('unitTurnProperty').value,
+            unit: document.getElementById('unitTurnUnit').value,
+            move_out_date: document.getElementById('unitTurnMoveOut').value,
+            target_date: document.getElementById('unitTurnTarget').value,
+            move_in_date: document.getElementById('unitTurnMoveIn').value || null,
+            reference_user: document.getElementById('unitTurnReferenceUser').value || null,
+            notes: document.getElementById('unitTurnNotes').value || null,
+            status: 'in-progress'
+        };
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('unit_turns')
+                .insert([unitTurnData])
+                .select();
+            
+            if (error) throw error;
+            
+            showToast('Unit turn created successfully', 'success');
+            closeModal('newUnitTurnModal');
+            
+            // Reload unit turns
+            await loadUnitTurns();
+            
+        } catch (error) {
+            console.error('Error creating unit turn:', error);
+            // If Supabase fails, still add to local data for demo
+            const newUnitTurn = {
+                ...unitTurnData,
+                id: Math.max(...unitTurns.map(ut => ut.id), 0) + 1,
+                property: document.getElementById('unitTurnProperty').options[document.getElementById('unitTurnProperty').selectedIndex].text,
+                tasks: {
+                    maintenance: false,
+                    paint: false,
+                    appliances: false,
+                    floors: false,
+                    other: false,
+                    housekeeping: false,
+                    keys: false
+                }
+            };
+            
+            unitTurns.push(newUnitTurn);
+            closeModal('newUnitTurnModal');
+            applyFilters();
+            showToast('Unit turn created successfully', 'success');
+        }
+    }
+
+    // Update metrics
+    function updateMetrics() {
+        if (filteredUnitTurns.length === 0) {
+            document.getElementById('avgDaysMetric').textContent = '0 days';
+            return;
+        }
+        
+        // Calculate average days vacant
+        const totalDays = filteredUnitTurns.reduce((sum, ut) => sum + (ut.daysVacant || 0), 0);
+        const avgDays = Math.round(totalDays / filteredUnitTurns.length * 100) / 100;
+        
+        document.getElementById('avgDaysMetric').textContent = `${avgDays} days`;
+    }
+
+    // Show more info
+    function showMoreInfo() {
+        showToast('More information about unit turns board', 'info');
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+        
+        // Reset form if it's the new unit turn modal
+        if (modalId === 'newUnitTurnModal') {
+            document.getElementById('newUnitTurnForm').reset();
+        }
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

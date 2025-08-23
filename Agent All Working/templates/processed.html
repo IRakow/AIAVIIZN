@@ -1,0 +1,1175 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Vacancies - AppFolio Property Manager{% endblock %}
+
+{% block head %}
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --dark-color: #1f2937;
+        --light-color: #f8fafc;
+        --border-color: #e5e7eb;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        margin: 20px;
+        box-shadow: var(--shadow-lg);
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .subnav-tabs {
+        background: white;
+        border-radius: 15px;
+        padding: 10px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        list-style: none;
+        margin: 0;
+        padding-left: 0;
+    }
+
+    .subnav-tabs li {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .subnav-tabs a {
+        display: block;
+        padding: 12px 20px;
+        text-decoration: none;
+        color: #64748b;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-weight: 500;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .subnav-tabs a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .subnav-tabs a:hover::before {
+        left: 100%;
+    }
+
+    .subnav-tabs li.is-selected a {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .subnav-tabs a:hover {
+        background: #f1f5f9;
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+    .page-title {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+
+    .filter-box {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .filter-box:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    .filter-box__instructions {
+        color: var(--dark-color);
+        font-weight: 600;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .form__row {
+        margin-bottom: 20px;
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
+    }
+
+    .form__row:nth-child(1) { animation-delay: 0.1s; }
+    .form__row:nth-child(2) { animation-delay: 0.2s; }
+    .form__row:nth-child(3) { animation-delay: 0.3s; }
+    .form__row:nth-child(4) { animation-delay: 0.4s; }
+    .form__row:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form__row__label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        position: relative;
+    }
+
+    .ai-enhanced {
+        position: relative;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border: 2px solid transparent;
+        border-radius: 10px;
+        background-clip: padding-box;
+    }
+
+    .ai-enhanced::before {
+        content: '🤖';
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        z-index: 10;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .form-control, .form-select, input[type="text"], input[type="date"], select {
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus, input[type="text"]:focus, input[type="date"]:focus, select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+        transform: translateY(-1px);
+    }
+
+    .ai-enhanced .form-control, .ai-enhanced input, .ai-enhanced select {
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9));
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .input-add-on {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-add-on__prepend, .input-add-on__append {
+        background: var(--light-color);
+        border: 2px solid var(--border-color);
+        padding: 12px 16px;
+        color: var(--dark-color);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .input-add-on__prepend {
+        border-right: none;
+        border-radius: 10px 0 0 10px;
+    }
+
+    .input-add-on__append {
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .input-add-on__append:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .input-add-on input {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        flex: 1;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transition: width 0.6s, height 0.6s;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .unit-property-card {
+        position: relative;
+    }
+
+    .unit-property-card__image-container {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .unit-property-card__image_div {
+        width: 100%;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .unit-property-card__image_div::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        transition: opacity 0.3s ease;
+    }
+
+    .card:hover .unit-property-card__image_div::before {
+        opacity: 0.7;
+    }
+
+    .unit-property-card__image-caption {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 8px;
+    }
+
+    .unit-property-card__main-info {
+        margin-bottom: 20px;
+    }
+
+    .unit-property-card__main-info a {
+        color: var(--dark-color);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+    }
+
+    .unit-property-card__main-info a:hover {
+        color: var(--primary-color);
+    }
+
+    .unit-property-card__table {
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    .unit-property-card__table td {
+        padding: 12px 16px;
+        text-align: center;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .unit-property-card__table td:last-child {
+        border-right: none;
+    }
+
+    .unit-property-card__tiny-header {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .action-table__vacancy-type {
+        background: linear-gradient(135deg, var(--warning-color), #fb923c);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 0.875rem;
+    }
+
+    .action-table__actions {
+        width: 100%;
+    }
+
+    .action-table__actions td {
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .action-table__actions td:first-child {
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .action-table__actions td:nth-child(2) {
+        color: #64748b;
+    }
+
+    .options-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .options-dropdown__toggle {
+        background: var(--light-color);
+        border: 1px solid var(--border-color);
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .options-dropdown__toggle:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .dropdown-menu {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        box-shadow: var(--shadow-lg);
+        min-width: 200px;
+        padding: 10px 0;
+        margin-top: 5px;
+    }
+
+    .dropdown-item {
+        padding: 10px 20px;
+        color: var(--dark-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .sort-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 0;
+    }
+
+    .sort-options select {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(99, 102, 241, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .saffron-spinner {
+        display: inline-block;
+        position: relative;
+        width: 64px;
+        height: 64px;
+    }
+
+    .saffron-spinner-a,
+    .saffron-spinner-b {
+        position: absolute;
+        border: 4px solid var(--primary-color);
+        opacity: 1;
+        border-radius: 50%;
+        animation: saffron-spin 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+    .saffron-spinner-b {
+        animation-delay: -0.5s;
+    }
+
+    @keyframes saffron-spin {
+        0% {
+            top: 28px;
+            left: 28px;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+        100% {
+            top: -1px;
+            left: -1px;
+            width: 58px;
+            height: 58px;
+            opacity: 0;
+        }
+    }
+
+    .grid {
+        display: grid;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .grid__large-3 { grid-column: span 3; }
+    .grid__large-4 { grid-column: span 4; }
+    .grid__large-5 { grid-column: span 5; }
+    .grid__medium-7 { grid-column: span 7; }
+    .grid__medium-5 { grid-column: span 5; }
+    .grid__small-12 { grid-column: span 12; }
+
+    @media (min-width: 992px) {
+        .grid { grid-template-columns: repeat(12, 1fr); }
+    }
+
+    @media (max-width: 991px) {
+        .grid { grid-template-columns: repeat(8, 1fr); }
+        .grid__medium-7 { grid-column: span 8; }
+        .grid__medium-5 { grid-column: span 8; }
+        .u-medium-hidden { display: none !important; }
+    }
+
+    @media (max-width: 576px) {
+        .grid { grid-template-columns: 1fr; }
+        .grid__small-12 { grid-column: span 1; }
+        .u-small-hidden { display: none !important; }
+        .main-container { margin: 10px; }
+    }
+
+    .u-hidden { display: none !important; }
+    .u-text-center { text-align: center; }
+    .u-text-right { text-align: right; }
+    .u-text-bold { font-weight: 700; }
+
+    .responsive-table {
+        overflow-x: auto;
+        margin-bottom: 20px;
+    }
+
+    .w-100 { width: 100% !important; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 1rem; }
+    .mt-0 { margin-top: 0; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+    .px-3 { padding-left: 1rem; padding-right: 1rem; }
+    .py-3 { padding-top: 1rem; padding-bottom: 1rem; }
+    .p-0 { padding: 0; }
+
+    .col-6 { flex: 0 0 50%; max-width: 50%; }
+    .col-12 { flex: 0 0 100%; max-width: 100%; }
+    .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -0.75rem;
+        margin-right: -0.75rem;
+    }
+
+    .row > * {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .filter-search-again {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .filter-search-again:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+        text-decoration: none;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        z-index: 1000;
+    }
+
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 15px 20px;
+        box-shadow: var(--shadow-lg);
+        z-index: 1050;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+    }
+
+    .toast-success {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .toast-error {
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-choice {
+        height: 46px !important;
+        line-height: 46px !important;
+        border: 2px solid var(--border-color) !important;
+        border-radius: 10px !important;
+        background: white !important;
+        padding: 0 16px !important;
+    }
+
+    .select2-choice:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+    }
+
+    .select2-drop {
+        border: 2px solid var(--primary-color) !important;
+        border-radius: 10px !important;
+        box-shadow: var(--shadow-lg) !important;
+        margin-top: 5px !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content-wrapper position-fixed bottom-0 overflow-y-auto js-main-page vacancies index">
+    <main class="main-container mx-auto px-3 w-100">
+        <section class="js-page-content-body page__content-body page-content-body px-1 py-3">
+            
+            <div id="site-subtabs" class="full-screen-hide">
+                <div class="js-responsive-table-container responsive-table u-medium-down-hidden">
+                    <div class="js-responsive-table-inner responsive-table__inner">
+                        <ul class="is-displayed-in-medium-down subnav-tabs" data-container-classes="u-medium-down-hidden" data-level="0">
+                            <li class="is-selected"><a href="{{ url_for('vacancies') }}">Vacancies</a></li>
+                            <li class=""><a href="{{ url_for('guest_cards') }}">Guest Cards</a></li>
+                            <li class=""><a href="{{ url_for('rental_applications') }}">Rental Applications</a></li>
+                            <li class=""><a href="{{ url_for('lease_documents') }}">Leases</a></li>
+                            <li class=""><a href="{{ url_for('lease_renewals') }}">Renewals</a></li>
+                            <li class=""><a href="{{ url_for('metrics') }}">Metrics</a></li>
+                            <li class=""><a href="{{ url_for('leasing_signals') }}">Signals</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="flash_messages"></div>
+
+            <h1 class="page-title js-security-deposit-alternative-banner">Vacancies</h1>
+
+            <section class="js-filterable-collection">
+                <div class="js-filter-box filter-box">
+                    <div class="js-filter-search-box u-hidden">
+                        <p class="filter-box__instructions">Filter your vacancies with the options below:</p>
+                        <div class="js-filter-form">
+                            <form class="form form--full-width" id="new_filters" data-type="json" autocomplete="off" novalidate="novalidate" action="{{ url_for('vacancies') }}" accept-charset="UTF-8" data-remote="true" method="get">
+                                
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_properties_ids">Properties</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <input 
+                                                data-search-path="{{ url_for('properties_search') }}?exclude_corporate=true" 
+                                                placeholder="Search by property, group, owner, or portfolio" 
+                                                class="form-control js-select2-search" 
+                                                type="text" 
+                                                name="filters[properties_ids]" 
+                                                id="filters_properties_ids"
+                                                data-ai-field="propertySearchInput"
+                                                title="AI-Enhanced Property Search">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_bedrooms">Bedrooms</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <select 
+                                                class="form-select" 
+                                                name="filters[bedrooms]" 
+                                                id="filters_bedrooms"
+                                                data-ai-field="bedroomCountFilter">
+                                                <option value="">Number of bedrooms</option>
+                                                <option value="0+">0+</option>
+                                                <option value="1+">1+</option>
+                                                <option value="2+">2+</option>
+                                                <option value="3+">3+</option>
+                                                <option value="4+">4+</option>
+                                                <option value="5+">5+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_rent">Rent Range</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="input-add-on">
+                                                        <span class="input-add-on__prepend">$</span>
+                                                        <input 
+                                                            placeholder="Minimum" 
+                                                            type="number" 
+                                                            class="form-control js-currency-input" 
+                                                            name="filters[min_rent]" 
+                                                            id="filters_min_rent"
+                                                            data-ai-field="minimumRent">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-add-on">
+                                                        <span class="input-add-on__prepend">$</span>
+                                                        <input 
+                                                            placeholder="Maximum" 
+                                                            type="number" 
+                                                            class="form-control js-currency-input" 
+                                                            name="filters[max_rent]" 
+                                                            id="filters_max_rent"
+                                                            data-ai-field="maxRent">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_available_date">Available Date Range</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="input-add-on">
+                                                        <input 
+                                                            placeholder="Start date" 
+                                                            class="form-control js-datepicker" 
+                                                            type="date" 
+                                                            name="filters[available_from]" 
+                                                            id="filters_available_from"
+                                                            data-ai-field="availableFromDate">
+                                                        <span class="input-add-on__append">
+                                                            <i class="fas fa-calendar"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-add-on">
+                                                        <input 
+                                                            placeholder="End date" 
+                                                            class="form-control js-datepicker" 
+                                                            type="date" 
+                                                            name="filters[available_to]" 
+                                                            id="filters_available_to"
+                                                            data-ai-field="availableToEndDate">
+                                                        <span class="input-add-on__append">
+                                                            <i class="fas fa-calendar"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_cats">Cats Allowed</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <select 
+                                                class="form-select" 
+                                                name="filters[cats]" 
+                                                id="filters_cats"
+                                                data-ai-field="propertyCategoryFilter">
+                                                <option value="">Any</option>
+                                                <option value="allowed">Yes</option>
+                                                <option value="not_allowed">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form__row ai-enhanced">
+                                    <label class="form__row__label" for="filters_dogs">Dogs Allowed</label>
+                                    <div class="form__row__body">
+                                        <div class="form__row__field-wrapper">
+                                            <select 
+                                                class="form-select" 
+                                                name="filters[dogs]" 
+                                                id="filters_dogs"
+                                                data-ai-field="pet_policy_dogs_allowed">
+                                                <option value="">Any</option>
+                                                <option value="allowed">Large</option>
+                                                <option value="small_only_allowed">Small</option>
+                                                <option value="not_allowed">None</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input 
+                                    class="js-sort-by-dest" 
+                                    autocomplete="off" 
+                                    type="hidden" 
+                                    name="filters[sort_by]" 
+                                    id="filters_sort_by" 
+                                    value="vacantOn"
+                                    data-ai-field="propertyListSortBy">
+
+                                <div class="form__row">
+                                    <div class="form__row__body">
+                                        <div class="btn-toolbar">
+                                            <button 
+                                                type="submit" 
+                                                class="btn btn-primary js-filter-submit w-100" 
+                                                id="search_button">
+                                                <i class="fas fa-search me-2"></i>Search Vacancies
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="js-filter-search-again-box u-text-center" style="min-height:20px;">
+                        <div class="text-center js-filter-search-box-loading" style="display: none;">
+                            <div class="spinner"></div>
+                        </div>
+                        <a class="js-filter-search-again filter-search-again" href="#">
+                            <i class="fas fa-filter me-2"></i>Click here to search
+                        </a>
+                    </div>
+                </div>
+
+                <div class="js-filter-waiting-message u-text-center u-hidden">
+                    <div class="saffron-spinner">
+                        <div class="saffron-spinner-a"></div>
+                        <div class="saffron-spinner-b"></div>
+                    </div>
+                </div>
+
+                <div class="row m-0 mb-2">
+                    <div class="u-small-hidden js-vacancy-contact-info col-6 p-0"></div>
+                    <div class="sort-options u-text-right col-12 col-sm-6 p-0">
+                        <strong>Sort By:</strong>
+                        <select name="sort_by" id="sort_by" class="js-sort-by-field js-no-autofocus">
+                            <option value="vacantOn">Days Vacant</option>
+                            <option value="rentlinxPostingVisible">Internet Posting Status</option>
+                            <option value="propertyAndUnitName">Name</option>
+                            <option value="marketRent">Market Rent</option>
+                            <option value="advertisedRent">Advertised Rent</option>
+                            <option value="websitePostingVisible">Website Posting Status</option>
+                            <option value="bedrooms">Bedrooms</option>
+                            <option value="availableOn">Available Date</option>
+                        </select>
+                    </div>
+                </div>
+
+                <p class="js-filter-no-results u-text-center u-hidden">
+                    <i class="fas fa-home fa-3x mb-3" style="color: #e5e7eb;"></i><br>
+                    <strong>No vacancies found.</strong><br>
+                    Try adjusting your search criteria.
+                </p>
+
+                <div class="js-filter-results js-listable-cards-container">
+                    <div class="js-listable-card js-premium-task-modal-data" id="u_3627">
+                        <div class="card card-body mb-3 js-listable-card-item">
+                            <div class="js-listable-alert-area"></div>
+                            <div class="unit-property-card">
+                                <div class="grid">
+                                    <div class="grid__large-3 u-text-center u-medium-hidden u-small-hidden">
+                                        <div class="unit-property-card__image-container">
+                                            <div class="unit-property-card__image_div" style="background-image: url('{{ url_for('static', filename='images/property-default.svg') }}')"></div>
+                                        </div>
+                                        <div class="unit-property-card__image-caption">
+                                            <i class="fas fa-camera me-1"></i>0 Photos
+                                        </div>
+                                    </div>
+
+                                    <div class="grid__large-5 grid__medium-7 grid__small-12">
+                                        <p class="unit-property-card__main-info">
+                                            <span class="js-card-title">
+                                                <a href="{{ url_for('property_unit', property_id=226, unit_id=3627) }}">
+                                                    Gene Field Apts / DW Gene Field LLC / Ryan Deutsch - 10-02
+                                                </a>
+                                            </span><br>
+                                            <span class="js-card-address">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                3515 Gene Field Rd. - 10-02, St. Joseph, MO 64506
+                                            </span>
+                                        </p>
+
+                                        <table class="unit-property-card__table">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <span class="unit-property-card__tiny-header">
+                                                            <i class="fas fa-bed me-1"></i>BD/BA
+                                                        </span><br>
+                                                        <span class="js-card-bd-ba">1/1</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="unit-property-card__tiny-header">
+                                                            <i class="fas fa-expand-arrows-alt me-1"></i>Sq.&nbsp;Ft.
+                                                        </span><br>
+                                                        <span class="js-card-sq-ft">731</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="unit-property-card__tiny-header">
+                                                            <i class="fas fa-dollar-sign me-1"></i>Rent
+                                                        </span><br>
+                                                        <span class="js-card-rent">$546</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="unit-property-card__tiny-header">
+                                                            <i class="fas fa-calendar-check me-1"></i>Available
+                                                        </span><br>
+                                                        <span class="js-card-available">Now</span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="unit-property-card__blurb-container grid__large-4 grid__medium-5 grid__small-12">
+                                        <div class="action-table">
+                                            <p class="js-vacancy-type action-table__vacancy-type action-table__vacant-for">
+                                                <i class="fas fa-clock me-1"></i>Vacant For: 1067 days
+                                            </p>
+                                            
+                                            <div class="js-options-dropdown options-dropdown action-table__dropdown">
+                                                <div class="js-options-dropdown-toggle options-dropdown__toggle mb-1" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-cog me-2"></i>Actions
+                                                    <i class="fas fa-chevron-down ms-auto"></i>
+                                                </div>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="{{ url_for('marketing_flyer', unit_id=3627) }}">
+                                                        <i class="fas fa-file-pdf me-2"></i>Download Marketing Flyer
+                                                    </a>
+                                                    <a class="dropdown-item" href="{{ url_for('post_manually', property_id=226, unit_id=3627) }}">
+                                                        <i class="fas fa-bullhorn me-2"></i>Post Vacancy Manually
+                                                    </a>
+                                                    <a class="dropdown-item" href="{{ url_for('exclude_unit', unit_id=3627) }}">
+                                                        <i class="fas fa-eye-slash me-2"></i>Remove from Vacancies List
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <table class="action-table__actions">
+                                                <tbody>
+                                                    <tr class="js-website-tasks js-task-row">
+                                                        <td><strong><i class="fas fa-globe me-1"></i>Website</strong></td>
+                                                        <td class="js-task-status">Not Posted</td>
+                                                        <td>
+                                                            <div class="js-post-task-container">
+                                                                <button class="js-post-task js-post-link btn w-100 btn-sm btn-primary">
+                                                                    <i class="fas fa-upload me-1"></i>Post
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="js-internet-tasks js-task-row">
+                                                        <td><strong><i class="fas fa-wifi me-1"></i>Internet</strong></td>
+                                                        <td class="js-task-status">Not Posted</td>
+                                                        <td>
+                                                            <div class="js-post-task-container">
+                                                                <button class="js-post-task js-post-link btn w-100 btn-sm btn-primary">
+                                                                    <i class="fas fa-upload me-1"></i>Post
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="js-premium-tasks js-task-row">
+                                                        <td><strong><i class="fas fa-star me-1"></i>Premium</strong></td>
+                                                        <td class="js-task-status">Off</td>
+                                                        <td>
+                                                            <div class="js-post-task-container">
+                                                                <button class="btn w-100 btn-sm btn-secondary">
+                                                                    <i class="fas fa-power-off me-1"></i>Activate
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay u-hidden" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="mt-3">Loading vacancies...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast toast-success" id="toastNotification">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="toastMessage">Action completed successfully!</span>
+            </div>
+            <button type="button" class="btn-close ms-auto" onclick="hideToast()"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter toggle functionality
+    const filterToggle = document.querySelector('.js-filter-search-again');
+    const filterBox = document.querySelector('.js-filter-search-box');
+    const filterAgainBox = document.querySelector('.js-filter-search-again-box');
+
+    filterToggle?.addEventListener('click', function(e) {
+        e.preventDefault();
+        filterBox.classList.remove('u-hidden');
+        filterAgainBox.classList.add('u-hidden');
+    });
+
+    // Form submission with loading state
+    const searchForm = document.getElementById('new_filters');
+    const searchButton = document.getElementById('search_button');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    searchForm?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        searchButton.innerHTML = '<div class="spinner me-2"></div>Searching...';
+        searchButton.disabled = true;
+        loadingOverlay.classList.remove('u-hidden');
+
+        // Simulate form processing
+        setTimeout(() => {
+            searchButton.innerHTML = '<i class="fas fa-search me-2"></i>Search Vacancies';
+            searchButton.disabled = false;
+            loadingOverlay.classList.add('u-hidden');
+            showToast('Search completed successfully!', 'success');
+        }, 2000);
+    });
+
+    // Sort functionality
+    

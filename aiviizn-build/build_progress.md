@@ -286,3 +286,90 @@
 **New pages discovered:** 1
 ---
 
+## 🔄 Building 24/103: https://aiviizn.uc.r.appspot.com/reports/tenant/security-deposits"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:42.325961
+**Copied from:** https://celticprop.appfolio.com/reports/tenant/security-deposits"
+**New pages discovered:** 2
+---
+
+## 🔄 Building 25/105: https://aiviizn.uc.r.appspot.com/reports/custom"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:56.695392
+**Copied from:** https://celticprop.appfolio.com/reports/custom"
+**New pages discovered:** 1
+---
+
+## 🔄 Building 26/106: https://aiviizn.uc.r.appspot.com/reports/scheduled"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:51.883276
+**Copied from:** https://celticprop.appfolio.com/reports/scheduled"
+**New pages discovered:** 3
+---
+
+## 🔄 Building 27/109: https://aiviizn.uc.r.appspot.com/reports/export"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:43.314085
+**Copied from:** https://celticprop.appfolio.com/reports/export"
+**New pages discovered:** 3
+---
+
+## 🔄 Building 28/112: https://aiviizn.uc.r.appspot.com/reports.html">
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:41.043220
+**Copied from:** https://celticprop.appfolio.com/reports.html">
+---
+
+## 🔄 Building 29/112: https://aiviizn.uc.r.appspot.com/reports"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:47.476315
+**Copied from:** https://celticprop.appfolio.com/reports"
+---
+
+## 🔄 Building 30/112: https://aiviizn.uc.r.appspot.com/reports">
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:45.098298
+**Copied from:** https://celticprop.appfolio.com/reports">
+**New pages discovered:** 1
+---
+
+## 🔄 Building 31/113: https://aiviizn.uc.r.appspot.com/reports*"
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:49.083191
+**Copied from:** https://celticprop.appfolio.com/reports*"
+**New pages discovered:** 3
+---
+
+## 🔄 Building 32/116: https://aiviizn.uc.r.appspot.com/reports/financial
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:45.871070
+**Copied from:** https://celticprop.appfolio.com/reports/financial
+---
+
+## 🔄 Building 33/116: https://aiviizn.uc.r.appspot.com/reports.py
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:40.211206
+**Copied from:** https://celticprop.appfolio.com/reports.py
+**New pages discovered:** 2
+---
+
+## 🔄 Building 34/118: https://aiviizn.uc.r.appspot.com/reports'
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:49.093614
+**Copied from:** https://celticprop.appfolio.com/reports'
+**New pages discovered:** 1
+---
+
+## 🔄 Building 35/119: https://aiviizn.uc.r.appspot.com/reports/financial/income-statement</parameter>
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:48.284194
+**Copied from:** https://celticprop.appfolio.com/reports/financial/income-statement</parameter>
+---
+
+## 🔄 Building 36/119: https://aiviizn.uc.r.appspot.com/reports</parameter>
+**Status:** ✅ SUCCESS
+**Duration:** 0:00:49.513161
+**Copied from:** https://celticprop.appfolio.com/reports</parameter>
+---
+
+## 🔄 Building 37/119: https://aiviizn.uc.r.appspot.com/reports/financial/income-statement'

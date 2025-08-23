@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}Surveys - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Surveys</h2>
+        <div class="header-tabs">
+            <ul class="nav nav-tabs" style="border-bottom: none;">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reports') }}" style="color: #0B5394;">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('scheduled_reports') }}" style="color: #0B5394;">Scheduled Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reporting_metrics') }}" style="color: #0B5394;">Metrics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('surveys') }}" style="background-color: #FFF; color: #0B5394; border: 1px solid #DEE2E6; border-bottom: 1px solid #FFF; margin-bottom: -1px;">Surveys</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-body">
+    <style>
+        .surveys-container {
+            background-color: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .survey-type-selector {
+            padding: 15px 20px;
+            background-color: #F8F9FA;
+            border-bottom: 1px solid #DEE2E6;
+        }
+        
+        .survey-type-selector label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            margin-right: 10px;
+        }
+        
+        .survey-type-select {
+            padding: 6px 12px;
+            border: 1px solid #DEE2E6;
+            border-radius: 3px;
+            font-size: 13px;
+            background-color: white;
+        }
+        
+        .survey-tabs {
+            background-color: white;
+            border-bottom: 1px solid #DEE2E6;
+            padding: 0 20px;
+        }
+        
+        .survey-tabs .nav-tabs {
+            border-bottom: none;
+            margin-bottom: -1px;
+        }
+        
+        .survey-tabs .nav-link {
+            color: #495057;
+            border: none;
+            padding: 12px 20px;
+            font-size: 13px;
+            background: transparent;
+        }
+        
+        .survey-tabs .nav-link:hover {
+            color: #0B5394;
+        }
+        
+        .survey-tabs .nav-link.active {
+            color: #0B5394;
+            border-bottom: 2px solid #0B5394;
+            font-weight: 500;
+        }
+        
+        .search-container {
+            background-color: #F8F9FA;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #DEE2E6;
+        }
+        
+        .search-text {
+            color: #6C757D;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .data-table {
+            background-color: white;
+        }
+        
+        .data-table table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background-color: #F8F9FA;
+            color: #212529;
+            font-weight: 600;
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 2px solid #DEE2E6;
+            font-size: 11px;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .data-table th.sortable {
+            cursor: pointer;
+        }
+        
+        .data-table th.sortable:after {
+            content: "↕";
+            position: absolute;
+            right: 10px;
+            color: #6C757D;
+            font-size: 10px;
+        }
+        
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #F0F0F0;
+            vertical-align: middle;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #F8F9FA;
+        }
+        
+        .survey-id {
+            color: #0B5394;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .survey-id:hover {
+            text-decoration: underline;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .status-converting {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-complete {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background-color: #CCE5FF;
+            color: #004085;
+        }
+        
+        .page-controls {
+            padding: 15px 20px;
+            background-color: #F8F9FA;
+            border-top: 1px solid #DEE2E6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-info {
+            color: #6C757D;
+            font-size: 13px;
+        }
+        
+        .page-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .page-links a {
+            color: #0B5394;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        
+        .page-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .action-bar {
+            padding: 15px 20px;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-new-survey {
+            background-color: #0B5394;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-new-survey:hover {
+            background-color: #073763;
+        }
+        
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            padding: 6px 12px;
+            background-color: white;
+            border: 1px solid #DEE2E6;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #495057;
+        }
+        
+        .view-btn:hover {
+            background-color: #F8F9FA;
+        }
+        
+        .view-btn.active {
+            background-color: #E3F2FD;
+            border-color: #0B5394;
+            color: #0B5394;
+        }
+    </style>
+
+    <div class="surveys-container">
+        <!-- Survey Type Selector -->
+        <div class="survey-type-selector">
+            <label for="surveyType">Type:</label>
+            <select id="surveyType" class="survey-type-select">
+                <option value="maintenance" selected>Maintenance</option>
+                <option value="resident">Resident Satisfaction</option>
+                <option value="movein">Move-In</option>
+                <option value="moveout">Move-Out</option>
+            </select>
+        </div>
+
+        <!-- Survey Title -->
+        <div class="action-bar">
+            <h3 style="font-size: 16px; margin: 0;">Maintenance Surveys</h3>
+            <button class="btn-new-survey">
+                <i class="fas fa-plus"></i> Create New Survey
+            </button>
+        </div>
+
+        <!-- Survey Tabs -->
+        <div class="survey-tabs">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-tab="responses">Responses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="analysis">Analysis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-tab="settings">Settings</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Search Container -->
+        <div class="search-container">
+            <p class="search-text">Click here to search</p>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Survey</th>
+                        <th>Work Order #</th>
+                        <th>Satisfaction</th>
+                        <th>Vendor</th>
+                        <th>Assigned Users</th>
+                        <th>Submitted By</th>
+                        <th>Property</th>
+                        <th>Submitted At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#105826-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Steve Moore</td>
+                        <td>Dacoda Hoggatt</td>
+                        <td>Walnut Ridge Apts</td>
+                        <td>4/30/2025 at 2:19 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#110073-1</a></td>
+                        <td>2</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ramon Solis</td>
+                        <td>Bradean Jordan</td>
+                        <td>(BARR) Rock Ridge Ranch Apartments</td>
+                        <td>4/29/2025 at 10:46 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#95627-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ivan Lopez</td>
+                        <td>Sean J. Harman</td>
+                        <td>Phog Apartments / Meiners Development Co. of Independence</td>
+                        <td>1/8/2024 at 10:46 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#94374-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ramon Solis</td>
+                        <td>LaTonya Guess</td>
+                        <td>(BARR) Rock Ridge Ranch Apartments</td>
+                        <td>12/19/2023 at 4:24 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93693-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ken Hughes</td>
+                        <td>Mavion Britton</td>
+                        <td>Brentwood Park / Brentwood Park Ventures LLC</td>
+                        <td>11/21/2023 at 4:25 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93266-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Steve Moore</td>
+                        <td>Florence Pollard</td>
+                        <td>Locust 24 Apartments</td>
+                        <td>11/11/2023 at 3:42 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93862-1</a></td>
+                        <td>5</td>
+                        <td>Celtic Property Management</td>
+                        <td>Vicente Campos</td>
+                        <td>Daryl Grovenburg</td>
+                        <td>Aspen Village Apartments</td>
+                        <td>11/9/2023 at 12:24 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93756-1</a></td>
+                        <td>2</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ivan Lopez</td>
+                        <td>Jessie Y. McGinnis-Edison</td>
+                        <td>(BARR) Rock Ridge Ranch Apartments</td>
+                        <td>11/8/2023 at 8:59 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93579-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Shannon Crabtree</td>
+                        <td>Hocine Akmoune</td>
+                        <td>Villas of Mur-Len / TSI Villas of Mur-Len</td>
+                        <td>11/7/2023 at 6:09 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93547-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Hugo Lopez</td>
+                        <td>Shannon Baraglia</td>
+                        <td>Virginia Apartments / Manheim</td>
+                        <td>11/7/2023 at 12:40 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93865-1</a></td>
+                        <td>5</td>
+                        <td>--</td>
+                        <td>Jaime Esparza</td>
+                        <td>Chandler Mattson</td>
+                        <td>Gene Field Apts / DW Gene Field LLC / Ryan Deutsch</td>
+                        <td>11/6/2023 at 5:08 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93745-1</a></td>
+                        <td>2</td>
+                        <td>Celtic Property Management</td>
+                        <td>Hugo Lopez</td>
+                        <td>Sidney C. Saunders</td>
+                        <td>Newport Apartments / Newport Apts LLC</td>
+                        <td>11/6/2023 at 3:58 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93517-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Hugo Lopez</td>
+                        <td>Theodore Zembrzuski</td>
+                        <td>Booth Apartments / Booth Apartments LLC</td>
+                        <td>11/6/2023 at 10:04 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93780-1</a></td>
+                        <td>1</td>
+                        <td>Celtic Property Management</td>
+                        <td>Ivan Lopez</td>
+                        <td>Dominic A. Varga</td>
+                        <td>Highland Apartments</td>
+                        <td>11/6/2023 at 9:43 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td><a href="#" class="survey-id">#93809-1</a></td>
+                        <td>1</td>
+                        <td>--</td>
+                        <td>--</td>
+                        <td>Andrea James</td>
+                        <td>Brentwood Park / Brentwood Park Ventures LLC</td>
+                        <td>11/6/2023 at 9:12 AM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Page Controls -->
+        <div class="page-controls">
+            <div class="page-info">
+                Displaying: 1-20 of 672
+            </div>
+            <div class="page-links">
+                <a href="#">Privacy</a>
+                <span style="color: #DEE2E6;">|</span>
+                <a href="#">Help & Training</a>
+                <span style="color: #DEE2E6;">|</span>
+                <a href="#">Make a Suggestion ›</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Survey type selector change handler
+    document.getElementById('surveyType').addEventListener('change', function() {
+        const selectedType = this.value;
+        const titleElement = document.querySelector('.action-bar h3');
+        
+        switch(selectedType) {
+            case 'maintenance':
+                titleElement.textContent = 'Maintenance Surveys';
+                break;
+            case 'resident':
+                titleElement.textContent = 'Resident Satisfaction Surveys';
+                break;
+            case 'movein':
+                titleElement.textContent = 'Move-In Surveys';
+                break;
+            case 'moveout':
+                titleElement.textContent = 'Move-Out Surveys';
+                break;
+        }
+        
+        // Here you would typically reload the data based on the selected type
+        console.log('Loading surveys for type:', selectedType);
+    });
+
+    // Tab navigation
+    document.querySelectorAll('.survey-tabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.survey-tabs .nav-link').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Handle tab content switching (you would implement actual content switching here)
+            const tabName = this.getAttribute('data-tab');
+            console.log('Switching to tab:', tabName);
+        });
+    });
+
+    // Search functionality
+    document.querySelector('.search-container').addEventListener('click', function() {
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search surveys...';
+        searchInput.style.width = '300px';
+        searchInput.style.padding = '8px';
+        searchInput.style.border = '1px solid #DEE2E6';
+        searchInput.style.borderRadius = '3px';
+        
+        this.innerHTML = '';
+        this.appendChild(searchInput);
+        searchInput.focus();
+        
+        searchInput.addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Sorting functionality
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            // Toggle sort direction
+            const currentText = this.textContent;
+            if (currentText.includes('↑')) {
+                this.textContent = currentText.replace('↑', '↓');
+            } else {
+                this.textContent = currentText.replace('↓', '↑');
+            }
+            
+            // Here you would implement actual sorting logic
+            console.log('Sorting by:', this.textContent);
+        });
+    });
+</script>
+{% endblock %}

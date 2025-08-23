@@ -1,0 +1,1 @@
+chmod +x setup_saas_database.sh

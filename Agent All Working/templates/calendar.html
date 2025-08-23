@@ -1,0 +1,488 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendar - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Calendar</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-primary" id="customizeBtn">
+                <i class="fas fa-cog"></i> Customize
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="content-body">
+    <!-- Calendar Controls -->
+    <div class="calendar-controls-section mb-3">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="todayBtn">Today</button>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <h5 class="mb-0" id="currentDate">Aug 3 - 9, 2025</h5>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" data-view="dayGridMonth">Month</button>
+                    <button type="button" class="btn btn-outline-secondary active" data-view="timeGridWeek">Week</button>
+                    <button type="button" class="btn btn-outline-secondary" data-view="timeGridDay">Day</button>
+                    <button type="button" class="btn btn-outline-secondary" data-view="listWeek">Agenda</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Type Filter -->
+    <div class="event-type-filter mb-3">
+        <span class="me-2">Event Types:</span>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary active" data-type="all">All</button>
+            <button type="button" class="btn btn-outline-secondary" data-type="showing">
+                <span class="event-color-dot" style="background: #D8BFD8;"></span> Showings
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-type="movein">
+                <span class="event-color-dot" style="background: #87CEEB;"></span> Move Ins
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-type="moveout">
+                <span class="event-color-dot" style="background: #FFB6C1;"></span> Move Outs
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-type="maintenance">
+                <span class="event-color-dot" style="background: #98FB98;"></span> Maintenance
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-type="inspection">
+                <span class="event-color-dot" style="background: #FFDAB9;"></span> Inspections
+            </button>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-wrapper bg-white rounded shadow-sm p-3">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Event Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalTitle">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="mb-3">
+                        <label class="form-label">Event Type</label>
+                        <select class="form-select" id="eventType">
+                            <option value="showing">Showing</option>
+                            <option value="movein">Move In</option>
+                            <option value="moveout">Move Out</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="inspection">Inspection</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="eventTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Property/Unit</label>
+                        <input type="text" class="form-control" id="eventLocation">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date/Time</label>
+                                <input type="datetime-local" class="form-control" id="eventStart">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">End Date/Time</label>
+                                <input type="datetime-local" class="form-control" id="eventEnd">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="eventNotes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="deleteEventBtn" style="display:none;">Delete</button>
+                <button type="button" class="btn btn-primary" id="saveEventBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .calendar-controls-section {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .event-type-filter {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .event-color-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    
+    .calendar-wrapper {
+        min-height: 600px;
+    }
+    
+    #calendar {
+        height: 700px;
+    }
+    
+    /* FullCalendar Custom Styles */
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: #dee2e6;
+    }
+    
+    .fc-col-header-cell-cushion {
+        padding: 8px 4px;
+        font-weight: 600;
+        color: #495057;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    
+    .fc-timegrid-slot-label-cushion {
+        font-size: 11px;
+        color: #6c757d;
+    }
+    
+    .fc-event {
+        border: none;
+        padding: 2px 4px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+    
+    .fc-event-main {
+        color: #333;
+    }
+    
+    /* Event type colors matching your screenshots */
+    .fc-event.showing-event {
+        background-color: #D8BFD8 !important;
+        border-left: 3px solid #9370DB !important;
+    }
+    
+    .fc-event.movein-event {
+        background-color: #87CEEB !important;
+        border-left: 3px solid #4682B4 !important;
+    }
+    
+    .fc-event.moveout-event {
+        background-color: #FFB6C1 !important;
+        border-left: 3px solid #FF69B4 !important;
+    }
+    
+    .fc-event.maintenance-event {
+        background-color: #98FB98 !important;
+        border-left: 3px solid #32CD32 !important;
+    }
+    
+    .fc-event.inspection-event {
+        background-color: #FFDAB9 !important;
+        border-left: 3px solid #FF8C00 !important;
+    }
+    
+    .fc-day-today {
+        background-color: rgba(11, 83, 148, 0.05) !important;
+    }
+    
+    .fc-timegrid-now-indicator-line {
+        border-color: #DC3545;
+        border-width: 2px;
+    }
+    
+    /* Calendar event times in your format */
+    .fc-event-time {
+        font-weight: 600;
+        display: block;
+    }
+    
+    .fc-event-title {
+        font-weight: normal;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* All day event styling */
+    .fc-daygrid-event {
+        white-space: normal;
+        align-items: normal;
+    }
+    
+    .fc-daygrid-event-dot {
+        display: none;
+    }
+    
+    /* Scrollbar styling */
+    .fc-scroller::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .fc-scroller::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    .fc-scroller::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    .fc-scroller::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css' rel='stylesheet' />
+
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calendar element
+    const calendarEl = document.getElementById('calendar');
+    
+    // Sample events matching your screenshots
+    const events = [
+        // Sunday Aug 3
+        { id: '1', title: '10:00 Showing: 15 E.', start: '2025-08-03T10:00:00', end: '2025-08-03T11:00:00', className: 'showing-event', extendedProps: { type: 'showing', unit: '15 E' } },
+        
+        // Monday Aug 4
+        { id: '2', title: 'Move In: Villas of Mur...', start: '2025-08-04T08:00:00', end: '2025-08-04T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '3', title: 'Move In: Valentine Ap...', start: '2025-08-04T08:00:00', end: '2025-08-04T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '4', title: 'Activity: Once Deposit...', start: '2025-08-04T08:00:00', end: '2025-08-04T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '5', title: 'Activity: Collect Applic...', start: '2025-08-04T08:00:00', end: '2025-08-04T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '6', title: 'Activity: Double check...', start: '2025-08-04T08:00:00', end: '2025-08-04T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '7', title: '09:30 Showing: 907 W...', start: '2025-08-04T09:30:00', end: '2025-08-04T10:15:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '8', title: '10:00 Showing: 3934...', start: '2025-08-04T10:00:00', end: '2025-08-04T10:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '9', title: '12:30 Showing: 4407', start: '2025-08-04T12:30:00', end: '2025-08-04T13:00:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '10', title: '03:00 Showing: 3934', start: '2025-08-04T15:00:00', end: '2025-08-04T15:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '11', title: '03:30 Showing: 3934', start: '2025-08-04T15:30:00', end: '2025-08-04T16:00:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '12', title: '04:15 Showing: 3043', start: '2025-08-04T16:15:00', end: '2025-08-04T17:00:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        
+        // Tuesday Aug 5
+        { id: '13', title: 'Move In: Westport Pla...', start: '2025-08-05T08:00:00', end: '2025-08-05T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '14', title: 'Move In: Homestead V...', start: '2025-08-05T08:00:00', end: '2025-08-05T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        
+        // Wednesday Aug 6
+        { id: '15', title: 'Activity: Collect Applic...', start: '2025-08-06T08:00:00', end: '2025-08-06T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '16', title: '11:00 Showing: 3745', start: '2025-08-06T11:00:00', end: '2025-08-06T11:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '17', title: '12:30 Showing: 10549', start: '2025-08-06T12:30:00', end: '2025-08-06T13:15:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '18', title: '01:00 Showing: 10549', start: '2025-08-06T13:00:00', end: '2025-08-06T13:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '19', title: '02:00 Showing: 15 E.', start: '2025-08-06T14:00:00', end: '2025-08-06T14:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '20', title: '03:00 Showing: 10415', start: '2025-08-06T15:00:00', end: '2025-08-06T15:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '21', title: '03:45 Showing: 2807 W...', start: '2025-08-06T15:45:00', end: '2025-08-06T16:30:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '22', title: '04:00 Showing: 15 E.', start: '2025-08-06T16:00:00', end: '2025-08-06T16:45:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        
+        // Thursday Aug 7
+        { id: '23', title: 'Activity: Collect Applic...', start: '2025-08-07T08:00:00', end: '2025-08-07T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '24', title: 'Activity: Double check...', start: '2025-08-07T08:00:00', end: '2025-08-07T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '25', title: '04:45 Showing: 4853', start: '2025-08-07T16:45:00', end: '2025-08-07T17:30:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        { id: '26', title: '04:45 Showing: 3902', start: '2025-08-07T16:45:00', end: '2025-08-07T17:30:00', className: 'showing-event', extendedProps: { type: 'showing' } },
+        
+        // Friday Aug 8
+        { id: '27', title: 'Move In: Grandview 17...', start: '2025-08-08T08:00:00', end: '2025-08-08T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '28', title: 'Move In: Aspen Villag...', start: '2025-08-08T08:00:00', end: '2025-08-08T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '29', title: 'Activity: Once Deposit...', start: '2025-08-08T08:00:00', end: '2025-08-08T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } },
+        { id: '30', title: 'Move In: (BARR) Rock...', start: '2025-08-08T08:00:00', end: '2025-08-08T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        { id: '31', title: 'Move In: Campbell Ap...', start: '2025-08-08T08:00:00', end: '2025-08-08T10:00:00', allDay: true, className: 'movein-event', extendedProps: { type: 'movein' } },
+        
+        // Saturday Aug 9
+        { id: '32', title: 'Activity: Once Deposit...', start: '2025-08-09T08:00:00', end: '2025-08-09T17:00:00', allDay: true, className: 'maintenance-event', extendedProps: { type: 'maintenance' } }
+    ];
+    
+    // Initialize calendar
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        initialDate: '2025-08-03',
+        headerToolbar: false,
+        height: 700,
+        nowIndicator: true,
+        slotMinTime: '06:00:00',
+        slotMaxTime: '20:00:00',
+        slotDuration: '01:00:00',
+        slotLabelInterval: '01:00:00',
+        expandRows: true,
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: true,
+        businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5],
+            startTime: '09:00',
+            endTime: '17:00'
+        },
+        events: events,
+        
+        eventClick: function(info) {
+            // Open modal with event details
+            document.getElementById('eventModalTitle').textContent = 'Edit Event';
+            document.getElementById('eventTitle').value = info.event.title;
+            document.getElementById('eventType').value = info.event.extendedProps.type || 'showing';
+            document.getElementById('eventLocation').value = info.event.extendedProps.unit || '';
+            document.getElementById('eventStart').value = formatDateTime(info.event.start);
+            document.getElementById('eventEnd').value = formatDateTime(info.event.end);
+            document.getElementById('deleteEventBtn').style.display = 'inline-block';
+            
+            const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+        },
+        
+        select: function(info) {
+            // Open modal for new event
+            document.getElementById('eventModalTitle').textContent = 'New Event';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventStart').value = formatDateTime(info.start);
+            document.getElementById('eventEnd').value = formatDateTime(info.end);
+            document.getElementById('deleteEventBtn').style.display = 'none';
+            
+            const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+            
+            calendar.unselect();
+        },
+        
+        eventDrop: function(info) {
+            console.log('Event moved:', info.event.title);
+        },
+        
+        eventResize: function(info) {
+            console.log('Event resized:', info.event.title);
+        },
+        
+        datesSet: function(dateInfo) {
+            updateDateDisplay(dateInfo);
+        }
+    });
+    
+    calendar.render();
+    
+    // Navigation controls
+    document.getElementById('prevBtn').addEventListener('click', function() {
+        calendar.prev();
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', function() {
+        calendar.next();
+    });
+    
+    document.getElementById('todayBtn').addEventListener('click', function() {
+        calendar.today();
+    });
+    
+    // View buttons
+    document.querySelectorAll('[data-view]').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelector('[data-view].active').classList.remove('active');
+            this.classList.add('active');
+            calendar.changeView(this.dataset.view);
+        });
+    });
+    
+    // Event type filters
+    document.querySelectorAll('[data-type]').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelector('[data-type].active').classList.remove('active');
+            this.classList.add('active');
+            
+            const type = this.dataset.type;
+            if (type === 'all') {
+                calendar.removeAllEventSources();
+                calendar.addEventSource(events);
+            } else {
+                const filtered = events.filter(e => e.extendedProps.type === type);
+                calendar.removeAllEventSources();
+                calendar.addEventSource(filtered);
+            }
+        });
+    });
+    
+    // Helper function to format datetime for input
+    function formatDateTime(date) {
+        if (!date) return '';
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+    // Update date display
+    function updateDateDisplay(dateInfo) {
+        const start = dateInfo.view.currentStart;
+        const end = new Date(dateInfo.view.currentEnd);
+        end.setDate(end.getDate() - 1);
+        
+        const options = { month: 'short', day: 'numeric' };
+        const startStr = start.toLocaleDateString('en-US', options);
+        const endStr = end.toLocaleDateString('en-US', options);
+        const year = end.getFullYear();
+        
+        if (dateInfo.view.type === 'dayGridMonth') {
+            document.getElementById('currentDate').textContent = 
+                start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        } else if (dateInfo.view.type === 'timeGridDay' || dateInfo.view.type === 'listDay') {
+            document.getElementById('currentDate').textContent = 
+                start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        } else {
+            document.getElementById('currentDate').textContent = `${startStr} - ${endStr}, ${year}`;
+        }
+    }
+    
+    // Save event handler
+    document.getElementById('saveEventBtn').addEventListener('click', function() {
+        // Add save logic here
+        const modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+        modal.hide();
+    });
+    
+    // Delete event handler
+    document.getElementById('deleteEventBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete this event?')) {
+            // Add delete logic here
+            const modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+            modal.hide();
+        }
+    });
+});
+</script>
+{% endblock %}

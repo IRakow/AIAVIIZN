@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Accounts - Property Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Bank Accounts</h2>
+</div>
+
+<div class="content-body">
+    <!-- Sub-navigation tabs for Accounting section -->
+    <ul class="nav nav-tabs mb-3" style="background: white; padding: 10px 10px 0; border-radius: 4px 4px 0 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('receivables') }}">Receivables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('payables') }}">Payables</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ url_for('bank_accounts') }}">Bank Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('journal_entries') }}">Journal Entries</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bank_transfers') }}">Bank Transfers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('gl_accounts') }}">GL Accounts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('diagnostics') }}">Diagnostics</a>
+        </li>
+    </ul>
+
+    <div class="bank-accounts-container">
+        <!-- Bank Changes In Progress Alert -->
+        <div class="bank-changes-alert">
+            <h3>Bank Changes In Progress</h3>
+            <div class="bank-changes-content">
+                <div class="bank-change-item">
+                    <strong>Eaton Apartments</strong><br>
+                    <span class="text-muted">operating</span>
+                </div>
+                <div class="arrow">→</div>
+                <div class="bank-change-item">
+                    <strong>Eaton Escrow</strong><br>
+                    <span class="text-muted">Properties<br>1 Property</span>
+                </div>
+                <div class="bank-change-action">
+                    <button class="btn btn-primary btn-sm">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <input type="text" class="filter-input" placeholder="Account Name">
+            <input type="text" class="filter-input" placeholder="Bank">
+            <button class="btn btn-outline-primary btn-sm">More Filters...</button>
+            <button class="btn btn-outline-secondary btn-sm">Clear Filters</button>
+        </div>
+
+        <!-- Bank Accounts Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Account Name <span class="sort-arrow">↑</span></th>
+                        <th>Bank <span class="sort-arrow">↓</span></th>
+                        <th>Account Number <span class="sort-arrow">↓</span></th>
+                        <th>Last Reconciliation <span class="sort-arrow">↓</span></th>
+                        <th>Payments Enabled <span class="sort-arrow">↓</span></th>
+                        <th>Auto-Reconciliation <span class="sort-arrow">↓</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in bank_accounts %}
+                    <tr>
+                        <td>{{ account.name }}</td>
+                        <td>{{ account.bank }}</td>
+                        <td>{{ account.account_number }}</td>
+                        <td>{{ account.last_reconciliation }}</td>
+                        <td>
+                            <span class="badge {% if account.payments_enabled == 'ENABLED' %}badge-success{% else %}badge-secondary{% endif %}">
+                                {{ account.payments_enabled }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if account.auto_reconciliation == 'PLAID' %}badge-info{% else %}badge-secondary{% endif %}">
+                                {{ account.auto_reconciliation }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks Panel -->
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h5>Tasks</h5>
+        <button class="btn btn-sm">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-item">
+            <a href="#">New Bank Account</a>
+        </div>
+        <div class="task-item">
+            <a href="#">New Bank Deposit</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Bank Feed</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Reconcile</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Close Accounting Period</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Enable Bank Accounts for Online Payments</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Link With Bank</a>
+        </div>
+        
+        <div class="tasks-subheader">Reports</div>
+        <div class="task-item">
+            <a href="#">Check Register</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Deposit Register</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Trust Account Balance</a>
+        </div>
+        <div class="task-item">
+            <a href="#">Bank Account Association</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.bank-changes-alert {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.bank-changes-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.bank-change-item {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.arrow {
+    font-size: 24px;
+    color: #1976d2;
+}
+
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-input {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 200px;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+.tasks-panel {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tasks-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.tasks-content {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.task-item {
+    padding: 5px 0;
+}
+
+.task-item a {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.task-item a:hover {
+    text-decoration: underline;
+}
+
+.tasks-subheader {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,2361 @@
+{% extends "base.html" %}
+
+{% block title %}Inspections - AIVIIZN{% endblock %}
+
+{% block styles %}
+<style>
+    /* Inspections Specific Styles */
+    
+    /* Page Header */
+    .page-header {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 400;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .customize-link {
+        color: #007bff;
+        text-decoration: none;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .customize-link:hover {
+        text-decoration: underline;
+    }
+
+    .btn-schedule-inspection {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-schedule-inspection:hover {
+        background: #0056b3;
+    }
+
+    .btn-actions {
+        background: white;
+        border: 1px solid #dee2e6;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        position: relative;
+    }
+
+    /* Dashboard Metrics */
+    .dashboard-metrics {
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .metric-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 15px;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.2s;
+        cursor: pointer;
+    }
+
+    .metric-card:hover {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .metric-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .metric-value {
+        font-size: 32px;
+        font-weight: 300;
+        color: #333;
+    }
+
+    /* Calendar View Toggle */
+    .view-toggle {
+        padding: 10px 0;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .toggle-btn {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+
+    .toggle-btn:first-child {
+        border-radius: 4px 0 0 4px;
+    }
+
+    .toggle-btn:last-child {
+        border-radius: 0 4px 4px 0;
+        border-left: none;
+    }
+
+    .toggle-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .filter-input, .filter-select {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-filter {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #495057;
+    }
+
+    .btn-filter:hover {
+        background: #f8f9fa;
+    }
+
+    /* Calendar View */
+    .calendar-view {
+        display: none;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .calendar-view.active {
+        display: block;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .calendar-nav button {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background: #dee2e6;
+        border: 1px solid #dee2e6;
+    }
+
+    .calendar-day {
+        background: white;
+        min-height: 100px;
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .calendar-day-number {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .calendar-inspection {
+        background: #e3f2fd;
+        border-radius: 3px;
+        padding: 2px 4px;
+        margin-bottom: 2px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    /* List Controls */
+    .list-controls {
+        padding: 15px 20px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+
+    .select-all {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-bulk {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        position: relative;
+    }
+
+    .btn-bulk:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .sort-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sort-select {
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .btn-sort-direction {
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Inspection Cards */
+    .inspections-list {
+        padding: 0;
+    }
+
+    .inspection-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        transition: background 0.2s;
+        position: relative;
+    }
+
+    .inspection-card:hover {
+        background: #f8f9fa;
+    }
+
+    .inspection-card.overdue {
+        border-left: 4px solid #dc3545;
+    }
+
+    .inspection-card.due-today {
+        border-left: 4px solid #ffc107;
+    }
+
+    .inspection-card.completed {
+        border-left: 4px solid #28a745;
+    }
+
+    .inspection-main {
+        padding: 15px 20px;
+        display: grid;
+        grid-template-columns: 40px 1fr 1fr 1fr auto;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .inspection-checkbox {
+        padding-top: 5px;
+    }
+
+    .inspection-header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .inspection-id {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .inspection-id:hover {
+        text-decoration: underline;
+    }
+
+    .inspection-badges {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-scheduled {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .badge-in-progress {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-cancelled {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .badge-move-in {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .badge-move-out {
+        background: #f0f0f0;
+        color: #6c757d;
+    }
+
+    .badge-routine {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-annual {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .inspection-property {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .property-name {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .unit-number {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .tenant-names {
+        color: #495057;
+        font-size: 13px;
+    }
+
+    .inspection-schedule {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .schedule-label {
+        font-size: 11px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .inspection-date {
+        color: #495057;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .inspector-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .user-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #495057;
+    }
+
+    .inspection-metadata {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .btn-actions-small {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .inspection-details {
+        padding: 0 20px 15px 60px;
+        color: #495057;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+    }
+
+    .dropdown-divider {
+        height: 0;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-content.modal-large {
+        max-width: 900px;
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .required {
+        color: #dc3545;
+    }
+
+    /* Inspection Checklist */
+    .checklist-section {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    .checklist-header {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .checklist-content {
+        padding: 15px;
+        display: none;
+    }
+
+    .checklist-content.show {
+        display: block;
+    }
+
+    .checklist-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+    .checklist-item:hover {
+        background: #f8f9fa;
+    }
+
+    .checklist-item input[type="checkbox"] {
+        margin-top: 2px;
+    }
+
+    .checklist-item-content {
+        flex: 1;
+    }
+
+    .checklist-item-title {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .checklist-item-description {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .checklist-item-notes {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .checklist-item.failed {
+        background: #fff5f5;
+        border-left: 4px solid #dc3545;
+    }
+
+    .checklist-item.passed {
+        background: #f0f9ff;
+        border-left: 4px solid #28a745;
+    }
+
+    /* Photo Upload */
+    .photo-upload-mini {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .photo-upload-btn {
+        padding: 4px 8px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .photo-preview-mini {
+        display: flex;
+        gap: 5px;
+    }
+
+    .photo-mini {
+        width: 40px;
+        height: 40px;
+        border-radius: 3px;
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+    }
+
+    .photo-mini img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #f8f9fa;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #bd2130;
+    }
+
+    /* Pagination */
+    .pagination {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .page-btn:hover {
+        background: #f8f9fa;
+    }
+
+    .page-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.success {
+        border-left: 4px solid #28a745;
+    }
+
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+
+    .toast.info {
+        border-left: 4px solid #17a2b8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Inspections</h1>
+        <div class="page-actions">
+            <a href="#" class="customize-link">Customize</a>
+            <button class="btn-schedule-inspection" id="scheduleInspectionBtn">
+                <span>+</span>
+                Schedule Inspection
+            </button>
+            <div class="dropdown">
+                <button class="btn-actions" id="actionsDropdown">
+                    Actions
+                    <span>▼</span>
+                </button>
+                <div class="dropdown-menu" id="actionsMenu">
+                    <div class="dropdown-item" onclick="exportInspections('csv')">Export to CSV</div>
+                    <div class="dropdown-item" onclick="exportInspections('pdf')">Export to PDF</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="printInspections()">Print Inspections</div>
+                    <div class="dropdown-item" onclick="emailReport()">Email Report</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="importInspections()">Import Inspections</div>
+                    <div class="dropdown-item" onclick="manageTemplates()">Manage Templates</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Metrics -->
+    <div class="dashboard-metrics">
+        <div class="metric-card" onclick="filterByMetric('scheduled-this-week')">
+            <div class="metric-label">Scheduled This Week</div>
+            <div class="metric-value">24</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('overdue')">
+            <div class="metric-label">Overdue</div>
+            <div class="metric-value">3</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('completed-this-month')">
+            <div class="metric-label">Completed This Month</div>
+            <div class="metric-value">87</div>
+        </div>
+        <div class="metric-card" onclick="filterByMetric('pending-review')">
+            <div class="metric-label">Pending Review</div>
+            <div class="metric-value">12</div>
+        </div>
+    </div>
+
+    <!-- View Toggle -->
+    <div class="view-toggle">
+        <button class="toggle-btn active" onclick="switchView('list')">List View</button>
+        <button class="toggle-btn" onclick="switchView('calendar')">Calendar View</button>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="calendar-view" id="calendarView">
+        <div class="calendar-header">
+            <div class="calendar-nav">
+                <button onclick="changeCalendarMonth(-1)">‹</button>
+                <h3 id="calendarMonth">August 2025</h3>
+                <button onclick="changeCalendarMonth(1)">›</button>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('scheduleInspectionModal')">Schedule Inspection</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Calendar will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section" id="filterSection">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Properties or Units</label>
+                <input type="text" class="filter-input" id="propertyFilter" 
+                       placeholder="Search by Unit, Property or Property Group"
+                       onkeyup="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Inspection Type</label>
+                <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+                    <option value="">All Types</option>
+                    <option value="move-in">Move-in</option>
+                    <option value="move-out">Move-out</option>
+                    <option value="routine">Routine</option>
+                    <option value="annual">Annual</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Inspector</label>
+                <input type="text" class="filter-input" id="inspectorFilter" 
+                       placeholder="Search inspectors..."
+                       onkeyup="applyFilters()">
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
+            <div style="margin-left: auto;">
+                <label class="filter-label" style="display: inline-block; margin-right: 8px;">Quick Filters</label>
+                <select class="filter-select" style="width: 200px;" onchange="applyQuickFilter(this.value)">
+                    <option value="">Select...</option>
+                    <option value="due-today">Due Today</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="this-week">This Week</option>
+                    <option value="failed-items">Failed Items</option>
+                    <option value="needs-follow-up">Needs Follow-up</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Controls -->
+    <div class="list-controls" id="listControls">
+        <div class="bulk-actions">
+            <div class="select-all">
+                <input type="checkbox" id="selectAll">
+                <label for="selectAll">Select all</label>
+            </div>
+            <div class="dropdown">
+                <button class="btn-bulk" id="bulkActionsBtn" disabled>Bulk Actions</button>
+                <div class="dropdown-menu" id="bulkActionsMenu">
+                    <div class="dropdown-item" onclick="bulkReschedule()">Reschedule Inspections</div>
+                    <div class="dropdown-item" onclick="bulkAssignInspector()">Assign Inspector</div>
+                    <div class="dropdown-item" onclick="bulkMarkComplete()">Mark Complete</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkCreateWorkOrders()">Create Work Orders</div>
+                    <div class="dropdown-item" onclick="bulkNotifyTenants()">Notify Tenants</div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="bulkExport()">Export Selected</div>
+                    <div class="dropdown-item" onclick="bulkDelete()" style="color: #dc3545;">Cancel Selected</div>
+                </div>
+            </div>
+            <span style="color: #666; font-size: 13px;" id="selectedCount">0 Selected</span>
+        </div>
+        <div class="sort-controls">
+            <span style="color: #666; font-size: 13px;">Sort by</span>
+            <select class="sort-select" id="sortBy" onchange="sortInspections()">
+                <option value="date">Inspection Date</option>
+                <option value="property">Property</option>
+                <option value="type">Type</option>
+                <option value="status">Status</option>
+                <option value="inspector">Inspector</option>
+            </select>
+            <button class="btn-sort-direction" id="sortDirection" onclick="toggleSortDirection()">
+                <span>▼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Inspections List -->
+    <div class="inspections-list" id="inspectionsList">
+        <!-- Inspections will be dynamically inserted here -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="paginationSection">
+        <button class="page-btn" onclick="changePage('prev')" id="prevPage" disabled>←</button>
+        <span id="pageNumbers"></span>
+        <button class="page-btn" onclick="changePage('next')" id="nextPage">→</button>
+    </div>
+</div>
+
+<!-- Schedule Inspection Modal -->
+<div id="scheduleInspectionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Schedule Inspection</h2>
+            <button class="modal-close" onclick="closeModal('scheduleInspectionModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="scheduleInspectionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Property <span class="required">*</span></label>
+                        <select class="form-control" required>
+                            <option value="">Select Property</option>
+                            <option>West Plaza</option>
+                            <option>Longmeadow Apartments</option>
+                            <option>Norclay Apartments</option>
+                            <option>Brentwood Park</option>
+                            <option>Randall Court Ventures</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit</label>
+                        <input type="text" class="form-control" placeholder="Unit number (optional for property-wide)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Inspection Type <span class="required">*</span></label>
+                        <select class="form-control" required id="inspectionTypeSelect" onchange="updateInspectionTemplate()">
+                            <option value="">Select Type</option>
+                            <option value="move-in">Move-in Inspection</option>
+                            <option value="move-out">Move-out Inspection</option>
+                            <option value="routine">Routine Inspection</option>
+                            <option value="annual">Annual Inspection</option>
+                            <option value="maintenance">Maintenance Inspection</option>
+                            <option value="safety">Safety Inspection</option>
+                            <option value="custom">Custom Inspection</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Inspection Template</label>
+                        <select class="form-control" id="templateSelect">
+                            <option value="">Use Default Template</option>
+                            <!-- Templates will be populated based on inspection type -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Scheduled Date <span class="required">*</span></label>
+                        <input type="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scheduled Time</label>
+                        <input type="time" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Inspector <span class="required">*</span></label>
+                    <select class="form-control" required>
+                        <option value="">Assign Inspector</option>
+                        <option>John Smith - Property Manager</option>
+                        <option>Sarah Johnson - Maintenance Lead</option>
+                        <option>Mike Davis - Inspector</option>
+                        <option>ABC Inspection Services</option>
+                        <option>Quality Property Inspections</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Purpose/Notes</label>
+                    <textarea class="form-control" placeholder="Reason for inspection, special focus areas, etc..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Access Instructions</label>
+                    <textarea class="form-control" placeholder="How to access the property/unit, contact information, etc..."></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="notifyTenantInspection">
+                    <label for="notifyTenantInspection">Notify tenant 24 hours before inspection</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="requirePermissionInspection">
+                    <label for="requirePermissionInspection">Require tenant permission to enter</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="photoDocumentation" checked>
+                    <label for="photoDocumentation">Include photo documentation</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="createWorkOrders">
+                    <label for="createWorkOrders">Automatically create work orders for failed items</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('scheduleInspectionModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveInspection()">Schedule Inspection</button>
+        </div>
+    </div>
+</div>
+
+<!-- Inspection Details Modal -->
+<div id="inspectionDetailsModal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h2 class="modal-title" id="inspectionModalTitle">Inspection Details</h2>
+            <button class="modal-close" onclick="closeModal('inspectionDetailsModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #333;">Inspection Checklist</h3>
+                    
+                    <!-- Kitchen Section -->
+                    <div class="checklist-section">
+                        <div class="checklist-header" onclick="toggleChecklistSection('kitchen')">
+                            Kitchen <span>▼</span>
+                        </div>
+                        <div class="checklist-content" id="kitchen">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="kitchen-appliances">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Appliances Working</div>
+                                    <div class="checklist-item-description">Check refrigerator, stove, dishwasher, disposal</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="kitchen-plumbing">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Plumbing & Fixtures</div>
+                                    <div class="checklist-item-description">Faucets, sink, water pressure, leaks</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="kitchen-condition">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Overall Condition</div>
+                                    <div class="checklist-item-description">Walls, flooring, lighting, cleanliness</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bathroom Section -->
+                    <div class="checklist-section">
+                        <div class="checklist-header" onclick="toggleChecklistSection('bathroom')">
+                            Bathroom <span>▼</span>
+                        </div>
+                        <div class="checklist-content" id="bathroom">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="bathroom-plumbing">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Plumbing Systems</div>
+                                    <div class="checklist-item-description">Toilet, shower, tub, faucets, water pressure</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="bathroom-ventilation">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Ventilation</div>
+                                    <div class="checklist-item-description">Exhaust fan working, no moisture issues</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Living Areas Section -->
+                    <div class="checklist-section">
+                        <div class="checklist-header" onclick="toggleChecklistSection('living')">
+                            Living Areas <span>▼</span>
+                        </div>
+                        <div class="checklist-content" id="living">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="living-flooring">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Flooring Condition</div>
+                                    <div class="checklist-item-description">Carpet, hardwood, tile condition and cleanliness</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="living-electrical">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Electrical Systems</div>
+                                    <div class="checklist-item-description">Outlets, switches, lighting fixtures</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HVAC Section -->
+                    <div class="checklist-section">
+                        <div class="checklist-header" onclick="toggleChecklistSection('hvac')">
+                            HVAC System <span>▼</span>
+                        </div>
+                        <div class="checklist-content" id="hvac">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hvac-operation">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">System Operation</div>
+                                    <div class="checklist-item-description">Heating and cooling working properly</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hvac-filters">
+                                <div class="checklist-item-content">
+                                    <div class="checklist-item-title">Air Filters</div>
+                                    <div class="checklist-item-description">Filters clean and properly installed</div>
+                                    <input type="text" class="checklist-item-notes" placeholder="Notes...">
+                                    <div class="photo-upload-mini">
+                                        <button type="button" class="photo-upload-btn">📷 Add Photo</button>
+                                        <div class="photo-preview-mini"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #333;">Inspection Info</h3>
+                    <div style="border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" id="inspectionStatus">
+                                <option>Scheduled</option>
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Inspector</label>
+                            <input type="text" class="form-control" value="John Smith" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Inspection Date</label>
+                            <input type="date" class="form-control" value="2025-08-15">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Overall Rating</label>
+                            <select class="form-control">
+                                <option>Excellent</option>
+                                <option>Good</option>
+                                <option>Fair</option>
+                                <option>Poor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 15px; color: #333;">Summary</h3>
+                    <div style="border: 1px solid #dee2e6; border-radius: 4px; padding: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">Items Passed</label>
+                            <div style="font-size: 24px; color: #28a745; font-weight: 500;">8</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Items Failed</label>
+                            <div style="font-size: 24px; color: #dc3545; font-weight: 500;">2</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Work Orders Created</label>
+                            <div style="font-size: 24px; color: #007bff; font-weight: 500;">2</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Inspector Notes</label>
+                            <textarea class="form-control" rows="4" placeholder="Overall inspection notes and recommendations..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" style="margin-right: auto;" onclick="cancelInspection()">Cancel Inspection</button>
+            <button class="btn btn-secondary" onclick="closeModal('inspectionDetailsModal')">Close</button>
+            <button class="btn btn-success" onclick="completeInspection()">Complete Inspection</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Inspections data will be loaded from Supabase
+    let inspections = [];
+    let totalInspections = 0;
+    
+    // Sample fallback data
+    let sampleInspections = [
+        {
+            id: 'INS-001',
+            type: 'move-out',
+            status: 'scheduled',
+            property: 'West Plaza',
+            unit: '1705',
+            tenant: 'Yarn Social, LLC',
+            inspector: 'John Smith',
+            scheduledDate: '2025-08-15',
+            scheduledTime: '10:00 AM',
+            purpose: 'Move-out inspection for security deposit assessment',
+            priority: 'high'
+        },
+        {
+            id: 'INS-002',
+            type: 'routine',
+            status: 'completed',
+            property: 'Longmeadow Apartments',
+            unit: '19A',
+            tenant: 'Larry Davis',
+            inspector: 'Sarah Johnson',
+            scheduledDate: '2025-08-12',
+            scheduledTime: '2:00 PM',
+            purpose: 'Quarterly routine inspection',
+            priority: 'medium'
+        },
+        {
+            id: 'INS-003',
+            type: 'move-in',
+            status: 'in-progress',
+            property: 'Norclay Apartments',
+            unit: '4655-1',
+            tenant: 'Amy L. Lutgen',
+            inspector: 'Mike Davis',
+            scheduledDate: '2025-08-14',
+            scheduledTime: '11:30 AM',
+            purpose: 'Pre-move-in inspection and documentation',
+            priority: 'high'
+        },
+        {
+            id: 'INS-004',
+            type: 'annual',
+            status: 'scheduled',
+            property: 'Brentwood Park',
+            unit: 'Common Areas',
+            tenant: 'N/A',
+            inspector: 'ABC Inspection Services',
+            scheduledDate: '2025-08-20',
+            scheduledTime: '9:00 AM',
+            purpose: 'Annual safety and compliance inspection',
+            priority: 'medium'
+        },
+        {
+            id: 'INS-005',
+            type: 'maintenance',
+            status: 'scheduled',
+            property: 'Randall Court Ventures',
+            unit: '6724-9',
+            tenant: 'Kayeson O. Slayden',
+            inspector: 'John Smith',
+            scheduledDate: '2025-08-16',
+            scheduledTime: '3:00 PM',
+            purpose: 'Post-repair inspection for plumbing work',
+            priority: 'low'
+        }
+    ];
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let sortOrder = 'desc';
+    let currentSort = 'date';
+    let currentView = 'list';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadInspections();
+        await loadProperties();
+        await loadInspectors();
+        initializeEventListeners();
+        generateCalendar();
+    });
+    
+    // Load inspections from Supabase
+    async function loadInspections() {
+        try {
+            const filters = getCurrentFilters();
+            const { data, error } = await SupabaseUtils.getInspections(currentPage, itemsPerPage, filters);
+            
+            if (error) {
+                console.error('Error loading inspections:', error);
+                // Fall back to sample data
+                inspections = sampleInspections;
+                totalInspections = sampleInspections.length;
+            } else {
+                // Transform Supabase data to match expected format
+                inspections = data.map(inspection => ({
+                    id: inspection.inspection_number,
+                    type: inspection.inspection_type,
+                    status: inspection.status,
+                    property: inspection.property_name,
+                    unit: inspection.unit_number || '',
+                    tenant: inspection.tenant_name || 'N/A',
+                    inspector: inspection.inspector_name,
+                    scheduledDate: inspection.scheduled_date,
+                    scheduledTime: inspection.scheduled_time || '',
+                    purpose: inspection.purpose || '',
+                    priority: 'medium', // Default priority
+                    dbId: inspection.id // Keep database ID for updates
+                }));
+                totalInspections = inspections.length;
+            }
+            
+            renderInspections();
+            renderPagination();
+            
+        } catch (error) {
+            console.error('Error loading inspections:', error);
+            // Fall back to sample data
+            inspections = sampleInspections;
+            totalInspections = sampleInspections.length;
+            renderInspections();
+            renderPagination();
+        }
+    }
+    
+    // Load properties for inspection creation
+    async function loadProperties() {
+        try {
+            const { data, error } = await SupabaseUtils.getProperties();
+            if (!error && data) {
+                const propertySelect = document.querySelector('#scheduleInspectionModal select');
+                if (propertySelect) {
+                    // Clear existing options except the first
+                    while (propertySelect.children.length > 1) {
+                        propertySelect.removeChild(propertySelect.lastChild);
+                    }
+                    
+                    // Add properties
+                    data.forEach(property => {
+                        const option = document.createElement('option');
+                        option.value = property.name;
+                        option.textContent = property.name;
+                        propertySelect.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading properties:', error);
+        }
+    }
+    
+    // Load inspectors for inspection assignment
+    async function loadInspectors() {
+        try {
+            const { data, error } = await SupabaseUtils.getVendors();
+            if (!error && data) {
+                const inspectorSelects = document.querySelectorAll('#scheduleInspectionModal select');
+                const inspectorSelect = inspectorSelects[4]; // Inspector dropdown
+                if (inspectorSelect) {
+                    // Clear existing options except the first
+                    while (inspectorSelect.children.length > 1) {
+                        inspectorSelect.removeChild(inspectorSelect.lastChild);
+                    }
+                    
+                    // Add inspectors
+                    data.forEach(vendor => {
+                        const option = document.createElement('option');
+                        option.value = vendor.name;
+                        option.textContent = `${vendor.name}${vendor.type === 'staff' ? ' - ' + vendor.specialty : ''}`;
+                        inspectorSelect.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error loading inspectors:', error);
+        }
+    }
+    
+    // Get current filter values
+    function getCurrentFilters() {
+        return {
+            property: document.getElementById('propertyFilter')?.value || '',
+            type: document.getElementById('typeFilter')?.value || '',
+            status: document.getElementById('statusFilter')?.value || '',
+            inspector: document.getElementById('inspectorFilter')?.value || ''
+        };
+    }
+
+    // Switch between list and calendar view
+    function switchView(view) {
+        currentView = view;
+        
+        // Update toggle buttons
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Show/hide appropriate sections
+        if (view === 'calendar') {
+            document.getElementById('calendarView').classList.add('active');
+            document.getElementById('filterSection').style.display = 'none';
+            document.getElementById('listControls').style.display = 'none';
+            document.getElementById('inspectionsList').style.display = 'none';
+            document.getElementById('paginationSection').style.display = 'none';
+        } else {
+            document.getElementById('calendarView').classList.remove('active');
+            document.getElementById('filterSection').style.display = 'block';
+            document.getElementById('listControls').style.display = 'flex';
+            document.getElementById('inspectionsList').style.display = 'block';
+            document.getElementById('paginationSection').style.display = 'flex';
+        }
+    }
+
+    // Generate calendar
+    function generateCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        // Clear existing calendar
+        grid.innerHTML = '';
+        
+        // Add day headers
+        const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        dayHeaders.forEach(day => {
+            const header = document.createElement('div');
+            header.className = 'calendar-day';
+            header.style.fontWeight = 'bold';
+            header.style.textAlign = 'center';
+            header.style.backgroundColor = '#f8f9fa';
+            header.textContent = day;
+            grid.appendChild(header);
+        });
+        
+        // Calculate first day of month and number of days
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day';
+            grid.appendChild(emptyDay);
+        }
+        
+        // Add calendar days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'calendar-day-number';
+            dayNumber.textContent = day;
+            dayElement.appendChild(dayNumber);
+            
+            // Add inspections for this day
+            const dayInspections = inspections.filter(inspection => {
+                const inspectionDate = new Date(inspection.scheduledDate);
+                return inspectionDate.getDate() === day && 
+                       inspectionDate.getMonth() === currentMonth &&
+                       inspectionDate.getFullYear() === currentYear;
+            });
+            
+            dayInspections.forEach(inspection => {
+                const inspectionElement = document.createElement('div');
+                inspectionElement.className = 'calendar-inspection';
+                inspectionElement.textContent = `${inspection.type} - ${inspection.unit}`;
+                inspectionElement.onclick = () => openInspectionDetails(inspection.id);
+                dayElement.appendChild(inspectionElement);
+            });
+            
+            grid.appendChild(dayElement);
+        }
+    }
+
+    // Update inspection template options
+    function updateInspectionTemplate() {
+        const inspectionType = document.getElementById('inspectionTypeSelect').value;
+        const templateSelect = document.getElementById('templateSelect');
+        
+        // Clear existing options
+        templateSelect.innerHTML = '<option value="">Use Default Template</option>';
+        
+        // Add type-specific templates
+        const templates = {
+            'move-in': [
+                'Standard Move-in Checklist',
+                'Detailed Move-in with Photos',
+                'Quick Move-in Assessment'
+            ],
+            'move-out': [
+                'Standard Move-out Inspection',
+                'Security Deposit Assessment',
+                'Detailed Damage Assessment'
+            ],
+            'routine': [
+                'Quarterly Property Check',
+                'Annual Maintenance Review',
+                'Basic Condition Assessment'
+            ],
+            'annual': [
+                'Comprehensive Annual Inspection',
+                'Safety & Compliance Check',
+                'Insurance Required Inspection'
+            ],
+            'maintenance': [
+                'Post-Repair Verification',
+                'Pre-Work Assessment',
+                'Quality Control Check'
+            ],
+            'safety': [
+                'Fire Safety Inspection',
+                'Security System Check',
+                'Emergency Equipment Test'
+            ]
+        };
+        
+        if (templates[inspectionType]) {
+            templates[inspectionType].forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.toLowerCase().replace(/\s+/g, '-');
+                option.textContent = template;
+                templateSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Render inspections list
+    function renderInspections() {
+        const list = document.getElementById('inspectionsList');
+        list.innerHTML = '';
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageInspections = inspections.slice(start, end);
+
+        pageInspections.forEach(inspection => {
+            const card = createInspectionCard(inspection);
+            list.appendChild(card);
+        });
+
+        // Re-initialize details toggles
+        document.querySelectorAll('.inspection-details').forEach(detail => {
+            detail.style.display = 'none';
+        });
+    }
+
+    // Create inspection card HTML
+    function createInspectionCard(inspection) {
+        const card = document.createElement('div');
+        card.className = `inspection-card ${getInspectionCardClass(inspection)}`;
+        card.dataset.id = inspection.id;
+        
+        // Determine badges
+        let badges = `<span class="badge badge-${inspection.status}">${inspection.status.toUpperCase()}</span>`;
+        badges += ` <span class="badge badge-${inspection.type}">${inspection.type.toUpperCase()}</span>`;
+
+        card.innerHTML = `
+            <div class="inspection-main">
+                <div class="inspection-checkbox">
+                    <input type="checkbox" onchange="updateSelectedCount()">
+                </div>
+                <div class="inspection-header">
+                    <a href="#" class="inspection-id" onclick="openInspectionDetails('${inspection.id}')">${inspection.id}</a>
+                    <div class="inspection-badges">${badges}</div>
+                </div>
+                <div class="inspection-property">
+                    <div class="property-name">${inspection.property}</div>
+                    <div class="unit-number">${inspection.unit}</div>
+                    <div class="tenant-names">${inspection.tenant}</div>
+                </div>
+                <div class="inspection-schedule">
+                    <div>
+                        <div class="schedule-label">Scheduled</div>
+                        <div class="inspection-date">${inspection.scheduledDate}</div>
+                        <div style="font-size: 12px; color: #666;">${inspection.scheduledTime}</div>
+                    </div>
+                    <div>
+                        <div class="schedule-label">Inspector</div>
+                        <div class="inspector-info">
+                            <span class="user-icon">👤</span>
+                            <span>${inspection.inspector}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="inspection-metadata">
+                    <div class="dropdown">
+                        <button class="btn-actions-small" onclick="toggleInspectionActions('${inspection.id}')">
+                            Actions ▼
+                        </button>
+                        <div class="dropdown-menu" id="actions-${inspection.id}">
+                            <div class="dropdown-item" onclick="openInspectionDetails('${inspection.id}')">View Details</div>
+                            <div class="dropdown-item" onclick="editInspection('${inspection.id}')">Edit Inspection</div>
+                            <div class="dropdown-item" onclick="rescheduleInspection('${inspection.id}')">Reschedule</div>
+                            <div class="dropdown-divider"></div>
+                            ${inspection.status === 'scheduled' ? 
+                                '<div class="dropdown-item" onclick="startInspection(\'' + inspection.id + '\')">Start Inspection</div>' :
+                                ''
+                            }
+                            ${inspection.status === 'in-progress' ? 
+                                '<div class="dropdown-item" onclick="completeInspection(\'' + inspection.id + '\')">Complete Inspection</div>' :
+                                ''
+                            }
+                            <div class="dropdown-item" onclick="duplicateInspection('${inspection.id}')">Duplicate</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="cancelInspection('${inspection.id}')" style="color: #dc3545;">Cancel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="inspection-details">${inspection.purpose}</div>
+        `;
+
+        return card;
+    }
+
+    // Get inspection card class for styling
+    function getInspectionCardClass(inspection) {
+        const today = new Date();
+        const inspectionDate = new Date(inspection.scheduledDate);
+        
+        if (inspection.status === 'completed') {
+            return 'completed';
+        } else if (inspectionDate < today) {
+            return 'overdue';
+        } else if (inspectionDate.toDateString() === today.toDateString()) {
+            return 'due-today';
+        }
+        return '';
+    }
+
+    // Render pagination
+    function renderPagination() {
+        const totalPages = Math.ceil(inspections.length / itemsPerPage);
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(btn);
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                pageNumbers.appendChild(span);
+            }
+        }
+
+        // Update prev/next buttons
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages;
+    }
+
+    // Initialize event listeners
+    function initializeEventListeners() {
+        // Select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.inspection-card input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateSelectedCount();
+        });
+
+        // Actions dropdown
+        document.getElementById('actionsDropdown').addEventListener('click', function() {
+            document.getElementById('actionsMenu').classList.toggle('show');
+        });
+
+        // Bulk actions dropdown
+        document.getElementById('bulkActionsBtn').addEventListener('click', function() {
+            if (!this.disabled) {
+                document.getElementById('bulkActionsMenu').classList.toggle('show');
+            }
+        });
+
+        // Schedule inspection button
+        document.getElementById('scheduleInspectionBtn').addEventListener('click', function() {
+            openModal('scheduleInspectionModal');
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('.btn-actions') && !e.target.matches('.btn-bulk') && !e.target.matches('.btn-actions-small')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    }
+
+    // Toggle inspection actions
+    function toggleInspectionActions(inspectionId) {
+        const menu = document.getElementById(`actions-${inspectionId}`);
+        
+        // Close all other action menus
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            if (m.id !== `actions-${inspectionId}`) {
+                m.classList.remove('show');
+            }
+        });
+        
+        menu.classList.toggle('show');
+    }
+
+    // Toggle checklist sections
+    function toggleChecklistSection(sectionId) {
+        const content = document.getElementById(sectionId);
+        const header = content.previousElementSibling;
+        const arrow = header.querySelector('span');
+        
+        if (content.classList.contains('show')) {
+            content.classList.remove('show');
+            arrow.textContent = '▼';
+        } else {
+            content.classList.add('show');
+            arrow.textContent = '▲';
+        }
+    }
+
+    // Inspection action functions
+    function openInspectionDetails(inspectionId) {
+        const inspection = inspections.find(i => i.id === inspectionId);
+        document.getElementById('inspectionModalTitle').textContent = `Inspection ${inspection.id}`;
+        openModal('inspectionDetailsModal');
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+
+    function editInspection(inspectionId) {
+        showToast('Opening inspection editor...', 'info');
+        document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+    }
+
+    function rescheduleInspection(inspectionId) {
+        showToast('Opening reschedule dialog...', 'info');
+        document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+    }
+
+    function startInspection(inspectionId) {
+        const inspection = inspections.find(i => i.id === inspectionId);
+        inspection.status = 'in-progress';
+        renderInspections();
+        showToast('Inspection started', 'success');
+        document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+    }
+
+    function completeInspection(inspectionId) {
+        const inspection = inspections.find(i => i.id === inspectionId);
+        if (inspection) {
+            inspection.status = 'completed';
+            renderInspections();
+            showToast('Inspection completed', 'success');
+        }
+        
+        // Close modal if open
+        if (inspectionId) {
+            document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+        }
+        closeModal('inspectionDetailsModal');
+    }
+
+    function duplicateInspection(inspectionId) {
+        showToast('Duplicating inspection...', 'info');
+        document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+    }
+
+    function cancelInspection(inspectionId) {
+        const inspection = inspections.find(i => i.id === inspectionId);
+        if (confirm(`Are you sure you want to cancel inspection ${inspection.id}?`)) {
+            inspection.status = 'cancelled';
+            renderInspections();
+            showToast('Inspection cancelled', 'info');
+        }
+        
+        // Close modal if open
+        if (inspectionId) {
+            document.getElementById(`actions-${inspectionId}`).classList.remove('show');
+        }
+        closeModal('inspectionDetailsModal');
+    }
+
+    // Update selected count
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = `${count} Selected`;
+        document.getElementById('bulkActionsBtn').disabled = count === 0;
+        
+        // Update select all checkbox
+        const allCheckboxes = document.querySelectorAll('.inspection-card input[type="checkbox"]');
+        document.getElementById('selectAll').checked = count === allCheckboxes.length && count > 0;
+    }
+
+    // Pagination functions
+    function goToPage(page) {
+        currentPage = page;
+        renderInspections();
+        renderPagination();
+    }
+
+    function changePage(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            goToPage(currentPage - 1);
+        } else if (direction === 'next') {
+            const totalPages = Math.ceil(inspections.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+    }
+
+    // Sort functions
+    function sortInspections() {
+        const sortBy = document.getElementById('sortBy').value;
+        currentSort = sortBy;
+        
+        inspections.sort((a, b) => {
+            let compareValue = 0;
+            
+            switch(sortBy) {
+                case 'date':
+                    compareValue = new Date(a.scheduledDate) - new Date(b.scheduledDate);
+                    break;
+                case 'property':
+                    compareValue = a.property.localeCompare(b.property);
+                    break;
+                case 'type':
+                    compareValue = a.type.localeCompare(b.type);
+                    break;
+                case 'status':
+                    compareValue = a.status.localeCompare(b.status);
+                    break;
+                case 'inspector':
+                    compareValue = a.inspector.localeCompare(b.inspector);
+                    break;
+                default:
+                    compareValue = new Date(a.scheduledDate) - new Date(b.scheduledDate);
+            }
+            
+            return sortOrder === 'asc' ? compareValue : -compareValue;
+        });
+        
+        renderInspections();
+    }
+
+    function toggleSortDirection() {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        const icon = document.querySelector('#sortDirection span');
+        icon.textContent = sortOrder === 'asc' ? '▲' : '▼';
+        sortInspections();
+    }
+
+    // Filter functions
+    function applyFilters() {
+        const propertyFilter = document.getElementById('propertyFilter').value.toLowerCase();
+        const typeFilter = document.getElementById('typeFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const inspectorFilter = document.getElementById('inspectorFilter').value.toLowerCase();
+        
+        document.querySelectorAll('.inspection-card').forEach(card => {
+            const property = card.querySelector('.property-name').textContent.toLowerCase();
+            const type = card.querySelector('.badge').textContent.toLowerCase();
+            const status = card.querySelector('.badge').textContent.toLowerCase();
+            const inspector = card.querySelector('.inspector-info span:last-child').textContent.toLowerCase();
+            
+            let show = true;
+            
+            if (propertyFilter && !property.includes(propertyFilter)) show = false;
+            if (typeFilter && !type.includes(typeFilter)) show = false;
+            if (statusFilter && !status.includes(statusFilter)) show = false;
+            if (inspectorFilter && !inspector.includes(inspectorFilter)) show = false;
+            
+            card.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.querySelectorAll('.filter-input, .filter-select').forEach(input => {
+            if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0;
+            } else {
+                input.value = '';
+            }
+        });
+        applyFilters();
+        showToast('Filters cleared', 'info');
+    }
+
+    function applyQuickFilter(filterName) {
+        if (!filterName) return;
+        
+        resetFilters();
+        
+        switch(filterName) {
+            case 'due-today':
+                // Would filter inspections due today
+                break;
+            case 'overdue':
+                // Would filter overdue inspections
+                break;
+            case 'this-week':
+                // Would filter inspections this week
+                break;
+            case 'failed-items':
+                // Would filter inspections with failed items
+                break;
+            case 'needs-follow-up':
+                // Would filter inspections needing follow-up
+                break;
+        }
+        
+        applyFilters();
+        showToast(`Applied filter: ${filterName}`, 'info');
+    }
+
+    function filterByMetric(metric) {
+        resetFilters();
+        
+        switch(metric) {
+            case 'scheduled-this-week':
+                // Would filter scheduled this week
+                break;
+            case 'overdue':
+                // Would filter overdue
+                break;
+            case 'completed-this-month':
+                document.getElementById('statusFilter').value = 'completed';
+                break;
+            case 'pending-review':
+                // Would filter pending review
+                break;
+        }
+        
+        applyFilters();
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    function saveInspection() {
+        const form = document.getElementById('scheduleInspectionForm');
+        if (form.checkValidity()) {
+            showToast('Inspection scheduled successfully', 'success');
+            closeModal('scheduleInspectionModal');
+            
+            // Add new inspection to list
+            const newInspection = {
+                id: `INS-${String(inspections.length + 1).padStart(3, '0')}`,
+                type: form.querySelector('#inspectionTypeSelect').value,
+                status: 'scheduled',
+                property: form.querySelector('select').value,
+                unit: form.querySelector('input[type="text"]').value || 'TBD',
+                tenant: 'New Tenant',
+                inspector: form.querySelector('select:nth-of-type(2)').value,
+                scheduledDate: form.querySelector('input[type="date"]').value,
+                scheduledTime: form.querySelector('input[type="time"]').value || 'TBD',
+                purpose: form.querySelector('textarea').value,
+                priority: 'medium'
+            };
+            
+            inspections.unshift(newInspection);
+            renderInspections();
+            renderPagination();
+            generateCalendar();
+        } else {
+            showToast('Please fill in all required fields', 'error');
+        }
+    }
+
+    // Bulk action functions
+    function bulkReschedule() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Rescheduling ${selected} inspections...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkAssignInspector() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Assigning inspector to ${selected} inspections...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkMarkComplete() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Marking ${selected} inspections as complete...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkCreateWorkOrders() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Creating work orders for ${selected} inspections...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkNotifyTenants() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Notifying tenants for ${selected} inspections...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkExport() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        showToast(`Exporting ${selected} inspections...`, 'info');
+        document.getElementById('bulkActionsMenu').classList.remove('show');
+    }
+
+    function bulkDelete() {
+        const selected = document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').length;
+        if (confirm(`Are you sure you want to cancel ${selected} inspections?`)) {
+            showToast(`Cancelled ${selected} inspections`, 'info');
+            document.getElementById('bulkActionsMenu').classList.remove('show');
+            
+            // Remove selected cards
+            document.querySelectorAll('.inspection-card input[type="checkbox"]:checked').forEach(cb => {
+                cb.closest('.inspection-card').remove();
+            });
+            updateSelectedCount();
+        }
+    }
+
+    // Export and action functions
+    function exportInspections(format) {
+        showToast(`Exporting inspections as ${format.toUpperCase()}...`, 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function printInspections() {
+        window.print();
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function emailReport() {
+        showToast('Opening email composer...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function importInspections() {
+        showToast('Opening import dialog...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    function manageTemplates() {
+        showToast('Opening template manager...', 'info');
+        document.getElementById('actionsMenu').classList.remove('show');
+    }
+
+    // Calendar functions
+    function changeCalendarMonth(direction) {
+        const monthHeader = document.getElementById('calendarMonth');
+        const currentDate = new Date(monthHeader.textContent + ' 1');
+        
+        currentDate.setMonth(currentDate.getMonth() + direction);
+        
+        const options = { year: 'numeric', month: 'long' };
+        monthHeader.textContent = currentDate.toLocaleDateString('en-US', options);
+        
+        generateCalendar();
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('show');
+        }
+    }
+</script>
+{% endblock %}

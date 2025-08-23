@@ -1,0 +1,205 @@
+{
+  "new_profile__method": {
+    "original": "_method",
+    "ai_name": "_method",
+    "semantic_type": "HTTP Method Override",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_profile_authenticity_token": {
+    "original": "authenticity_token",
+    "ai_name": "authenticity_token",
+    "semantic_type": "Security Token",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_profile_profile[profile_name]": {
+    "original": "profile[profile_name]",
+    "ai_name": "profile_name",
+    "semantic_type": "Profile Type",
+    "data_type": "CATEGORICAL",
+    "is_calculated": false
+  },
+  "new_profile_from_page_action": {
+    "original": "from_page_action",
+    "ai_name": "from_page_action",
+    "semantic_type": "Navigation Source",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_profile_commit": {
+    "original": "commit",
+    "ai_name": "commit",
+    "semantic_type": "Submit Action",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_filters_s2id_autogen2": {
+    "original": "s2id_autogen2",
+    "ai_name": "s2id_autogen2",
+    "semantic_type": "unknown",
+    "data_type": "string",
+    "is_calculated": false
+  },
+  "new_filters_s2id_autogen2_search": {
+    "original": "s2id_autogen2_search",
+    "ai_name": "search",
+    "semantic_type": "search_field",
+    "data_type": "string",
+    "is_calculated": false
+  },
+  "new_filters_filters[properties_ids]": {
+    "original": "filters[properties_ids]",
+    "ai_name": "properties_ids",
+    "semantic_type": "Property Filter",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_filters_s2id_autogen1": {
+    "original": "s2id_autogen1",
+    "ai_name": "Search Field",
+    "semantic_type": "Search",
+    "data_type": "String",
+    "is_calculated": false
+  },
+  "new_filters_s2id_autogen1_search": {
+    "original": "s2id_autogen1_search",
+    "ai_name": "search",
+    "semantic_type": "search_field",
+    "data_type": "string",
+    "is_calculated": false
+  },
+  "new_filters_filters[bedrooms]": {
+    "original": "filters[bedrooms]",
+    "ai_name": "bedrooms",
+    "semantic_type": "Number of Bedrooms",
+    "data_type": "CATEGORICAL",
+    "is_calculated": false
+  },
+  "new_filters_filters[min_rent]": {
+    "original": "filters[min_rent]",
+    "ai_name": "min_rent",
+    "semantic_type": "Minimum Rent",
+    "data_type": "NUMBER",
+    "is_calculated": false
+  },
+  "new_filters_filters[max_rent]": {
+    "original": "filters[max_rent]",
+    "ai_name": "max_rent",
+    "semantic_type": "Maximum Rent",
+    "data_type": "NUMBER",
+    "is_calculated": false
+  },
+  "new_filters_filters[available_from]": {
+    "original": "filters[available_from]",
+    "ai_name": "available_from",
+    "semantic_type": "Available From Date",
+    "data_type": "DATE",
+    "is_calculated": false
+  },
+  "new_filters_filters[available_to]": {
+    "original": "filters[available_to]",
+    "ai_name": "available_to",
+    "semantic_type": "Available To Date",
+    "data_type": "DATE",
+    "is_calculated": false
+  },
+  "new_filters_filters[cats]": {
+    "original": "filters[cats]",
+    "ai_name": "cats_allowed",
+    "semantic_type": "Cats Allowed",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "new_filters_filters[dogs]": {
+    "original": "filters[dogs]",
+    "ai_name": "dogs_allowed",
+    "semantic_type": "Dogs Allowed",
+    "data_type": "CATEGORICAL",
+    "is_calculated": false
+  },
+  "new_filters_filters[sort_by]": {
+    "original": "filters[sort_by]",
+    "ai_name": "sort_by",
+    "semantic_type": "Sort Criteria",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "new_filters_commit": {
+    "original": "commit",
+    "ai_name": "commit",
+    "semantic_type": "Search Action",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "_authenticity_token": {
+    "original": "authenticity_token",
+    "ai_name": "authenticity_token",
+    "semantic_type": "Security Token",
+    "data_type": "TEXT",
+    "is_calculated": false
+  },
+  "_categories[activity_due]": {
+    "original": "categories[activity_due]",
+    "ai_name": "activity_due",
+    "semantic_type": "Activity Due",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[architectural_review_creation]": {
+    "original": "categories[architectural_review_creation]",
+    "ai_name": "architectural_review_creation",
+    "semantic_type": "Architectural Review Creation",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[architectural_review_chat_message_creation]": {
+    "original": "categories[architectural_review_chat_message_creation]",
+    "ai_name": "Architectural Review Chat Message Creation",
+    "semantic_type": "feature_toggle",
+    "data_type": "boolean",
+    "is_calculated": false
+  },
+  "_categories[rental_application_creation]": {
+    "original": "categories[rental_application_creation]",
+    "ai_name": "rental_application_creation",
+    "semantic_type": "Rental Application Creation",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[service_request_creation]": {
+    "original": "categories[service_request_creation]",
+    "ai_name": "service_request_creation",
+    "semantic_type": "Service Request Creation",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[tenant_birthday]": {
+    "original": "categories[tenant_birthday]",
+    "ai_name": "tenant_birthday",
+    "semantic_type": "Tenant Birthday",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[tenant_insurance_expiration]": {
+    "original": "categories[tenant_insurance_expiration]",
+    "ai_name": "tenant_insurance_expiration",
+    "semantic_type": "Tenant Insurance Expiration",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_categories[vendor_insurance_expiration]": {
+    "original": "categories[vendor_insurance_expiration]",
+    "ai_name": "vendor_insurance_expiration",
+    "semantic_type": "Vendor Insurance Expiration",
+    "data_type": "BOOLEAN",
+    "is_calculated": false
+  },
+  "_commit": {
+    "original": "commit",
+    "ai_name": "commit",
+    "semantic_type": "Save Action",
+    "data_type": "TEXT",
+    "is_calculated": false
+  }
+}

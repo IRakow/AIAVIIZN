@@ -1,0 +1,92 @@
+<!-- templates/receivables.html -->
+{% extends "base.html" %}
+
+{% block title %}Receivables - Property Management{% endblock %}
+
+{% block header %}
+<div class="header">
+    <div class="tab-nav">
+        <a href="{{ url_for('receivables') }}" class="tab-nav-item active">Receivables</a>
+        <a href="{{ url_for('payables') }}" class="tab-nav-item">Payables</a>
+        <a href="{{ url_for('bank_accounts') }}" class="tab-nav-item">Bank Accounts</a>
+        <a href="{{ url_for('journal_entries') }}" class="tab-nav-item">Journal Entries</a>
+        <a href="{{ url_for('bank_transfers') }}" class="tab-nav-item">Bank Transfers</a>
+        <a href="{{ url_for('gl_accounts') }}" class="tab-nav-item">GL Accounts</a>
+        <a href="{{ url_for('diagnostics') }}" class="tab-nav-item">Diagnostics</a>
+    </div>
+</div>
+
+<div class="header" style="background: white; padding: 10px 20px;">
+    <div class="tab-nav" style="border-bottom: none;">
+        <a href="#" class="tab-nav-item active" style="font-size: 12px;">Receipts</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Charges</a>
+        <a href="#" class="tab-nav-item" style="font-size: 12px;">Bank Deposits</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Receipts</h1>
+
+<div class="search-box">
+    Click here to search
+</div>
+
+<div class="data-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Date <span style="font-size: 10px;">↕</span></th>
+                <th>Payer <span style="font-size: 10px;">↕</span></th>
+                <th>GL Account <span style="font-size: 10px;">↕</span></th>
+                <th>Property - Unit <span style="font-size: 10px;">↕</span></th>
+                <th style="text-align: right;">Amount <span style="font-size: 10px;">↕</span></th>
+                <th>Reference <span style="font-size: 10px;">↕</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receipt in receipts %}
+            <tr>
+                <td>{{ receipt.date }}</td>
+                <td>{{ receipt.payer }}</td>
+                <td>{{ receipt.gl_account }}</td>
+                <td>{{ receipt.property }}</td>
+                <td style="text-align: right; color: #0056b3;">{{ "%.2f"|format(receipt.amount) }}</td>
+                <td>{{ receipt.reference }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block tasks_panel %}
+<div class="tasks-panel">
+    <div class="tasks-header">
+        <h3>Tasks</h3>
+        <button class="close-btn" onclick="toggleTasks()">×</button>
+    </div>
+    <div class="tasks-content">
+        <div class="task-section-title">⭐ Tasks</div>
+        <div class="task-item" style="color: #0056b3;">Tenant Receipt</div>
+        <div class="task-item">Owner Receipt</div>
+        <div class="task-item">Other Receipt</div>
+        <div class="task-item">Subsidy Receipts</div>
+        <div class="task-item">Application Fee</div>
+        <div class="task-item">Tenant Charge</div>
+        <div class="task-item">Bulk Charges and Credits</div>
+        <div class="task-item">Bulk Recurring Charges</div>
+        <div class="task-item">Tenant Credit</div>
+        <div class="task-item">Apply Credits</div>
+        <div class="task-item">Common Charge</div>
+        <div class="task-item">Charge Late Fees</div>
+        <div class="task-item">New Bank Deposit</div>
+        <div class="task-item">Lockbox</div>
+        <div class="task-item">Resident eCheck Fee Settings</div>
+        <div class="task-item">Flexible Rent Settings</div>
+        
+        <div class="task-section-title">❓ Help Topics</div>
+        <div class="task-item">Tenant Online Payments</div>
+    </div>
+</div>
+{% endblock %}

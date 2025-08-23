@@ -1,0 +1,753 @@
+{
+  "new_profile__method": {
+    "form_id": "new_profile",
+    "form_name": "",
+    "field_name": "_method",
+    "ai_generated_name": "httpMethodOverride",
+    "field_type": "hidden",
+    "semantic_type": "HTTP Method Override",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "authenticity_token",
+      "commit"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The field name '_method', its hidden nature, its presence alongside 'authenticity_token' and 'commit' (often used in form submissions), and the context of a property management system where updates and deletes are common operations strongly suggest that this field is used for HTTP method overriding. The page context hints at user profile management ('Profile: Property M'), further supporting this theory as profile updates/deletions would likely use PUT/PATCH/DELETE methods. The lack of a placeholder or pattern also aligns with this type of hidden field. The iframe related to Google Tag Manager is irrelevant to the form field itself."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "95726241c955a56ee7f9eb96739b40d0"
+  },
+  "new_profile_authenticity_token": {
+    "form_id": "new_profile",
+    "form_name": "",
+    "field_name": "authenticity_token",
+    "ai_generated_name": "csrf_token",
+    "field_type": "hidden",
+    "semantic_type": "Cross-Site Request Forgery Token",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "_method",
+      "commit"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The name 'authenticity_token', the hidden HTML type, and its presence alongside fields like '_method' and 'commit' (typically used in form submissions) strongly suggest this is a CSRF token. CSRF tokens are crucial for web security, and their generation is handled server-side. The surrounding fields indicate a form submission context.  While the page context mentions Google Tag Manager, it doesn't directly relate to this field's purpose within the form itself."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "d1fd061dde9d6d628d3632cdfb0a783b"
+  },
+  "new_profile_profile[profile_name]": {
+    "form_id": "new_profile",
+    "form_name": "",
+    "field_name": "profile[profile_name]",
+    "ai_generated_name": "selectedPropertyProfile",
+    "field_type": "select-one",
+    "semantic_type": "Property Profile Selection",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The context mentions \"Profile: Property M\" immediately after \"Ian Rakow Profile\". This strongly suggests the field is for selecting a property profile, and 'Property M' is an example value.  The name 'profile[profile_name]' and the HTML type 'select-one' further reinforce this.  While the exact related fields are unknown, it's reasonable to assume other fields describing the property profile exist, but aren't revealed within the limited context provided. The lack of surrounding fields related to property details suggests this selection might lead to a separate page/section displaying further information about the chosen profile.  The surrounding fields like '_method', 'authenticity_token', 'from_page_action', and 'commit' suggest a form submission action."
+    },
+    "placeholder": null,
+    "required": false,
+    "options": [
+      {
+        "value": "property_management",
+        "text": "Property Management"
+      },
+      {
+        "value": "association_management",
+        "text": "Association Management"
+      }
+    ],
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "5ace675c5f17b50a49844b9cb0c6bc08"
+  },
+  "new_profile_from_page_action": {
+    "form_id": "new_profile",
+    "form_name": "",
+    "field_name": "from_page_action",
+    "ai_generated_name": "originating_page_action",
+    "field_type": "hidden",
+    "semantic_type": "Referral Source",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "_method",
+      "authenticity_token",
+      "commit"
+    ],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The name 'from_page_action' strongly suggests that it stores information about the action taken on the previous page. Its presence alongside fields like '_method', 'authenticity_token', and 'commit' which are commonly used in form submissions further reinforces this. The page context mentions 'Add Functionality', 'Integrations', 'Help & Training' suggesting potential actions a user might have taken. Given the HTML type 'hidden', this field likely stores values like 'add_property', 'edit_profile', 'view_report', 'search', etc.  While the exact values are unknown, the context strongly implies navigation tracking."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "3884601837f82e90aebf2da530c0bb85"
+  },
+  "new_profile_commit": {
+    "form_id": "new_profile",
+    "form_name": "",
+    "field_name": "commit",
+    "ai_generated_name": "saveProfileChangesButton",
+    "field_type": "submit",
+    "semantic_type": "submit_button",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "_method",
+      "authenticity_token",
+      "profile[profile_name]",
+      "from_page_action"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The HTML type 'submit' indicates this is a button that submits a form. The context mentions \"Profile: Property M\" and a field named 'profile[profile_name]', suggesting this page allows editing a property profile.  The presence of '_method', 'authenticity_token', and 'from_page_action' further supports this being a form submission mechanism.  The 'commit' value likely represents the button label, common in web forms for save actions.  Though the label isn't visible in the limited context, the surrounding fields strongly suggest its purpose. We infer the button label would be something like 'Save', 'Update', or 'Commit Changes', thus 'saveProfileChangesButton' is a suitable descriptive name."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "4b7c8736f5e7c2ec0aad4a0c0c09ffbe"
+  },
+  "new_filters_s2id_autogen2": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "s2id_autogen2",
+    "ai_generated_name": "property_id",
+    "field_type": "text",
+    "semantic_type": "property_id",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The original name 's2id_autogen2' suggests an auto-generated ID field, likely related to a select2 dropdown. The proximity to 'filters[properties_ids]' strongly suggests this field holds a property ID used for filtering. The page context mentions 'Property M', further reinforcing this interpretation.  The 'text' data type is chosen because IDs are often represented as strings even if numerically based. While it's possible the ID is purely numeric, we cannot be certain without more context. Hence the confidence is 0.8 and not 1.0."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "05db7a672756a419ea07a51595286a70"
+  },
+  "new_filters_s2id_autogen2_search": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "s2id_autogen2_search",
+    "ai_generated_name": "propertyIdSearchInput",
+    "field_type": "text",
+    "semantic_type": "property_id",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.9,
+    "context_clues": {
+      "reasoning": "The original cryptic name 's2id_autogen2_search' suggests an auto-generated field related to a search functionality.  The presence of 'filters[properties_ids]' as a surrounding field strongly indicates this field is used to search or filter based on property IDs. The page context mentioning 'Advanced Search' further supports this. The HTML type 'text' is appropriate for entering property IDs, which could be numeric or alphanumeric strings.  Although the placeholder is empty, the context provides enough clues for a high-confidence interpretation."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "05db7a672756a419ea07a51595286a70"
+  },
+  "new_filters_filters[properties_ids]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[properties_ids]",
+    "ai_generated_name": "propertySearchQuery",
+    "field_type": "text",
+    "semantic_type": "Property Search Query",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "propertyId",
+      "groupId",
+      "ownerId",
+      "portfolioId"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The placeholder text \"Search by property, group, owner, or portfolio\" clearly indicates the purpose of this field. The original name 'filters[properties_ids]' suggests that it's part of a filtering system, likely using IDs to retrieve matching entities.  While 'properties_ids' is plural, the placeholder suggests a broader search, so it's probably designed to handle various search terms and not strictly just property IDs. The page context mentions 'Advanced Search,' further supporting this conclusion.  We are inferring related fields based on the entities mentioned in the placeholder text, assuming that such entities are managed within the system and therefore might have their own identifiers. Although the actual search logic might be complex and involve joins across multiple tables, the field itself simply captures the user's input text and is not a calculated value."
+    },
+    "placeholder": "Search by property, group, owner, or portfolio",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "8468c3e3fee9c7e70d417d481f726d9a"
+  },
+  "new_filters_s2id_autogen1": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "s2id_autogen1",
+    "ai_generated_name": "property_id",
+    "field_type": "text",
+    "semantic_type": "property_id",
+    "data_type": "number",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The field name 's2id_autogen1' suggests an auto-generated ID, likely related to a select2 dropdown.  The surrounding field 'filters[properties_ids]' strongly indicates this field is related to property identification. The page context mentioning 'Property M' further supports this. While the exact nature of the ID isn't clear (internal ID, MLS number, etc.), the most likely scenario given the available information is that this field captures a property ID used for filtering or searching. The 'text' HTML type suggests it could potentially handle alphanumeric IDs.  Since there's no placeholder or pattern, the exact format is unknown, leading to a slightly lower confidence."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "05db7a672756a419ea07a51595286a70"
+  },
+  "new_filters_s2id_autogen1_search": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "s2id_autogen1_search",
+    "ai_generated_name": "propertyIdSearchInput",
+    "field_type": "text",
+    "semantic_type": "property_id",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The original cryptic name 's2id_autogen1_search' suggests an auto-generated field related to a search or selection functionality.  The HTML type 'text' indicates a free-text input. Crucially, the proximity to 'filters[properties_ids]' strongly implies that this field is used to input property IDs for filtering purposes.  The page context mentions 'Search' and 'Advanced Search', further supporting this interpretation. While the placeholder is empty, the overall context points towards a property ID search field. The 's2id_' prefix often suggests a select2 javascript library usage, which is commonly used for searchable select boxes, further strengthening this hypothesis. It's unlikely to be a calculated field as it's a user input."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "05db7a672756a419ea07a51595286a70"
+  },
+  "new_filters_filters[bedrooms]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[bedrooms]",
+    "ai_generated_name": "bedroomCountFilter",
+    "field_type": "select-one",
+    "semantic_type": "Property Bedroom Count Filter",
+    "data_type": "number",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The original name 'filters[bedrooms]' and the HTML type 'select-one' strongly suggest a filter for the number of bedrooms.  The context of a property management system and the likely proximity to a 'properties_ids' filter further reinforce this.  'select-one' implies discrete numerical options for bedroom counts. We can confidently infer it is not calculated as it is a user-provided filter value.  The related field 'filters[properties_ids]' likely represents a set of property identifiers, suggesting this filter is used to narrow down the list based on bedroom count."
+    },
+    "placeholder": null,
+    "required": false,
+    "options": [
+      {
+        "value": "",
+        "text": ""
+      },
+      {
+        "value": "0+",
+        "text": "0+"
+      },
+      {
+        "value": "1+",
+        "text": "1+"
+      },
+      {
+        "value": "2+",
+        "text": "2+"
+      },
+      {
+        "value": "3+",
+        "text": "3+"
+      },
+      {
+        "value": "4+",
+        "text": "4+"
+      },
+      {
+        "value": "5+",
+        "text": "5+"
+      }
+    ],
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "94d14e0a0a6d5f5b23cbf9d9bfce8e94"
+  },
+  "new_filters_filters[min_rent]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[min_rent]",
+    "ai_generated_name": "minimumRent",
+    "field_type": "text",
+    "semantic_type": "minimum_rent",
+    "data_type": "number",
+    "unit_of_measure": "dollars",
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The original name 'filters[min_rent]', the placeholder 'Minimum', and the page context related to property management strongly suggest this field is used to filter property searches by a minimum rent amount.  The presence of 'filters[properties_ids]' suggests it's used in conjunction with property IDs to narrow search results.  While the HTML type is 'text', it's highly likely that the application expects and processes this as a numerical input representing a monetary value.  We infer 'dollars' as the unit based on common practice for rent values. We can't definitively confirm the unit, but the context makes it very probable. The lack of a pattern attribute doesn't provide enough information to contradict this."
+    },
+    "placeholder": "Minimum",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "3e93b6a32bad8cfd0d646c9cedc9328f"
+  },
+  "new_filters_filters[max_rent]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[max_rent]",
+    "ai_generated_name": "maxRent",
+    "field_type": "text",
+    "semantic_type": "Maximum Rent Filter",
+    "data_type": "number",
+    "unit_of_measure": "dollars",
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The original name 'filters[max_rent]', the placeholder 'Maximum', and the page context related to property management strongly suggest that this field is used to filter properties based on a maximum rent value.  The presence of 'filters[properties_ids]' further supports this, indicating a filtering context related to property listings.  The HTML type 'text' is common for numerical input, and we infer 'dollars' as the unit due to the context of rent. Although the pattern is not provided, it's likely a numerical pattern restricting input to valid rent amounts. It's unlikely to be a calculated field as it represents a user-specified input for filtering."
+    },
+    "placeholder": "Maximum",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "d8a2e68b752744e93922dc55c45546fc"
+  },
+  "new_filters_filters[available_from]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[available_from]",
+    "ai_generated_name": "availableFromDate",
+    "field_type": "text",
+    "semantic_type": "availability_start_date",
+    "data_type": "date",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "properties_ids"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The original name 'filters[available_from]', the placeholder 'Start date', and the page context related to property management strongly suggest this field is used to filter properties based on their availability start date.  The presence of 'filters[properties_ids]' further reinforces this by indicating a likely filtering action on a set of properties. The HTML input type 'text' is common for date inputs even if a specific date picker isn't explicitly mentioned. Although the surrounding fields are listed as commas without names, they don't directly influence the analysis of *this* field.  The absence of a pattern doesn't preclude it being a date as client-side validation and formatting are common."
+    },
+    "placeholder": "Start date",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "547198f240cb5e45e0fbbbae1924734a"
+  },
+  "new_filters_filters[available_to]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[available_to]",
+    "ai_generated_name": "availabilityEndDate",
+    "field_type": "text",
+    "semantic_type": "Availability End Date",
+    "data_type": "date",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.9,
+    "context_clues": {
+      "reasoning": "The original name 'filters[available_to]' and placeholder 'End date' strongly suggest this field is used to filter properties by their availability.  The context of a property management system further reinforces this interpretation, pointing to an end date for availability. It's likely used in conjunction with a start date field (not provided) to specify a range. The related field 'filters[properties_ids]' implies that this filter applies to a selection of properties. We can't be 100% certain without more context, but the available information makes this interpretation highly likely."
+    },
+    "placeholder": "End date",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "b2bd2540a680bdd51cc692ff5c751550"
+  },
+  "new_filters_filters[cats]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[cats]",
+    "ai_generated_name": "propertyCategoryFilter",
+    "field_type": "select-one",
+    "semantic_type": "Property Category/Type",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.9,
+    "context_clues": {
+      "reasoning": "The original name 'filters[cats]' suggests categories related to properties.  The context of a property management system and the presence of a related field likely associated with property IDs ('filters[properties_ids]') strongly supports this interpretation.  The HTML type 'select-one' indicates a dropdown or similar selection element for choosing a single category.  'cats' is likely short for 'categories'. This field is used to filter search results, not to perform calculations."
+    },
+    "placeholder": null,
+    "required": false,
+    "options": [
+      {
+        "value": "",
+        "text": ""
+      },
+      {
+        "value": "allowed",
+        "text": "Yes"
+      },
+      {
+        "value": "not_allowed",
+        "text": "No"
+      }
+    ],
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "2b167cf29c677fcdb18b3db677ca32ca"
+  },
+  "new_filters_filters[dogs]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[dogs]",
+    "ai_generated_name": "dog_filter",
+    "field_type": "select-one",
+    "semantic_type": "Pet Policy Filter - Dogs Allowed",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.9,
+    "context_clues": {
+      "reasoning": "The original name 'filters[dogs]' and the context of a property management system strongly suggest this is a filter related to dog policies for rental properties.  The 'select-one' HTML type indicates a dropdown or similar selection mechanism.  It likely filters properties based on options like 'dogs allowed', 'no dogs', or other variations. The 'filters[properties_ids]' field is likely related, perhaps representing the IDs of properties being filtered. The page context mentions 'Advanced Search', further reinforcing the filtering aspect."
+    },
+    "placeholder": null,
+    "required": false,
+    "options": [
+      {
+        "value": "",
+        "text": ""
+      },
+      {
+        "value": "allowed",
+        "text": "Large"
+      },
+      {
+        "value": "small_only_allowed",
+        "text": "Small"
+      },
+      {
+        "value": "not_allowed",
+        "text": "None"
+      }
+    ],
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "5d3ca3e026cf879c849b7ad6b2ea5d05"
+  },
+  "new_filters_filters[sort_by]": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "filters[sort_by]",
+    "ai_generated_name": "propertyListSortBy",
+    "field_type": "hidden",
+    "semantic_type": "Sort Criterion",
+    "data_type": "text",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.8,
+    "context_clues": {
+      "reasoning": "The field name `filters[sort_by]` strongly suggests it's part of a filtering/sorting mechanism. The context of a property management system and the presence of `filters[properties_ids]` further reinforces this.  The 'sort_by' portion indicates that this field holds the criteria by which the property list should be sorted (e.g., 'property_name', 'address', 'unit_count', 'rent').  Since it's a hidden field, the value is likely set dynamically based on user interaction with sorting controls on the page and submitted with the form. The type is likely textual, representing the name of a field to sort by.  The lack of a placeholder or pattern reinforces the idea that this field is populated programmatically."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "cdf5c0e6f1ef3e790992b06e198eadf8"
+  },
+  "new_filters_commit": {
+    "form_id": "new_filters",
+    "form_name": "",
+    "field_name": "commit",
+    "ai_generated_name": "applyFiltersButton",
+    "field_type": "submit",
+    "semantic_type": "submit_button",
+    "data_type": "boolean",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [
+      "filters[properties_ids]"
+    ],
+    "confidence": 0.95,
+    "context_clues": {
+      "reasoning": "The HTML type 'submit' indicates this is a button that submits a form. The context suggests it's within a property management system, likely on a search or filtering page.  The presence of 'filters[properties_ids]' strongly suggests that this button applies filters based on selected property IDs.  The original name 'commit' reinforces the idea of confirming and applying changes."
+    },
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/vacancies",
+    "signature": "f343348cf27b53b5ce6ca8443cd93303"
+  },
+  "_authenticity_token": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "authenticity_token",
+    "ai_generated_name": "authenticity_token",
+    "field_type": "hidden",
+    "semantic_type": "Security Token",
+    "data_type": "TEXT",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 1.0,
+    "context_clues": [
+      "The field name \"authenticity_token\" is a standard convention for Cross-Site Request Forgery (CSRF) protection tokens.",
+      "The long, random value suggests a security token.",
+      "The \"hidden\" type indicates the token is not meant for user interaction."
+    ],
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "b4f0087d0d92b407e4034b04a21a52c8"
+  },
+  "_categories[activity_due]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[activity_due]",
+    "ai_generated_name": "activity_due",
+    "field_type": "hidden",
+    "semantic_type": "Activity Due Count",
+    "data_type": "NUMBER",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.85,
+    "context_clues": [
+      "The field name 'categories[activity_due]' suggests a count of activities due.",
+      "The value '0' indicates a numerical representation.",
+      "The 'hidden' type implies this field is not directly visible to the user, but likely used for internal tracking or calculations."
+    ],
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "9087f9b88d02a7783459f8d408bafea0"
+  },
+  "_categories[architectural_review_creation]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[architectural_review_creation]",
+    "ai_generated_name": "architectural_review_creation",
+    "field_type": "hidden",
+    "semantic_type": "feature_toggle",
+    "data_type": "boolean",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.8999999999999999,
+    "context_clues": {},
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "70c8c50ae6214fae2a620779f6aa99d4"
+  },
+  "_categories[architectural_review_chat_message_creation]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[architectural_review_chat_message_creation]",
+    "ai_generated_name": "architectural_review_chat_message_creation",
+    "field_type": "hidden",
+    "semantic_type": "Architectural Review Chat Message Creation Count",
+    "data_type": "NUMBER",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.85,
+    "context_clues": [
+      "The field name 'categories[architectural_review_chat_message_creation]' suggests a count of architectural review chat message creations.",
+      "The value '0' indicates a numerical representation.",
+      "The 'hidden' type implies this field is not directly visible to the user, but likely used for internal tracking or calculations."
+    ],
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "aff4b75a488c1539501b29d924895116"
+  },
+  "_categories[rental_application_creation]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[rental_application_creation]",
+    "ai_generated_name": "rental_application_creation",
+    "field_type": "hidden",
+    "semantic_type": "Feature Toggle",
+    "data_type": "Boolean",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.8999999999999999,
+    "context_clues": {},
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "6d6308b4f3dd6af9ac3fe437ed1b2002"
+  },
+  "_categories[service_request_creation]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[service_request_creation]",
+    "ai_generated_name": "service_request_creation",
+    "field_type": "hidden",
+    "semantic_type": "Service Request Creation Count",
+    "data_type": "NUMBER",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.85,
+    "context_clues": [
+      "The field name 'categories[service_request_creation]' suggests a count of service request creations.",
+      "The value '0' indicates a numerical representation.",
+      "The 'hidden' type implies this field is not directly visible to the user, but likely used for internal tracking or calculations."
+    ],
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "f04884124b116b120f313efb6dc4dbb7"
+  },
+  "_categories[tenant_birthday]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[tenant_birthday]",
+    "ai_generated_name": "tenant_birthday",
+    "field_type": "hidden",
+    "semantic_type": "Date",
+    "data_type": "Hidden",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.8999999999999999,
+    "context_clues": {},
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "30cc938f46b9804071a18fdcfacb4cde"
+  },
+  "_categories[tenant_insurance_expiration]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[tenant_insurance_expiration]",
+    "ai_generated_name": "tenant_insurance_expiration",
+    "field_type": "hidden",
+    "semantic_type": "date",
+    "data_type": "hidden",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.875,
+    "context_clues": {},
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "72e28d3dbcecf49760ea72705eba355e"
+  },
+  "_categories[vendor_insurance_expiration]": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "categories[vendor_insurance_expiration]",
+    "ai_generated_name": "vendor_insurance_expiration",
+    "field_type": "hidden",
+    "semantic_type": "Date",
+    "data_type": "Hidden",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.875,
+    "context_clues": {},
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "30cc938f46b9804071a18fdcfacb4cde"
+  },
+  "_commit": {
+    "form_id": "",
+    "form_name": "",
+    "field_name": "commit",
+    "ai_generated_name": "commit",
+    "field_type": "submit",
+    "semantic_type": "Save Action",
+    "data_type": "TEXT",
+    "unit_of_measure": null,
+    "is_calculated": false,
+    "calculation_formula": null,
+    "related_fields": [],
+    "confidence": 0.95,
+    "context_clues": [
+      "The 'type' attribute being 'submit' indicates that this is a submit button.",
+      "The 'value' attribute being 'Save' and the 'id' being 'save_button' clearly suggest that this button triggers a save action."
+    ],
+    "placeholder": "",
+    "required": false,
+    "options": null,
+    "page_url": "https://celticprop.appfolio.com/",
+    "signature": "a8491eaed8a5c520e60a3098f7ed915b"
+  }
+}

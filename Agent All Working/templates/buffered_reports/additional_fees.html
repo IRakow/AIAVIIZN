@@ -1,0 +1,1123 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Additional Fees - AIVIIZN{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://property.cdn.appfolio.com/assets/property/packs/css/7866-10a8e7c0.css">
+<link rel="stylesheet" href="https://public.cdn.appfolio.com/public/icons/font-awesome-custom/reports/fa.6-appf.1/custom-icons.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+<style>
+    :root {
+        --ai-primary: #667eea;
+        --ai-secondary: #764ba2;
+        --ai-accent: #f093fb;
+        --ai-dark: #2d3748;
+        --ai-light: #f7fafc;
+        --ai-success: #48bb78;
+        --ai-warning: #ed8936;
+        --ai-error: #f56565;
+        --ag-header-font-size: 13px;
+        --ag-font-size: 13px;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--ai-primary) 0%, var(--ai-secondary) 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+    }
+
+    .ai-enhanced {
+        position: relative;
+        background: linear-gradient(45deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        animation: ai-glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes ai-glow {
+        0% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+        100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.6); }
+    }
+
+    .ai-enhanced::before {
+        content: '🤖';
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: var(--ai-primary);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        z-index: 10;
+    }
+
+    .report-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .report-header {
+        background: linear-gradient(90deg, #f8f9ff 0%, #e8edff 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .report-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--ai-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .btn-ai {
+        background: linear-gradient(45deg, var(--ai-primary), var(--ai-secondary));
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .btn-ai:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        border: none;
+        color: var(--ai-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--ai-primary);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .search-container {
+        position: relative;
+        min-width: 300px;
+    }
+
+    .search-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 25px;
+        padding: 0.75rem 3rem 0.75rem 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .search-input:focus {
+        border-color: var(--ai-primary);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+
+    .search-buttons {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 2px;
+    }
+
+    .search-btn {
+        background: var(--ai-primary);
+        border: none;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .search-btn:hover {
+        background: var(--ai-secondary);
+    }
+
+    .ag-theme-custom {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .ag-header {
+        background: linear-gradient(90deg, var(--ai-primary), var(--ai-secondary));
+        color: white;
+    }
+
+    .ag-header-cell {
+        color: white;
+        font-weight: 600;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .ag-row {
+        transition: all 0.2s ease;
+    }
+
+    .ag-row:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .ag-row-group {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        font-weight: 600;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        border-radius: 10px;
+        padding: 0.5rem;
+    }
+
+    .dropdown-item {
+        border-radius: 6px;
+        margin-bottom: 2px;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background: var(--ai-primary);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 15px;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--ai-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .toggle-description {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .toggle-description:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--ai-primary);
+    }
+
+    .report-description-container {
+        background: linear-gradient(90deg, rgba(72, 187, 120, 0.1), rgba(237, 137, 54, 0.1));
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        border-left: 4px solid var(--ai-success);
+    }
+
+    .column-drop {
+        background: white;
+        border: 2px dashed #e2e8f0;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .column-drop:hover {
+        border-color: var(--ai-primary);
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .calculation-badge {
+        background: linear-gradient(45deg, var(--ai-accent), var(--ai-primary));
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-left: 0.5rem;
+    }
+
+    .error-message {
+        background: linear-gradient(45deg, #fed7d7, #feb2b2);
+        color: #c53030;
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        border-left: 4px solid var(--ai-error);
+    }
+
+    .success-message {
+        background: linear-gradient(45deg, #c6f6d5, #9ae6b4);
+        color: #276749;
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        border-left: 4px solid var(--ai-success);
+    }
+
+    @media (max-width: 768px) {
+        .control-panel {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-container {
+            min-width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .report-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-0">Additional Fees Report</h1>
+                <p class="mb-0 opacity-75">AI-Enhanced Property Management Analytics</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div id="report-container" class="report-container position-relative">
+        <div class="loading-overlay d-none" id="loadingOverlay">
+            <div class="text-center">
+                <div class="loading-spinner"></div>
+                <div class="mt-3">Loading data...</div>
+            </div>
+        </div>
+        
+        <div class="report-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="report-title-container">
+                    <div class="report-title">Additional Fees</div>
+                    <div class="toggle-description" id="toggleDescription">
+                        <span class="toggle-description-text d-none d-md-inline">
+                            <i class="fa fa-info-circle me-2"></i>Hide Details 
+                            <i class="fa fa-angle-down ms-1"></i>
+                        </span>
+                        <span class="d-md-none">
+                            <i class="fa fa-info-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="control-panel">
+                    <button id="viewTourBtn" class="btn btn-ai">
+                        <i class="fa fa-play me-2"></i>View Tour
+                    </button>
+                    
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search Report..." id="searchInput">
+                        <div class="search-buttons">
+                            <button class="search-btn" id="searchPrev" title="Previous">
+                                <i class="fa fa-chevron-up"></i>
+                            </button>
+                            <button class="search-btn" id="searchNext" title="Next">
+                                <i class="fa fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-file-pdf me-2"></i>Print to PDF
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="printLandscape">
+                                <i class="fa fa-file me-2"></i>Landscape
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="printPortrait">
+                                <i class="fa fa-file me-2"></i>Portrait
+                            </a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-cogs me-2"></i>Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item ai-enhanced" href="#" id="saveLayout">
+                                <i class="fa fa-save me-2"></i>Save Layout
+                                <span class="calculation-badge">AI</span>
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="emailReport">
+                                <i class="fa fa-envelope me-2"></i>Email Report
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="exportExcel">
+                                <i class="fa fa-file-excel me-2"></i>Export as Excel
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="exportCsv">
+                                <i class="fa fa-bar-chart me-2"></i>Export as CSV
+                            </a></li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn btn-secondary" id="refreshBtn">
+                        <i class="fa fa-refresh me-2"></i>
+                        <span class="d-none d-sm-inline">Refresh</span>
+                    </button>
+                    
+                    <button class="btn btn-ai" id="customizeBtn">
+                        <i class="fa fa-cogs me-2"></i>
+                        <span class="d-none d-sm-inline">Customize</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="reportDescription" class="report-description-container">
+                <div><strong>Properties:</strong> <span class="text-success">Active</span></div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fa fa-robot me-1"></i>
+                        AI-enhanced calculations: Session rates, trace sampling, and activity tracking
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-3">
+            <!-- Column Drop Areas -->
+            <div class="row mb-3 d-none" id="columnDropAreas">
+                <div class="col-12">
+                    <div class="column-drop ai-enhanced" id="rowGroupDrop">
+                        <div class="text-center text-muted">
+                            <i class="fa fa-grip-vertical me-2"></i>
+                            <span id="currentGrouping">Property (Ascending)</span>
+                            <button class="btn btn-sm btn-outline-danger ms-2" id="removeGrouping">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Grid -->
+            <div class="ag-theme-custom" style="height: 600px; width: 100%;" id="dataGrid">
+                <table class="table table-striped table-hover" id="feesTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Property <span class="calculation-badge">AI</span></th>
+                            <th>Account</th>
+                            <th class="ai-enhanced">Percentage <span class="calculation-badge">Ratio</span></th>
+                            <th>Fee Type</th>
+                            <th class="ai-enhanced">Amount <span class="calculation-badge">Currency</span></th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th class="ai-enhanced">Calculated Total <span class="calculation-badge">Auto</span></th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success/Error Messages -->
+    <div id="messageContainer"></div>
+</div>
+
+<!-- Modals -->
+<!-- Email Report Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fa fa-envelope me-2"></i>Email Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="emailForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="emailTo" class="form-label">To:</label>
+                        <input type="email" class="form-control ai-enhanced" id="emailTo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailSubject" class="form-label">Subject:</label>
+                        <input type="text" class="form-control" id="emailSubject" 
+                               value="Additional Fees Report - {{ current_date }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailMessage" class="form-label">Message:</label>
+                        <textarea class="form-control" id="emailMessage" rows="4">
+Please find the Additional Fees Report attached.
+
+This report was generated automatically by AIVIIZN Property Management System.
+                        </textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="includePdf" checked>
+                            <label class="form-check-label" for="includePdf">
+                                Include PDF attachment
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ai">
+                        <i class="fa fa-paper-plane me-2"></i>Send Email
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Customize Modal -->
+<div class="modal fade" id="customizeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fa fa-cogs me-2"></i>Customize Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Visible Columns</h6>
+                        <div id="columnToggles">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>AI Enhancements</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input ai-enhanced" type="checkbox" id="enableAutoCalc" checked>
+                            <label class="form-check-label" for="enableAutoCalc">
+                                Auto-calculate totals <span class="calculation-badge">AI</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input ai-enhanced" type="checkbox" id="enableSampling" checked>
+                            <label class="form-check-label" for="enableSampling">
+                                Smart sampling rates <span class="calculation-badge">AI</span>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input ai-enhanced" type="checkbox" id="enableTracking" checked>
+                            <label class="form-check-label" for="enableTracking">
+                                Activity tracking <span class="calculation-badge">AI</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <h6>Calculation Settings</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="sessionSampleRate" class="form-label">Session Sample Rate (%)</label>
+                                <input type="number" class="form-control ai-enhanced" id="sessionSampleRate" 
+                                       value="10" min="0" max="100">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="traceSampleRate" class="form-label">Trace Sample Rate (%)</label>
+                                <input type="number" class="form-control ai-enhanced" id="traceSampleRate" 
+                                       value="100" min="0" max="100">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="heartbeatDelay" class="form-label">Heartbeat Delay (seconds)</label>
+                                <input type="number" class="form-control ai-enhanced" id="heartbeatDelay" 
+                                       value="60" min="1" max="300">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="resetSettings">
+                    <i class="fa fa-undo me-2"></i>Reset to Default
+                </button>
+                <button type="button" class="btn btn-ai" id="applySettings">
+                    <i class="fa fa-check me-2"></i>Apply Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script>
+class AdditionalFeesReport {
+    constructor() {
+        this.table = null;
+        this.settings = {
+            sessionSampleRate: 10,
+            traceSampleRate: 100,
+            heartbeatDelay: 60,
+            enableAutoCalc: true,
+            enableSampling: true,
+            enableTracking: true
+        };
+        this.searchIndex = 0;
+        this.searchResults = [];
+        this.init();
+    }
+
+    init() {
+        this.loadData();
+        this.initEventListeners();
+        this.initTooltips();
+    }
+
+    async loadData() {
+        this.showLoading();
+        try {
+            // Simulate API call - replace with actual Supabase integration
+            const data = await this.fetchFromSupabase();
+            this.populateTable(data);
+            this.initDataTable();
+        } catch (error) {
+            this.showError('Failed to load data: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async fetchFromSupabase() {
+        // Simulate data - replace with actual Supabase query
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        property: 'Sunset Apartments',
+                        account: 'ACC-001',
+                        percentage: 15.5,
+                        feeType: 'Late Fee',
+                        amount: 75.00,
+                        dateApplied: '2024-01-15',
+                        status: 'Active',
+                        calculatedTotal: 86.25,
+                        notes: 'Applied after 5-day grace period'
+                    },
+                    {
+                        property: 'Ocean View Complex',
+                        account: 'ACC-002',
+                        percentage: 10.0,
+                        feeType: 'Pet Fee',
+                        amount: 50.00,
+                        dateApplied: '2024-01-10',
+                        status: 'Pending',
+                        calculatedTotal: 55.00,
+                        notes: 'Monthly pet fee'
+                    },
+                    {
+                        property: 'Garden Heights',
+                        account: 'ACC-003',
+                        percentage: 20.0,
+                        feeType: 'Damage Fee',
+                        amount: 200.00,
+                        dateApplied: '2024-01-12',
+                        status: 'Active',
+                        calculatedTotal: 240.00,
+                        notes: 'Carpet cleaning required'
+                    }
+                ]);
+            }, 1000);
+        });
+    }
+
+    populateTable(data) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        data.forEach((row, index) => {
+            const calculatedTotal = this.calculateTotal(row.amount, row.percentage);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="ai-enhanced">${row.property}</td>
+                <td>${row.account}</td>
+                <td class="ai-enhanced">${row.percentage}%</td>
+                <td>${row.feeType}</td>
+                <td class="ai-enhanced">$${row.amount.toFixed(2)}</td>
+                <td>${new Date(row.dateApplied).toLocaleDateString()}</td>
+                <td>
+                    <span class="badge ${this.getStatusBadgeClass(row.status)}">
+                        ${row.status}
+                    </span>
+                </td>
+                <td class="ai-enhanced fw-bold text-primary">$${calculatedTotal.toFixed(2)}</td>
+                <td>${row.notes}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="report.editRow(${index})">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="report.deleteRow(${index})">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    calculateTotal(amount, percentage) {
+        // AI calculation using the formula: amount + (amount * percentage/100)
+        const rate = percentage / 100;
+        return amount * (1 + rate);
+    }
+
+    initDataTable() {
+        if (this.table) {
+            this.table.destroy();
+        }
+        
+        this.table = $('#feesTable').DataTable({
+            responsive: true,
+            pageLength: 25,
+            order: [[0, 'asc']],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    className: 'btn btn-success d-none'
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn btn-info d-none'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn btn-danger d-none'
+                }
+            ],
+            language: {
+                search: "",
+                searchPlaceholder: "Search records...",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            drawCallback: () => {
+                this.enhanceAIFields();
+            }
+        });
+    }
+
+    enhanceAIFields() {
+        document.querySelectorAll('.ai-enhanced').forEach(element => {
+            if (!element.classList.contains('tooltip-added')) {
+                element.setAttribute('title', 'AI Enhanced Field');
+                element.classList.add('tooltip-added');
+            }
+        });
+    }
+
+    initEventListeners() {
+        // Toggle description
+        document.getElementById('toggleDescription').addEventListener('click', this.toggleDescription);
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => this.performSearch(e.target.value));
+        document.getElementById('searchPrev').addEventListener('click', () => this.navigateSearch(-1));
+        document.getElementById('searchNext').addEventListener('click', () => this.navigateSearch(1));
+        
+        // Action buttons
+        document.getElementById('refreshBtn').addEventListener('click', () => this.loadData());
+        document.getElementById('customizeBtn').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('customizeModal')).show();
+        });
+        
+        // Export buttons
+        document.getElementById('exportExcel').addEventListener('click', () => this.exportData('excel'));
+        document.getElementById('exportCsv').addEventListener('click', () => this.exportData('csv'));
+        
+        // Print buttons
+        document.getElementById('printLandscape').addEventListener('click', () => this.printReport('landscape'));
+        document.getElementById('printPortrait').addEventListener('click', () => this.printReport('portrait'));
+        
+        // Email form
+        document.getElementById('emailForm').addEventListener('submit', this.sendEmail.bind(this));
+        document.getElementById('emailReport').addEventListener('click', () => {
+            new bootstrap.Modal(document.getElementById('emailModal')).show();
+        });
+        
+        // Customize modal
+        document.getElementById('applySettings').addEventListener('click', this.applySettings.bind(this));
+        document.getElementById('resetSettings').addEventListener('click', this.resetSettings.bind(this));
+        
+        // Save layout
+        document.getElementById('saveLayout').addEventListener('click', this.saveLayout.bind(this));
+        
+        // View tour
+        document.getElementById('viewTourBtn').addEventListener('click', this.startTour.bind(this));
+    }
+
+    toggleDescription() {
+        const description = document.getElementById('reportDescription');
+        const icon = document.querySelector('.toggle-description i:last-child');
+        
+        if (description.style.display === 'none') {
+            description.style.display = 'block';
+            icon.className = 'fa fa-angle-down ms-1';
+        } else {
+            description.style.display = 'none';
+            icon.className = 'fa fa-angle-up ms-1';
+        }
+    }
+
+    performSearch(query) {
+        if (!this.table) return;
+        
+        this.table.search(query).draw();
+        this.searchResults = [];
+        this.searchIndex = 0;
+        
+        if (query) {
+            // Highlight search results
+            document.querySelectorAll('#feesTable tbody tr').forEach((row, index) => {
+                if (row.style.display !== 'none') {
+                    this.searchResults.push(index);
+                }
+            });
+        }
+    }
+
+    navigateSearch(direction) {
+        if (this.searchResults.length === 0) return;
+        
+        this.searchIndex += direction;
+        if (this.searchIndex < 0) this.searchIndex = this.searchResults.length - 1;
+        if (this.searchIndex >= this.searchResults.length) this.searchIndex = 0;
+        
+        // Scroll to result
+        const targetRow = document.querySelector(`#feesTable tbody tr:nth-child(${this.searchResults[this.searchIndex] + 1})`);
+        if (targetRow) {
+            targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetRow.classList.add('table-warning');
+            setTimeout(() => targetRow.classList.remove('table-warning'), 2000);
+        }
+    }
+
+    exportData(format) {
+        if (!this.table) return;
+        
+        const button = this.table.button(format === 'excel' ? 0 : 1);
+        button.trigger();
+        this.showSuccess(`Data exported as ${format.toUpperCase()}`);
+    }
+
+    printReport(orientation) {
+        const printWindow = window.open('', '_blank');
+        const tableHtml = document.getElementById('feesTable').outerHTML;
+        
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Additional Fees Report</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <style>
+                        @page { size: ${orientation}; margin: 1in; }
+                        body { font-size: 12px; }
+                        .ai-enhanced { background: rgba(102, 126, 234, 0.1) !important; }
+                        @media print {
+                            .btn { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>Additional Fees Report</h2>
+                    <p>Generated on ${new Date().toLocaleString()}</p>
+                    ${tableHtml}
+                </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    async sendEmail(e) {
+        e.preventDefault();
+        
+        this.showLoading();
+        
+        const formData = new FormData(e.target);
+        const emailData = {
+            to: formData.get('emailTo') || document.getElementById('emailTo').value,
+            subject: document.getElementById('emailSubject').value,
+            message: document.getElementById('emailMessage').value,
+            includePdf: document.getElementById('includePdf').checked
+        };
+        
+        try {
+            // Simulate email sending - replace with actual API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            this.showSuccess('Email sent successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('emailModal')).hide();
+        } catch (error) {
+            this.showError('Failed to send email: ' + error.message);
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    applySettings() {
+        this.settings.sessionSampleRate = parseFloat(document.getElementById('sessionSampleRate').value);
+        this.settings.traceSampleRate = parseFloat(document.getElementById('traceSampleRate').value);
+        this.settings.heartbeatDelay = parseInt(document.getElementById('heartbeatDelay').value);
+        this.settings.enableAutoCalc = document.getElementById('enableAutoCalc').checked;
+        this.settings.enableSampling = document.getElementById('enableSampling').checked;
+        this.settings.enableTracking = document.getElementById('enableTracking').checked;
+        
+        // Apply AI calculations based on settings
+        this.recalculateWithSettings();
+        
+        this.showSuccess('Settings applied successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('customizeModal')).hide();
+    }
+
+    resetSettings() {
+        this.settings = {
+            sessionSampleRate: 10,
+            traceSampleRate: 100,
+            heartbeatDelay: 60,
+            enableAutoCalc: true,
+            enableSampling: true,
+            enableTracking: true
+        };
+        
+        // Update form fields
+        document.getElementById('sessionSampleRate').value = this.settings.sessionSampleRate;
+        document.getElementById('traceSampleRate').value = this.settings.traceSampleRate;
+        document.getElementById('heartbeatDelay').value = this.settings.heartbeatDelay;
+        document.getElementById('enableAutoCalc').checked = this.settings.enableAutoCalc;
+        document.getElementById('enableSampling').checked = this.settings.enableSampling;
+        document.getElementById('enableTracking').checked = this.settings.enableTracking;
+        
+        this.showSuccess('Settings reset to default values');
+    }
+
+    recalculateWithSettings() {
+        if (!this.settings.enableAutoCalc) return;
+        
+        // Recalculate all totals based on current settings
+        document.querySelectorAll('#feesTable tbody tr').forEach(row => {
+            const amountCell = row.children[4];
+            const percentageCell = row.children[2];
+            const totalCell = row.children[7];
+            
+            if (amountCell && percentageCell && totalCell) {
+                const amount = parseFloat(amountCell.textContent.replace('$', ''));
+                const percentage = parseFloat(percentageCell.textContent.replace('%', ''));
+                
+                // Apply AI calculation with sampling rate adjustments
+                const adjustedPercentage = this.settings.enableSampling ? 
+                    percentage * (this.settings.sessionSampleRate / 100) : percentage;
+                
+                const newTotal = this.calculateTotal(amount, adjustedPercentage);
+                totalCell.textContent = `$${newTotal.toFixed(2)}`;
+            }
+        });
+    }
+
+    saveLayout() {
+        const layout = {
+            columns: this.table ? this.table.columns().visible().toArray() : [],
+            order: this.table ? this.table.order() : [],
+            pageLength: this.table ? this.table.page.len() : 25,
+            settings: this.settings,
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('additionalFeesLayout', JSON.stringify(layout));
+        this.showSuccess('Layout saved successfully!');
+    }
+
+    startTour() {
+        // Simple tour implementation
+        const steps = [
+            { element: '.report-title', text: 'This is your Additional Fees report with AI enhancements' },
+            { element: '.ai-enhanced', text: 'AI-enhanced fields provide smart calculations and insights' },
+            { element: '#searchInput', text: 'Use the search to quickly find specific records' },
+            { element: '#customizeBtn', text: 'Customize your report settings and AI parameters' }
+        ];
+        
+        let currentStep = 0;
+        
+        const showStep = () => {
+            if (currentStep >= steps.length) return;
+            
+            const step = steps[currentStep];
+            const element = document.querySelector(step.element);
+            
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.8)';
+                
+                setTimeout(() => {
+                    alert(step.text);
+                    element.style.boxShadow = '';
+                    currentStep++;
+                    if (currentStep < steps.length) {
+                        setTimeout(showStep, 1000);
+                    }
+                }, 1000);
+            }
+        };
+        
+        showStep();
+    }
+
+    editRow(index) {
+        // Implement row editing functionality
+        this.showSuccess('Edit functionality would be implemented here');
+    }
+
+    deleteRow(index) {
+        if (confirm('Are you sure you want to delete this record?')) {
+            // Implement row deletion
+            this.showSuccess('Record deleted successfully');
+        }
+    }
+
+    getStatusBadgeClass(status) {
+        switch (status.toLowerCase()) {
+            case 'active': return 'bg-success';
+            case 'pending': return 'bg-warning text-dark';
+            case 'inactive': return 'bg-secondary';
+            default: return 'bg-primary';
+        }
+    }
+
+    showLoading() {
+        document.getElementById('loadingOverlay').classList.remove('d-none');
+    }
+
+    hideLoading() {
+        document.getElementById('loadingOverlay').classList.add('d-none');
+    }
+
+    showSuccess(message) {
+        this.showMessage(message, 'success');
+    }
+
+    showError(message) {
+        this.showMessage(message, 'error');
+    }
+
+    showMessage(message, type) {
+        const container = document.getElementById('messageContainer');
+        const alertClass = type === 'success' ? 'success-message' : 'error-message';
+        
+        const alert = document.createElement('div');
+        alert.className = alertClass;
+        alert.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}</span>
+                <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+            </div>
+        `;
+        
+        container.appendChild(alert);
+        
+        setTimeout(() => {
+            if (alert.parentElement) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+
+    initTooltips() {
+        // Initialize Bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+}
+
+// Initialize the report when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.report = new AdditionalFeesReport();
+});
+</script>
+{% endblock %}

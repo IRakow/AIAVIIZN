@@ -1,0 +1,1472 @@
+<!-- AIVIIZN Template: AppFolio Property Manager -->
+<!-- Generated from: https://celticprop.appfolio.com/v_plus_services_marketplace/leasing_signals -->
+<!-- Timestamp: 20250821_015649 -->
+<!-- Beautiful AppFolio-inspired design -->
+
+{% extends "base.html" %}
+
+{% block title %}AppFolio Property Manager - AIVIIZN Property Manager{% endblock %}
+
+{% block styles %}
+<style>
+/* AppFolio-inspired styling converted for AIVIIZN */
+
+/* AppFolio-inspired color scheme */
+:root {
+    --appfolio-blue: #0066CC;
+    --appfolio-dark-blue: #0052A3;
+    --appfolio-light-blue: #4A90E2;
+    --appfolio-gray: #F8F9FA;
+    --appfolio-border: #E0E6ED;
+}
+
+/* AppFolio-style navigation */
+.aiviizn-nav {
+    background: var(--appfolio-blue);
+    border-bottom: 2px solid var(--appfolio-dark-blue);
+}
+
+/* AppFolio-style content areas */
+.aiviizn-content {
+    background: white;
+    border: 1px solid var(--appfolio-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* AppFolio-style data tables */
+.aiviizn-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--appfolio-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.aiviizn-table th {
+    background: var(--appfolio-gray);
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid var(--appfolio-border);
+}
+
+.aiviizn-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.aiviizn-table tr:hover {
+    background: #f8f9fa;
+}
+
+
+/* Page-specific styling */
+/* Adapted from AppFolio */
+
+  .login-alert {
+    p {
+      margin-bottom: 0;
+    }
+    ul {
+      margin-bottom: 0;
+    }
+  }
+
+/* Adapted from AppFolio */
+
+  @keyframes intercom-lightweight-app-launcher {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes intercom-lightweight-app-gradient {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes intercom-lightweight-app-messenger {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    40% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .intercom-lightweight-app {
+    position: fixed;
+    z-index: 2147483001;
+    width: 0;
+    height: 0;
+    font-family: intercom-font, "Helvetica Neue", "Apple Color Emoji", Helvetica, Arial, sans-serif;
+  }
+
+  .intercom-lightweight-app-gradient {
+    position: fixed;
+    z-index: 2147483002;
+    width: 500px;
+    height: 500px;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at bottom right,
+      rgba(29, 39, 54, 0.16) 0%,
+      rgba(29, 39, 54, 0) 72%);
+    animation: intercom-lightweight-app-gradient 200ms ease-out;
+  }
+
+  .intercom-lightweight-app-launcher {
+    position: fixed;
+    z-index: 2147483003;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none;
+    bottom: 20px;
+    right: 20px;
+    max-width: 48px;
+    width: 48px;
+    max-height: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #006eb7;
+    cursor: pointer;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
+    transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    box-sizing: content-box;
+  }
+
+
+  .intercom-lightweight-app-launcher:hover {
+    transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    transform: scale(1.1)
+  }
+
+  .intercom-lightweight-app-launcher:active {
+    transform: scale(0.85);
+    transition: transform 134ms cubic-bezier(0.45, 0, 0.2, 1);
+  }
+
+
+  .intercom-lightweight-app-launcher:focus {
+    outline: none;
+
+    
+  }
+
+  .intercom-lightweight-app-launcher-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    transition: transform 100ms linear, opacity 80ms linear;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg {
+    height: 44px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-custom-icon-open {
+    max-height: 24px;
+    max-width: 24px;
+
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize {
+    
+        opacity: 0;
+        transform: rotate(-60deg) scale(0);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-messenger {
+    position: fixed;
+    z-index: 2147483003;
+    overflow: hidden;
+    background-color: #ffffff;
+    animation: intercom-lightweight-app-messenger 250ms cubic-bezier(0, 1, 1, 1);
+    transform-origin: bottom right;
+
+    
+        width: 400px;
+        height: calc(100% - 104px);
+        max-height: 704px;
+        min-height: 250px;
+        right: 20px;
+        bottom: 84px;
+        box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+      
+
+    border-radius: 16px;
+  }
+
+  .intercom-lightweight-app-messenger-header {
+    height: 64px;
+    border-bottom: none;
+    background: #ffffff;
+  }
+
+  .intercom-lightweight-app-messenger-footer{
+    position:absolute;
+    bottom:0;
+    width: 100%;
+    height: 80px;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 21px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  @media print {
+    .intercom-lightweight-app {
+      display: none;
+    }
+  }
+
+
+
+/* AIVIIZN Beautiful Enhancements */
+.aiviizn-page {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.content-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.aiviizn-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 8px 8px 0 0;
+    margin: -30px -30px 30px -30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.aiviizn-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.aiviizn-header h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+.aiviizn-header p {
+    margin: 8px 0 0 0;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* Beautiful AppFolio-style buttons */
+.btn-appfolio {
+    background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-appfolio:hover {
+    background: linear-gradient(135deg, #0052A3 0%, #004182 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+}
+
+.btn-appfolio:active {
+    transform: translateY(0);
+}
+
+/* Beautiful data grid styling */
+.data-grid {
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    background: white;
+}
+
+.data-grid th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #495057;
+}
+
+.data-grid td {
+    padding: 12px;
+    border-bottom: 1px solid #f8f9fa;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.data-grid tr:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+    transition: all 0.2s ease;
+}
+
+.data-grid tr:last-child td {
+    border-bottom: none;
+}
+
+/* Beautiful currency formatting */
+.currency {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-weight: 600;
+    text-align: right;
+    font-size: 14px;
+}
+
+.currency.positive {
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.currency.negative {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Beautiful form styling */
+.aiviizn-form {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin: 20px 0;
+}
+
+.aiviizn-input {
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.aiviizn-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+    outline: none;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .aiviizn-header {
+        padding: 20px;
+        margin: -20px -20px 20px -20px;
+    }
+    
+    .data-grid {
+        font-size: 12px;
+    }
+    
+    .data-grid th,
+    .data-grid td {
+        padding: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="aiviizn-page leasing">
+<div class="content-wrapper">
+<div class="aiviizn-header">
+<h1><i class="fas fa-chart-line me-3"></i>AppFolio Property Manager</h1>
+<p class="mb-0">Professional property management reporting with beautiful design</p>
+</div>
+<!-- AppFolio Content Converted to Beautiful AIVIIZN Design -->
+<div class="aiviizn-content-area">
+<body>
+<div class="aiviizn-container px-sm-0 px-md-1">
+<div class="aiviizn-row mt-sm-5 mb-0">
+<div class="aiviizn-col-12 col-sm-9 col-md-7 col-lg-6 col-xl-5 px-0 mx-auto pt-sm-5">
+<div class="aiviizn-aiviizn-card p-3 p-sm-5">
+<div class="aiviizn-mt-4 d-flex justify-content-center">
+<img alt="AIVIIZN Property Manager" height="56" src="https://public.cdn.aiviizn.com/public/images/apm-primary-skyblue.svg"/>
+</div>
+<section class="aiviizn-bg-white overflow-hidden mx-1 mx-sm-3">
+<div class="aiviizn-w-100 mt-5 mb-3 mx-sm-auto" id="login_content">
+<div class="aiviizn-mx-4 mx-sm-1">
+<style>
+  .login-alert {
+    p {
+      margin-bottom: 0;
+    }
+    ul {
+      margin-bottom: 0;
+    }
+  }
+</style>
+<h1 class="aiviizn-heading-login">Log in to your account</h1>
+<form accept-charset="UTF-8" action="/users/sign_in" class="aiviizn-form" data-type="html" id="new_user" method="post" novalidate="novalidate"><input autocomplete="off" name="authenticity_token" type="hidden" value="1dWwnWzjU4wjK5J6ycWkYsLnxGLWfjw0e3X6KxY1S-yx3gD10YSlelKO0YZUlJV7XOuXRhMyZ0DMAxcuWQxU9g"/>
+<!--  this hidden field is for backwards compatibility-->
+<!--  it can be removed once all users of mobile app have updated to the new version-->
+<input autocomplete="off" id="require_reverification" name="require_reverification" type="hidden" value="true"/>
+<input id="fingerprint" name="fingerprint" type="hidden" value="eeb1757d1436605f0a15767ff18881ff"/>
+<input id="nfo" name="nfo" type="hidden"/>
+<div class="aiviizn-form-group mb-3 my-4">
+<label class="aiviizn-col-form-label" for="user_email">Email</label>
+<input class="aiviizn-aiviizn-input string js-autofocus" id="user_email" name="user[email]" type="email" value=""/>
+</div>
+<div class="aiviizn-form-group mb-3">
+<label class="aiviizn-col-form-label" for="user_password">Password</label>
+<input class="aiviizn-aiviizn-input" id="user_password" name="user[password]" type="password"/>
+</div>
+<p class="aiviizn-d-block pt-2">
+<a href="/users/password/new">Forgot your password?</a>
+</p>
+<div class="aiviizn-btn-toolbar mt-4 pt-2">
+<input class="aiviizn-btn btn-appfolio w-100" data-disable-with="Please Wait..." id="log_in_button" name="commit" type="submit" value="Log In"/>
+</div>
+<div class="aiviizn-d-flex flex-column pt-2">
+<div id="resident-owner-help"><div class="aiviizn-text-center d-flex justify-content-center"><div>Trying to log in as a resident or owner?<span class="aiviizn-ms-1 mb-5" style="cursor: pointer;"><button aria-disabled="false" aria-label="More Info" class="aiviizn-p-0 btn btn-link" type="button"><i aria-hidden="true" class="aiviizn-fa-solid fa-circle-question text-primary" id="help-bubble-0"></i></button></span></div></div></div>
+<div class="aiviizn-row justify-content-around mt-3">
+<div class="aiviizn-col-12 col-xs-12 col-sm-6 mb-2">
+<a class="aiviizn-btn btn-secondary w-100" href="https://aiviizn.aiviizn.com/connect" id="resident-hoa-portal-link">Resident/HOA Portal</a>
+</div>
+<div class="aiviizn-col-12 col-xs-12 col-sm-6 mb-2">
+<a class="aiviizn-btn btn-secondary w-100" href="https://aiviizn.aiviizn.com/oportal" id="owner-portal-link">Owner Portal</a>
+</div>
+</div>
+</div>
+</form>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+<div class="aiviizn-text-center w-100 login-feedback" data-site-key="6Lcy0jclAAAAAIwnicjW9eug0K-QpmH9S9cb9zA2" id="feedback-footer"><button aria-disabled="false" class="aiviizn-btn btn-outline-primary" type="button"><span class="aiviizn-fw-bold text-uppercase"><i aria-hidden="true" class="aiviizn-fa-solid fa-envelope me-2"></i>Feedback</span></button></div><div><div class="aiviizn-grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="aiviizn-grecaptcha-logo"><iframe frameborder="0" height="60" name="a-5a1q0orl74jx" role="presentation" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" scrolling="no" src="https://www.google.com/recaptcha/enterprise/anchor?ar=1&amp;k=6Lcy0jclAAAAAIwnicjW9eug0K-QpmH9S9cb9zA2&amp;co=aHR0cHM6Ly9jZWx0aWNwcm9wLmFwcGZvbGlvLmNvbTo0NDM.&amp;hl=en&amp;v=07cvpCr3Xe3g2ttJNUkC6W0J&amp;size=invisible&amp;anchor-ms=20000&amp;execute-ms=15000&amp;cb=piimnzaw31ws" title="reCAPTCHA" width="256"></iframe></div><div class="aiviizn-grecaptcha-error"></div><textarea class="aiviizn-g-recaptcha-response" id="g-recaptcha-response-100000" name="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div><iframe aria-hidden="true" id="intercom-frame" style="position: absolute !important; opacity: 0 !important; width: 1px !important; height: 1px !important; top: 0 !important; left: 0 !important; border: none !important; display: block !important; z-index: -1 !important; pointer-events: none;" tabindex="-1" title="Intercom"></iframe><div class="aiviizn-intercom-lightweight-app"><div aria-label="Open Intercom Messenger" aria-live="polite" class="aiviizn-intercom-lightweight-app-launcher intercom-launcher" role="button" tabindex="0"><div class="aiviizn-intercom-lightweight-app-launcher-icon intercom-lightweight-app-launcher-icon-open"><img alt="" class="aiviizn-intercom-lightweight-app-launcher-custom-icon-open" src="https://downloads.intercomcdn.com/i/o/u3fkdwwh/594316/3ca13eddb05d09673ab28c9e9349/5d73ede4689a6d589e63cc43c16f9e88.png"/></div><div class="aiviizn-intercom-lightweight-app-launcher-icon intercom-lightweight-app-launcher-icon-minimize"><svg fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M18.601 8.39897C18.269 8.06702 17.7309 8.06702 17.3989 8.39897L12 13.7979L6.60099 8.39897C6.26904 8.06702 5.73086 8.06702 5.39891 8.39897C5.06696 8.73091 5.06696 9.2691 5.39891 9.60105L11.3989 15.601C11.7309 15.933 12.269 15.933 12.601 15.601L18.601 9.60105C18.9329 9.2691 18.9329 8.73091 18.601 8.39897Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div></div><style id="intercom-lightweight-app-style" type="text/css">
+  @keyframes intercom-lightweight-app-launcher {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes intercom-lightweight-app-gradient {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes intercom-lightweight-app-messenger {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    40% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .intercom-lightweight-app {
+    position: fixed;
+    z-index: 2147483001;
+    width: 0;
+    height: 0;
+    font-family: intercom-font, "Helvetica Neue", "Apple Color Emoji", Helvetica, Arial, sans-serif;
+  }
+
+  .intercom-lightweight-app-gradient {
+    position: fixed;
+    z-index: 2147483002;
+    width: 500px;
+    height: 500px;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at bottom right,
+      rgba(29, 39, 54, 0.16) 0%,
+      rgba(29, 39, 54, 0) 72%);
+    animation: intercom-lightweight-app-gradient 200ms ease-out;
+  }
+
+  .intercom-lightweight-app-launcher {
+    position: fixed;
+    z-index: 2147483003;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none;
+    bottom: 20px;
+    right: 20px;
+    max-width: 48px;
+    width: 48px;
+    max-height: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #006eb7;
+    cursor: pointer;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
+    transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    box-sizing: content-box;
+  }
+
+
+  .intercom-lightweight-app-launcher:hover {
+    transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    transform: scale(1.1)
+  }
+
+  .intercom-lightweight-app-launcher:active {
+    transform: scale(0.85);
+    transition: transform 134ms cubic-bezier(0.45, 0, 0.2, 1);
+  }
+
+
+  .intercom-lightweight-app-launcher:focus {
+    outline: none;
+
+    
+  }
+
+  .intercom-lightweight-app-launcher-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    transition: transform 100ms linear, opacity 80ms linear;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg {
+    height: 44px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-custom-icon-open {
+    max-height: 24px;
+    max-width: 24px;
+
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize {
+    
+        opacity: 0;
+        transform: rotate(-60deg) scale(0);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-messenger {
+    position: fixed;
+    z-index: 2147483003;
+    overflow: hidden;
+    background-color: #ffffff;
+    animation: intercom-lightweight-app-messenger 250ms cubic-bezier(0, 1, 1, 1);
+    transform-origin: bottom right;
+
+    
+        width: 400px;
+        height: calc(100% - 104px);
+        max-height: 704px;
+        min-height: 250px;
+        right: 20px;
+        bottom: 84px;
+        box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+      
+
+    border-radius: 16px;
+  }
+
+  .intercom-lightweight-app-messenger-header {
+    height: 64px;
+    border-bottom: none;
+    background: #ffffff;
+  }
+
+  .intercom-lightweight-app-messenger-footer{
+    position:absolute;
+    bottom:0;
+    width: 100%;
+    height: 80px;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 21px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  @media print {
+    .intercom-lightweight-app {
+      display: none;
+    }
+  }
+</style></div></body>
+</div>
+<!-- Interactive Forms with Beautiful Styling -->
+<div class="aiviizn-forms-section">
+<form accept-charset="UTF-8" action="/aiviizn/users/sign_in" class="form" data-type="html" id="new_user" method="post" novalidate="novalidate"><input autocomplete="off" name="authenticity_token" type="hidden" value="1dWwnWzjU4wjK5J6ycWkYsLnxGLWfjw0e3X6KxY1S-yx3gD10YSlelKO0YZUlJV7XOuXRhMyZ0DMAxcuWQxU9g"/>
+<!--  this hidden field is for backwards compatibility-->
+<!--  it can be removed once all users of mobile app have updated to the new version-->
+<input autocomplete="off" id="require_reverification" name="require_reverification" type="hidden" value="true"/>
+<input id="fingerprint" name="fingerprint" type="hidden" value="eeb1757d1436605f0a15767ff18881ff"/>
+<input id="nfo" name="nfo" type="hidden"/>
+<div class="form-group mb-3 my-4">
+<label class="col-form-label" for="user_email">Email</label>
+<input class="form-control string js-autofocus" id="user_email" name="user[email]" type="email" value=""/>
+</div>
+<div class="form-group mb-3">
+<label class="col-form-label" for="user_password">Password</label>
+<input class="form-control" id="user_password" name="user[password]" type="password"/>
+</div>
+<p class="d-block pt-2">
+<a href="/users/password/new">Forgot your password?</a>
+</p>
+<div class="btn-toolbar mt-4 pt-2">
+<input class="btn btn-primary w-100" data-disable-with="Please Wait..." id="log_in_button" name="commit" type="submit" value="Log In"/>
+</div>
+<div class="d-flex flex-column pt-2">
+<div id="resident-owner-help"><div class="text-center d-flex justify-content-center"><div>Trying to log in as a resident or owner?<span class="ms-1 mb-5" style="cursor: pointer;"><button aria-disabled="false" aria-label="More Info" class="p-0 btn btn-link" type="button"><i aria-hidden="true" class="fa-solid fa-circle-question text-primary" id="help-bubble-0"></i></button></span></div></div></div>
+<div class="row justify-content-around mt-3">
+<div class="col-12 col-xs-12 col-sm-6 mb-2">
+<a class="btn btn-secondary w-100" href="/connect" id="resident-hoa-portal-link">Resident/HOA Portal</a>
+</div>
+<div class="col-12 col-xs-12 col-sm-6 mb-2">
+<a class="btn btn-secondary w-100" href="/oportal" id="owner-portal-link">Owner Portal</a>
+</div>
+</div>
+</div>
+</form>
+</div>
+<!-- Data Visualization Section -->
+<div class="mt-4" id="data-visualization">
+<h3 class="mb-3"><i class="fas fa-chart-bar me-2"></i>Data Insights</h3>
+<div class="row">
+<div class="col-md-8">
+<canvas id="main-chart" style="max-height: 400px;"></canvas>
+</div>
+<div class="col-md-4">
+<div class="card border-0 shadow-sm">
+<div class="card-body">
+<h5 class="card-title">Quick Stats</h5>
+<div id="quick-stats">
+<!-- Stats will be populated by JavaScript -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Export and Action Buttons -->
+<div class="mt-4 d-flex justify-content-between align-items-center">
+<div class="btn-group" role="group">
+<button class="btn btn-appfolio" onclick="exportToPDF()" type="button">
+<i class="fas fa-file-pdf me-2"></i>Export PDF
+                </button>
+<button class="btn btn-outline-primary" onclick="exportToExcel()" type="button">
+<i class="fas fa-file-excel me-2"></i>Export Excel
+                </button>
+<button class="btn btn-outline-secondary" onclick="refreshData()" type="button">
+<i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+</div>
+<small class="text-muted">
+                Last updated: <span id="last-updated">{ page_data.timestamp }</span>
+</small>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js for beautiful visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// AIVIIZN JavaScript - Beautiful AppFolio functionality
+console.log('🚀 AIVIIZN AppFolio Property Manager - Loading...');
+
+// Supabase connection
+const supabaseUrl = '{{ supabase_url }}';
+const supabaseAnonKey = '{{ supabase_anon_key }}';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+// Page-specific calculations converted from AppFolio
+// Extracted calculations from AppFolio
+// Calculation: @keyframes intercom-lightweight-app-launcher {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes intercom-lightweight-app-gradient {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes intercom-lightweight-app-messenger {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    40% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .intercom-lightweight-app {
+    position: fixed;
+    z-index: 2147483001;
+    width: 0;
+    height: 0;
+    font-family: intercom-font, "Helvetica Neue", "Apple Color Emoji", Helvetica, Arial, sans-serif;
+  }
+
+  .intercom-lightweight-app-gradient {
+    position: fixed;
+    z-index: 2147483002;
+    width: 500px;
+    height: 500px;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at bottom right,
+      rgba(29, 39, 54, 0.16) 0%,
+      rgba(29, 39, 54, 0) 72%);
+    animation: intercom-lightweight-app-gradient 200ms ease-out;
+  }
+
+  .intercom-lightweight-app-launcher {
+    position: fixed;
+    z-index: 2147483003;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none;
+    bottom: 20px;
+    right: 20px;
+    max-width: 48px;
+    width: 48px;
+    max-height: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #006eb7;
+    cursor: pointer;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06), 0 2px 32px 0 rgba(0, 0, 0, 0.16);
+    transition: transform 167ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    box-sizing: content-box;
+  }
+
+
+  .intercom-lightweight-app-launcher:hover {
+    transition: transform 250ms cubic-bezier(0.33, 0.00, 0.00, 1.00);
+    transform: scale(1.1)
+  }
+
+  .intercom-lightweight-app-launcher:active {
+    transform: scale(0.85);
+    transition: transform 134ms cubic-bezier(0.45, 0, 0.2, 1);
+  }
+
+
+  .intercom-lightweight-app-launcher:focus {
+    outline: none;
+
+    
+  }
+
+  .intercom-lightweight-app-launcher-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    transition: transform 100ms linear, opacity 80ms linear;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-open svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve {
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg {
+    height: 44px;
+  }
+
+  .intercom-lightweight-app-launcher-icon-self-serve svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-launcher-custom-icon-open {
+    max-height: 24px;
+    max-width: 24px;
+
+    
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize {
+    
+        opacity: 0;
+        transform: rotate(-60deg) scale(0);
+      
+  }
+
+  .intercom-lightweight-app-launcher-icon-minimize svg path {
+    fill: rgb(255, 255, 255);
+  }
+
+  .intercom-lightweight-app-messenger {
+    position: fixed;
+    z-index: 2147483003;
+    overflow: hidden;
+    background-color: #ffffff;
+    animation: intercom-lightweight-app-messenger 250ms cubic-bezier(0, 1, 1, 1);
+    transform-origin: bottom right;
+
+    
+        width: 400px;
+        height: calc(100% - 104px);
+        max-height: 704px;
+        min-height: 250px;
+        right: 20px;
+        bottom: 84px;
+        box-shadow: 0 5px 40px rgba(0,0,0,0.16);
+      
+
+    border-radius: 16px;
+  }
+
+  .intercom-lightweight-app-messenger-header {
+    height: 64px;
+    border-bottom: none;
+    background: #ffffff;
+  }
+
+  .intercom-lightweight-app-messenger-footer{
+    position:absolute;
+    bottom:0;
+    width: 100%;
+    height: 80px;
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 21px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  @media print {
+    .intercom-lightweight-app {
+      display: none;
+    }
+  }
+// Context: @keyframes intercom-lightweight-app-launcher {
+    from {
+      opacity: 0;
+      transform: scale(0
+
+
+
+// Beautiful AIVIIZN Database Class
+class AIVIIZNDatabase {
+    constructor() {
+        this.tableName = 'lease_agreements';
+        this.cache = new Map();
+    }
+    
+    // Load data for this beautiful page
+    async loadPageData() {
+        try {
+            console.log('📊 Loading data for AppFolio Property Manager...');
+            const { data, error } = await supabase
+                .from(this.tableName)
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            this.cache.set('pageData', data);
+            this.renderBeautifulData(data);
+            this.updateCalculations(data);
+            this.createVisualization(data);
+            
+            console.log('✅ Data loaded successfully!');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            this.showErrorMessage('Failed to load data. Please try again.');
+        }
+    }
+    
+    // Render data in beautiful AppFolio-style tables
+    renderBeautifulData(data) {
+        const tableContainer = document.querySelector('.data-grid');
+        if (!tableContainer || !data.length) return;
+        
+        // Create beautiful table HTML
+        let tableHTML = '<table class="table table-hover data-grid">';
+        
+        // Beautiful header
+        tableHTML += '<thead><tr>';
+        Object.keys(data[0]).forEach(key => {
+            if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                tableHTML += `<th>${this.formatColumnName(key)}</th>`;
+            }
+        });
+        tableHTML += '</tr></thead>';
+        
+        // Beautiful body
+        tableHTML += '<tbody>';
+        data.forEach(row => {
+            tableHTML += '<tr>';
+            Object.entries(row).forEach(([key, value]) => {
+                if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
+                    const formattedValue = this.formatCellValue(key, value);
+                    tableHTML += `<td>${formattedValue}</td>`;
+                }
+            });
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        
+        tableContainer.innerHTML = tableHTML;
+    }
+    
+    // Format column names beautifully
+    formatColumnName(name) {
+        return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+    
+    // Format cell values beautifully
+    formatCellValue(key, value) {
+        if (value === null || value === undefined) return '<em class="text-muted">—</em>';
+        
+        // Currency formatting
+        if (key.includes('amount') || key.includes('balance') || key.includes('total')) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                const formatted = this.formatCurrency(numValue);
+                const cssClass = numValue >= 0 ? 'positive' : 'negative';
+                return `<span class="currency ${cssClass}">${formatted}</span>`;
+            }
+        }
+        
+        // Date formatting
+        if (key.includes('date') || key.includes('time')) {
+            return new Date(value).toLocaleDateString();
+        }
+        
+        // Percentage formatting
+        if (key.includes('percent') || key.includes('rate')) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                return `<span class="badge bg-info">${numValue}%</span>`;
+            }
+        }
+        
+        return value;
+    }
+    
+    // Beautiful currency formatting
+    formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
+    
+    // Update calculations with beautiful animations
+    updateCalculations(data) {
+        console.log('🧮 Updating calculations...');
+        
+        // Calculate totals
+        const totals = this.calculateTotals(data);
+        
+        // Update UI with beautiful animations
+        Object.entries(totals).forEach(([key, value]) => {
+            const element = document.querySelector(`[data-calculation="${key}"]`);
+            if (element) {
+                this.animateValueChange(element, value);
+            }
+        });
+        
+        
+// Calculate grand totals for financial data
+function calculateGrandTotal() {
+    let total = 0;
+    const values = document.querySelectorAll('.currency-value');
+    values.forEach(value => {
+        const amount = parseFloat(value.textContent.replace(/[$,]/g, ''));
+        if (!isNaN(amount)) {
+            total += amount;
+        }
+    });
+    
+    const totalElement = document.querySelector('.grand-total');
+    if (totalElement) {
+        totalElement.textContent = formatCurrency(total);
+    }
+}
+
+// Format currency values
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+
+    }
+    
+    // Create beautiful data visualization
+    createVisualization(data) {
+        const ctx = document.getElementById('main-chart');
+        if (!ctx || !data.length) return;
+        
+        // Prepare data for Chart.js
+        const chartData = this.prepareChartData(data);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'AppFolio Property Manager Trends',
+                        font: {
+                            family: 'Inter',
+                            size: 16,
+                            weight: '600'
+                        }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    },
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    }
+                }
+            }
+        });
+    }
+    
+    // Prepare chart data from database
+    prepareChartData(data) {
+        // This would be customized based on the specific page type
+        return {
+            labels: data.map((_, index) => `Period ${index + 1}`),
+            datasets: [{
+                label: 'Values',
+                data: data.map(row => Object.values(row)[1]), // First numeric column
+                borderColor: 'rgb(11, 83, 148)',
+                backgroundColor: 'rgba(11, 83, 148, 0.1)',
+                fill: true
+            }]
+        };
+    }
+    
+    // Calculate totals and summaries
+    calculateTotals(data) {
+        const totals = {};
+        
+        if (!data.length) return totals;
+        
+        // Calculate sums for numeric columns
+        Object.keys(data[0]).forEach(key => {
+            if (key.includes('amount') || key.includes('balance') || key.includes('total')) {
+                totals[key] = data.reduce((sum, row) => {
+                    const value = parseFloat(row[key]) || 0;
+                    return sum + value;
+                }, 0);
+            }
+        });
+        
+        return totals;
+    }
+    
+    // Animate value changes
+    animateValueChange(element, newValue) {
+        const currentValue = parseFloat(element.textContent.replace(/[^\d.-]/g, '')) || 0;
+        const duration = 1000;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            
+            const interpolatedValue = currentValue + (newValue - currentValue) * easeOutQuart;
+            
+            if (element.classList.contains('currency')) {
+                element.textContent = this.formatCurrency(interpolatedValue);
+            } else {
+                element.textContent = Math.round(interpolatedValue).toLocaleString();
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+    
+    // Show beautiful error messages
+    showErrorMessage(message) {
+        const alertHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        const container = document.querySelector('.content-wrapper');
+        container.insertAdjacentHTML('afterbegin', alertHTML);
+    }
+}
+
+// Initialize beautiful page functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎨 Initializing beautiful AIVIIZN page...');
+    
+    const db = new AIVIIZNDatabase();
+    db.loadPageData();
+    
+    // Initialize all beautiful interactions
+    initializeFilters();
+    initializeDatePickers();
+    initializeDataTables();
+    initializeCalculations();
+    initializeAnimations();
+    
+    console.log('✨ Beautiful AIVIIZN page ready!');
+});
+
+// Beautiful filter functionality
+function initializeFilters() {
+    const filters = document.querySelectorAll('.filter-control');
+    filters.forEach(filter => {
+        filter.addEventListener('change', function() {
+            const loading = document.querySelector('.content-wrapper');
+            loading.classList.add('loading');
+            
+            setTimeout(() => {
+                updateDataDisplay();
+                loading.classList.remove('loading');
+            }, 500);
+        });
+    });
+}
+
+// Beautiful date picker initialization
+function initializeDatePickers() {
+    const datePickers = document.querySelectorAll('.date-picker');
+    datePickers.forEach(picker => {
+        picker.addEventListener('change', function() {
+            refreshReportData();
+        });
+    });
+}
+
+// Beautiful data table functionality
+function initializeDataTables() {
+    const tables = document.querySelectorAll('.data-grid');
+    tables.forEach(table => {
+        addTableSorting(table);
+        addTableFiltering(table);
+        addTableAnimations(table);
+    });
+}
+
+// Beautiful real-time calculations
+function initializeCalculations() {
+    const calculationFields = document.querySelectorAll('.calculation-field');
+    calculationFields.forEach(field => {
+        field.addEventListener('input', function() {
+            recalculateAllTotals();
+        });
+    });
+}
+
+// Beautiful animations
+function initializeAnimations() {
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+            }
+        });
+    });
+    
+    document.querySelectorAll('.data-grid, .aiviizn-form, .card').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+// Export functions
+function exportToPDF() {
+    console.log('📄 Exporting to beautiful PDF...');
+    // Implementation would go here
+    alert('PDF export functionality would be implemented here');
+}
+
+function exportToExcel() {
+    console.log('📊 Exporting to Excel...');
+    // Implementation would go here
+    alert('Excel export functionality would be implemented here');
+}
+
+function refreshData() {
+    console.log('🔄 Refreshing data...');
+    const db = new AIVIIZNDatabase();
+    db.loadPageData();
+    
+    // Update timestamp
+    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+`;
+document.head.appendChild(style);
+
+</script>
+{% endblock %}

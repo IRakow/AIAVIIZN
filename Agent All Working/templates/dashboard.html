@@ -1,0 +1,586 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AIVIIZN{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Dashboard</h2>
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>View By: All</option>
+                <option>View By: Property</option>
+                <option>View By: Portfolio</option>
+            </select>
+            <button class="btn btn-sm btn-primary">
+                <i class="fas fa-cog"></i> Customize
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="content-body" style="padding: 15px; background: #f8f9fa;">
+    <!-- Move Ins Section -->
+    <div class="dashboard-section mb-4">
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    <span class="badge bg-success me-2">NEW</span>
+                    Move Ins Updated
+                    <small class="text-muted ms-2">We've added some key information to help track the progress of your move-ins.</small>
+                </h6>
+                <button class="btn btn-sm btn-outline-primary">FEEDBACK</button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Future Tenant</th>
+                                <th>Property - Unit</th>
+                                <th>Lease</th>
+                                <th>Portal</th>
+                                <th>Balance</th>
+                                <th>Insurance</th>
+                                <th>Move In Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for movein in recent_moveins %}
+                            <tr>
+                                <td>{{ movein.tenant }}</td>
+                                <td>{{ movein.property }}</td>
+                                <td><span class="badge bg-success">{{ movein.lease }}</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>${{ "%.2f"|format(movein.balance) }}</td>
+                                <td>
+                                    {% if movein.insurance == "Covered" %}
+                                    <span class="badge bg-success">Covered</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Not Covered</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ movein.move_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Row -->
+    <div class="row mb-4">
+        <!-- Delinquencies Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Delinquencies</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-around text-center">
+                        <div>
+                            <h2 class="text-primary">{{ stats.delinquencies['0_30'] }}</h2>
+                            <small class="text-muted">0-30 DAYS</small>
+                        </div>
+                        <div>
+                            <h2 class="text-warning">{{ stats.delinquencies['31_60'] }}</h2>
+                            <small class="text-muted">31-60 DAYS</small>
+                        </div>
+                        <div>
+                            <h2 class="text-danger">{{ stats.delinquencies['61_plus'] }}</h2>
+                            <small class="text-muted">61+ DAYS</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Online Payments Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Online Payments</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <h2 class="text-primary">{{ stats.online_payments.percentage }}%</h2>
+                            <small class="text-muted">Payments Collected Online</small>
+                        </div>
+                        <div class="col-6 text-center">
+                            <h2 class="text-success">{{ stats.online_payments.units_paid }}%</h2>
+                            <small class="text-muted">Units Paid Online</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Card -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Notifications</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Activities</strong>
+                        <div class="d-flex justify-content-between">
+                            <span>{{ stats.notifications.activities }} Due in the next 7 days</span>
+                            <span class="text-danger">10667 Overdue</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Bills</strong>
+                        <div>{{ stats.notifications.bills }} Pending approval</div>
+                    </div>
+                    <div>
+                        <strong>Purchase Orders</strong>
+                        <div>{{ stats.notifications.purchase_orders }} Pending approval</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Leasing Activity -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Leasing Activity (Last 30 Days)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <canvas id="guestCardsChart" style="max-height: 150px;"></canvas>
+                            <div class="text-center mt-2">
+                                <h4>{{ stats.leasing.guest_cards }}</h4>
+                                <small class="text-muted">TOTAL GUEST CARDS</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <canvas id="applicationsChart" style="max-height: 150px;"></canvas>
+                            <div class="text-center mt-2">
+                                <h4>{{ stats.leasing.applications }}</h4>
+                                <small class="text-muted">TOTAL APPLICATIONS</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <h5 class="text-primary">{{ stats.leasing.out_for_signing }}</h5>
+                            <small>Out for Signing</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-info">{{ stats.leasing.ready_to_countersign }}</h5>
+                            <small>Ready to Countersign</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-success">{{ stats.leasing.executed }}</h5>
+                            <small>Fully Executed</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-warning">{{ stats.leasing.average_turnover }}</h5>
+                            <small>days Average Turnover Time</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Performance Metrics -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Key Performance Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <h4 class="text-primary">${{ "{:,.2f}".format(stats.financials.total_income) }}</h4>
+                            <small>Total Income</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-danger">${{ "{:,.2f}".format(stats.financials.total_expense) }}</h4>
+                            <small>Total Expense</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-success">${{ "{:,.2f}".format(stats.financials.market_rent) }}</h4>
+                            <small>Total Market Rent</small>
+                        </div>
+                    </div>
+                    <canvas id="performanceChart" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance and Insurance Row -->
+    <div class="row mb-4">
+        <!-- Maintenance -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Maintenance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <canvas id="workOrdersChart" style="max-height: 150px;"></canvas>
+                            <div class="text-center mt-2">
+                                <h4>{{ stats.maintenance.work_orders.new + stats.maintenance.work_orders.assigned + stats.maintenance.work_orders.completed }}</h4>
+                                <small class="text-muted">TOTAL WORK ORDERS</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mt-4">
+                                <div class="mb-2">
+                                    <strong>{{ stats.maintenance.work_orders.new }}</strong> New
+                                </div>
+                                <div class="mb-2">
+                                    <strong>{{ stats.maintenance.work_orders.assigned }}</strong> Assigned
+                                </div>
+                                <div class="mb-2">
+                                    <strong>0</strong> Estimate Requested
+                                </div>
+                                <div class="mb-2">
+                                    <strong>5</strong> Scheduled
+                                </div>
+                                <div class="mb-2">
+                                    <strong>15</strong> Waiting
+                                </div>
+                                <div class="mb-2">
+                                    <strong>21</strong> Work Done, Unbilled in Last 60 Days
+                                </div>
+                                <div class="mb-2">
+                                    <strong>0</strong> Ready to Bill
+                                </div>
+                                <div>
+                                    <strong>{{ stats.maintenance.work_orders.completed }}</strong> Completed, Unbilled in Last 60 Days
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insurance Coverage -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Insurance Coverage</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <canvas id="insuranceChart" style="max-height: 150px;"></canvas>
+                            <div class="text-center mt-2">
+                                <h4>1437</h4>
+                                <small class="text-muted">TOTAL UNITS</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mt-4">
+                                <div class="mb-2">
+                                    <strong>{{ stats.insurance.renters }}</strong> Renters Insurance
+                                </div>
+                                <div class="mb-2">
+                                    <strong>{{ stats.insurance.liability }}</strong> Liability to Landlord Insurance
+                                </div>
+                                <div class="mb-2">
+                                    <strong>0</strong> Both Renters and Liability to Landlord Insurance
+                                </div>
+                                <div class="mb-2">
+                                    <strong>22</strong> Policy Expiring in Next 30 Days
+                                </div>
+                                <div>
+                                    <strong>105</strong> No Insurance
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center mt-3 pt-3 border-top">
+                        <div class="col-4">
+                            <h5 class="text-info">{{ stats.insurance.total_coverage }}</h5>
+                            <small>TOTAL COVERAGE</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-info">34.86%</h5>
+                            <small>RENTERS INSURANCE COVERAGE</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-info">57.41%</h5>
+                            <small>LIABILITY TO LANDLORD COVERAGE</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">Portfolio Summary</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Beds</th>
+                            <th>Units</th>
+                            <th>Rented</th>
+                            <th>Available</th>
+                            <th>Vacant Unrented</th>
+                            <th>Avg Days Vacant</th>
+                            <th>Move Ins</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>7</td>
+                            <td>7</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0.00</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>56</td>
+                            <td>47</td>
+                            <td>11</td>
+                            <td>9</td>
+                            <td>80.44</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>307</td>
+                            <td>278</td>
+                            <td>40</td>
+                            <td>29</td>
+                            <td>254.52</td>
+                            <td>7</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>749</td>
+                            <td>699</td>
+                            <td>71</td>
+                            <td>50</td>
+                            <td>109.42</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>94</td>
+                            <td>87</td>
+                            <td>9</td>
+                            <td>7</td>
+                            <td>231.43</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0.00</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td>1214</td>
+                            <td>1119</td>
+                            <td>131</td>
+                            <td>95</td>
+                            <td></td>
+                            <td>20</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Color palette matching original
+    const colors = {
+        primary: '#3B82F6',
+        success: '#10B981',
+        warning: '#F59E0B',
+        danger: '#EF4444',
+        info: '#06B6D4',
+        gray: '#6B7280',
+        lightGray: '#E5E7EB'
+    };
+
+    // Guest Cards Chart
+    const guestCardsCtx = document.getElementById('guestCardsChart');
+    if (guestCardsCtx) {
+        new Chart(guestCardsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Pre-Qualified', 'Inactive', 'Waitlisted', 'Application Completed', 'Cold'],
+                datasets: [{
+                    data: [250, 30, 50, 20, 15, 6],
+                    backgroundColor: [colors.success, colors.primary, colors.gray, colors.warning, colors.info, colors.lightGray],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Applications Chart
+    const applicationsCtx = document.getElementById('applicationsChart');
+    if (applicationsCtx) {
+        new Chart(applicationsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['New', 'Approved', 'Denied', 'Decision Pending', 'Canceled'],
+                datasets: [{
+                    data: [5, 30, 10, 15, 4],
+                    backgroundColor: [colors.primary, colors.success, colors.danger, colors.warning, colors.gray],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Work Orders Chart
+    const workOrdersCtx = document.getElementById('workOrdersChart');
+    if (workOrdersCtx) {
+        new Chart(workOrdersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['New', 'Assigned', 'Scheduled', 'Waiting', 'Completed'],
+                datasets: [{
+                    data: [220, 122, 5, 15, 1066],
+                    backgroundColor: [colors.primary, colors.info, colors.warning, colors.gray, colors.success],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Insurance Chart
+    const insuranceCtx = document.getElementById('insuranceChart');
+    if (insuranceCtx) {
+        new Chart(insuranceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Renters Insurance', 'Liability to Landlord', 'No Insurance'],
+                datasets: [{
+                    data: [501, 825, 105],
+                    backgroundColor: [colors.success, colors.primary, colors.danger],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Performance Chart (Line Graph)
+    const performanceCtx = document.getElementById('performanceChart');
+    if (performanceCtx) {
+        new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Income',
+                    data: [1000000, 1020000, 1015000, 1030000, 1025000, 1040000, 1045000, 1055000, 1065000, 1070000, 1060000, 1040000, 842569],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Expense',
+                    data: [750000, 620000, 680000, 640000, 600000, 850000, 750000, 780000, 740000, 800000, 950000, 600000, 231078],
+                    borderColor: colors.danger,
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

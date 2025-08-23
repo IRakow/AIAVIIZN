@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Orders - Property Management{% endblock %}
+{% block page_title %}Purchase Orders{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-box {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-hint {
+        text-align: center;
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .filter-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+        padding: 6px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    
+    .date-range {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .date-range input {
+        flex: 1;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    .btn-primary {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .status-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .status-tab {
+        padding: 10px 20px;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        cursor: pointer;
+        font-size: 13px;
+        margin-bottom: -2px;
+        transition: all 0.2s;
+    }
+    
+    .status-tab:first-child {
+        border-radius: 4px 0 0 0;
+    }
+    
+    .status-tab:last-child {
+        border-radius: 0 4px 0 0;
+    }
+    
+    .status-tab.active {
+        background: white;
+        border-bottom: 2px solid white;
+        font-weight: 600;
+        color: #0d6efd;
+    }
+    
+    .status-tab:hover:not(.active) {
+        background: #f8f9fa;
+    }
+    
+    .empty-state {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 80px 40px;
+        text-align: center;
+    }
+    
+    .empty-icon {
+        font-size: 64px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 10px;
+    }
+    
+    .empty-text {
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+    }
+    
+    .checkbox-wrapper input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    
+    .purchase-order-list {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    
+    .po-header {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .po-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .po-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .data-table th {
+        padding: 10px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 12px;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        background: #f8f9fa;
+    }
+    
+    .data-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #f1f3f4;
+        font-size: 13px;
+    }
+    
+    .data-table tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .po-number {
+        color: #0d6efd;
+        font-weight: 500;
+        text-decoration: none;
+    }
+    
+    .po-number:hover {
+        text-decoration: underline;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .status-pending-revision {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-pending-approval {
+        background: #cfe2ff;
+        color: #084298;
+    }
+    
+    .status-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .amount {
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .action-links {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .action-links a {
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    .action-links a:hover {
+        color: #0d6efd;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+        font-weight: 600;
+        color: #212529;
+    }
+    
+    .stat-label {
+        font-size: 11px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block tabs %}
+<a href="{{ url_for('work_orders') }}" class="tab-nav-item">Work Orders</a>
+<a href="{{ url_for('recurring_work_orders') }}" class="tab-nav-item">Recurring Work Orders</a>
+<a href="{{ url_for('inspections') }}" class="tab-nav-item">Inspections</a>
+<a href="{{ url_for('unit_turns') }}" class="tab-nav-item">Unit Turns</a>
+<a href="{{ url_for('projects') }}" class="tab-nav-item">Projects</a>
+<a href="{{ url_for('purchase_orders') }}" class="tab-nav-item active">Purchase Orders</a>
+<a href="{{ url_for('inventory') }}" class="tab-nav-item">Inventory</a>
+<a href="{{ url_for('fixed_assets') }}" class="tab-nav-item">Fixed Assets</a>
+<a href="{{ url_for('smart_maintenance') }}" class="tab-nav-item">Smart Maintenance</a>
+{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Pending Revision</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Pending My Revision</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Pending Approval</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">$0</div>
+        <div class="stat-label">Total This Month</div>
+    </div>
+</div>
+
+<div class="filter-box">
+    <div class="filter-hint">Filter purchase orders with the options below. Leave any option blank to filter "all".</div>
+    
+    <div class="filter-grid">
+        <div class="filter-group">
+            <label class="filter-label">Properties</label>
+            <input type="text" placeholder="All properties">
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Vendor</label>
+            <select>
+                <option>Search by vendor or management company</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">GL Accounts</label>
+            <select>
+                <option>Select GL Accounts</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="filter-grid">
+        <div class="filter-group">
+            <label class="filter-label">Date Range</label>
+            <div class="date-range">
+                <input type="date" value="2025-08-07">
+                <span>to</span>
+                <input type="date">
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Approval Status</label>
+            <select>
+                <option>All</option>
+                <option>Pending Revision</option>
+                <option>Pending My Revision</option>
+                <option>Pending Approval</option>
+                <option>Approved</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Completed</label>
+            <select>
+                <option>All</option>
+                <option>Not Completed</option>
+                <option>Completed</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Order Submitted</label>
+            <select>
+                <option>All</option>
+                <option>Not Submitted</option>
+                <option>Submitted</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="checkbox-wrapper">
+        <input type="checkbox" id="showCanceled">
+        <label for="showCanceled">Show canceled purchase orders</label>
+    </div>
+    
+    <div class="filter-actions" style="margin-top: 20px;">
+        <button class="btn btn-primary">Search</button>
+    </div>
+</div>
+
+<div class="status-tabs">
+    <div class="status-tab active">All</div>
+    <div class="status-tab">Pending Revision</div>
+    <div class="status-tab">Pending My Revision</div>
+    <div class="status-tab">Pending Approval</div>
+    <div class="status-tab">Approved</div>
+</div>
+
+<div class="empty-state">
+    <div class="empty-icon">
+        <i class="fas fa-file-invoice"></i>
+    </div>
+    <div class="empty-title">No purchase orders found</div>
+    <div class="empty-text">
+        There are no purchase orders matching your search criteria.<br>
+        Try adjusting your filters or create a new purchase order.
+    </div>
+    <button class="btn btn-success">
+        <i class="fas fa-plus"></i> Create Purchase Order
+    </button>
+</div>
+
+<!-- This would show when there are purchase orders -->
+<div class="purchase-order-list" style="display: none;">
+    <div class="po-header">
+        <div class="po-title">Purchase Orders</div>
+        <div class="po-actions">
+            <button class="btn btn-success">
+                <i class="fas fa-plus"></i> New Purchase Order
+            </button>
+            <button class="btn">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>PO Number</th>
+                <th>Vendor</th>
+                <th>Property</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="#" class="po-number">PO-2025-0847</a></td>
+                <td>ABC Maintenance Co.</td>
+                <td>Rock Ridge Ranch</td>
+                <td>08/05/2025</td>
+                <td class="amount">$4,250.00</td>
+                <td><span class="status-badge status-pending-approval">Pending Approval</span></td>
+                <td>No</td>
+                <td class="action-links">
+                    <a href="#"><i class="fas fa-eye"></i></a>
+                    <a href="#"><i class="fas fa-edit"></i></a>
+                    <a href="#"><i class="fas fa-print"></i></a>
+                </td>
+            </tr>
+            <tr>
+                <td><a href="#" class="po-number">PO-2025-0846</a></td>
+                <td>Superior Plumbing</td>
+                <td>Brentwood Park</td>
+                <td>08/04/2025</td>
+                <td class="amount">$1,850.00</td>
+                <td><span class="status-badge status-approved">Approved</span></td>
+                <td>Yes</td>
+                <td class="action-links">
+                    <a href="#"><i class="fas fa-eye"></i></a>
+                    <a href="#"><i class="fas fa-copy"></i></a>
+                    <a href="#"><i class="fas fa-print"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status tab switching
+    document.querySelectorAll('.status-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

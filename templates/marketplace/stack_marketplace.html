@@ -1,0 +1,793 @@
+
+{% extends 'base.html' %}
+
+{% block title %}AppFolio Property Manager - Additional Services{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-blue: #2563eb;
+        --secondary-purple: #7c3aed;
+        --accent-green: #10b981;
+        --warning-amber: #f59e0b;
+        --danger-red: #ef4444;
+        --success-emerald: #059669;
+        --dark-slate: #1e293b;
+        --light-gray: #f8fafc;
+        --border-gray: #e2e8f0;
+    }
+
+    .content-wrapper {
+        background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+        min-height: 100vh;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-purple) 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border-gray);
+        overflow: hidden;
+    }
+
+    .service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .service-card.featured {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border: 2px solid var(--primary-blue);
+        position: relative;
+    }
+
+    .service-card.featured::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--secondary-purple));
+    }
+
+    .badge-category {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        text-transform: uppercase;
+    }
+
+    .badge-affordable-housing {
+        background: linear-gradient(135deg, var(--dark-slate), #475569);
+        color: white;
+    }
+
+    .badge-marketing {
+        background: linear-gradient(135deg, #6366f1, var(--secondary-purple));
+        color: white;
+    }
+
+    .badge-maintenance {
+        background: linear-gradient(135deg, var(--danger-red), #dc2626);
+        color: white;
+    }
+
+    .badge-accounting {
+        background: linear-gradient(135deg, var(--accent-green), var(--success-emerald));
+        color: white;
+    }
+
+    .status-enabled {
+        color: var(--success-emerald);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-enabled i {
+        font-size: 1.2rem;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-outline-custom {
+        border: 2px solid var(--primary-blue);
+        color: var(--primary-blue);
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: transparent;
+    }
+
+    .btn-outline-custom:hover {
+        background: var(--primary-blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .alert-new-feature {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        border: 1px solid var(--primary-blue);
+        border-radius: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alert-new-feature::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--secondary-purple));
+    }
+
+    .hero-image {
+        border-radius: 1rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .hero-image:hover {
+        transform: scale(1.05);
+    }
+
+    .services-list {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .service-item {
+        border-bottom: 1px solid var(--border-gray);
+        padding: 1.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .service-item:hover {
+        background: var(--light-gray);
+    }
+
+    .service-item:last-child {
+        border-bottom: none;
+    }
+
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 2px solid var(--primary-blue);
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .profile-switch-form {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .service-card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content-wrapper position-fixed bottom-0 overflow-y-auto js-main-page">
+    <main class="main-container mx-auto px-3 w-100">
+        <section class="js-page-content-body page-content-body px-1 py-3">
+            
+            <!-- Profile Switch Form -->
+            <div class="profile-switch-form fade-in">
+                <form id="profile-switch-form" action="/user_profiles/switch" method="post">
+                    <input type="hidden" name="_method" value="put">
+                    <input type="hidden" name="authenticity_token" value="JRyc5Rd1l8K8ujY9ThkzOyLr07WW1nZqmOCHwLNT_GmQm-FNxM5RzvJ1FeOje3J0AziJfAyntacT75OwB-91iQ">
+                    <input type="hidden" name="from_page_action" value="v_plus_services_marketplace-index">
+                    
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label for="profile_profile_name" class="form-label fw-bold">Profile Type:</label>
+                            <select class="form-select" name="profile[profile_name]" id="profile_profile_name">
+                                <option value="property_management" selected>Property Management</option>
+                                <option value="association_management">Association Management</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 text-md-end mt-3 mt-md-0">
+                            <button type="submit" id="switch_profile_button" class="btn btn-primary-custom me-2">
+                                <span class="button-text">Switch Profile</span>
+                                <span class="loading-spinner d-none"></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-custom">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Flash Messages -->
+            <div id="flash_messages"></div>
+
+            <!-- Main Services Marketplace -->
+            <div id="v_plus_services_marketplace_main">
+                <!-- Page Header -->
+                <div class="page-header fade-in">
+                    <div class="container">
+                        <h1 class="display-4 fw-bold mb-4 text-center">Additional Services</h1>
+                        <p class="lead text-center opacity-90">Maximize your partnership with AppFolio</p>
+                    </div>
+                </div>
+
+                <!-- New Feature Alert -->
+                <div class="alert-new-feature p-4 mb-5 fade-in" style="animation-delay: 0.2s;">
+                    <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <span class="badge bg-primary fs-6 fw-bold">NEW</span>
+                        </div>
+                        <div class="col-md-11">
+                            <h3 class="h5 fw-bold mb-2">You'll wonder how you ever managed to manage.</h3>
+                            <p class="mb-0">Realm-X Flows is a workflow automation engine that helps you standardize your processes and increases the speed, efficiency, and consistency of how they are executed. 
+                                <a href="/apm_plus" class="fw-bold text-decoration-none">Learn More</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Section -->
+                <div class="row align-items-center mb-5 fade-in" style="animation-delay: 0.4s;">
+                    <div class="col-lg-6">
+                        <h2 class="display-5 fw-bold mb-4">Maximize your partnership with AppFolio</h2>
+                        <p class="lead text-muted">Take advantage of additional services that are built to work seamlessly across your workflows.</p>
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <img src="https://public.cdn.appfolio.com/public/images/marketplace/final.png" 
+                             class="hero-image img-fluid" 
+                             alt="People collaborating in a modern office environment">
+                    </div>
+                </div>
+
+                <!-- Featured Services -->
+                <div class="row mb-5 fade-in" style="animation-delay: 0.6s;">
+                    <div class="col-12">
+                        <h2 class="h3 fw-bold mb-4">Featured Services</h2>
+                    </div>
+                    
+                    <!-- FolioGuard Smart Ensure -->
+                    <div class="col-lg-12 mb-4">
+                        <div class="service-card featured p-4">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h3 class="h4 fw-bold mb-3">FolioGuard™ Smart Ensure</h3>
+                                    <p class="text-muted mb-3">Unlock new revenue streams with Smart Ensure while protecting your properties. Automatically track and enforce your insurance requirements - let the system do the heavy lifting.</p>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="status-enabled">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Enabled</span>
+                                        </div>
+                                        <a href="/smart_ensure" class="btn btn-outline-custom">Learn More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Two Column Featured Services -->
+                    <div class="col-md-6 mb-4">
+                        <div class="service-card h-100 p-4">
+                            <h3 class="h5 fw-bold mb-3">Add Affordable Housing Units to Your Portfolio</h3>
+                            <p class="text-muted mb-4">Gain peace of mind by streamlining your affordable housing property management with AppFolio. Efficiently operate your affordable housing and market-rate units on one powerful platform.</p>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary-custom btn-sm">Sign Up</button>
+                                <a href="/affordable_housing" class="btn btn-outline-custom btn-sm">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="service-card h-100 p-4">
+                            <h3 class="h5 fw-bold mb-3">FolioScreen™ Trusted Renter</h3>
+                            <p class="text-muted mb-4">Select the most qualified applicants for your community and approve them quickly— all while reducing fraud & staying fair housing compliant.</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="status-enabled">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Enabled</span>
+                                </div>
+                                <a href="/screenings/awareness" class="btn btn-outline-custom btn-sm">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Services -->
+                <div class="services-list fade-in" style="animation-delay: 0.8s;">
+                    <div class="card-header bg-white p-4 border-bottom">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2 class="h4 fw-bold mb-0">Available Services</h2>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <input type="search" id="services-search" class="form-control" placeholder="Search services..." style="max-width: 300px; margin-left: auto;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div id="services-list">
+                            <!-- Affordable Housing -->
+                            <div class="service-item" data-category="affordable-housing">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Affordable Housing</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-affordable-housing">AFFORDABLE HOUSING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/affordable_housing" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Websites -->
+                            <div class="service-item" data-category="marketing">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Websites</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/websites/awareness" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Leasing Assistant, Lisa -->
+                            <div class="service-item" data-category="marketing">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">AI Leasing Assistant, Lisa</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/lisa" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Leasing CRM -->
+                            <div class="service-item" data-category="marketing">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Leasing CRM</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/leasing_crm" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Leasing Signals -->
+                            <div class="service-item" data-category="marketing">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Leasing Signals</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-marketing">MARKETING AND LEASING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/leasing_signals" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Smart Maintenance -->
+                            <div class="service-item" data-category="maintenance">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Smart Maintenance</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-maintenance">MAINTENANCE</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/smart_maintenance" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Online Payables -->
+                            <div class="service-item" data-category="accounting">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <h4 class="h6 fw-bold mb-2">Online Payables</h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5">
+                                                <span class="badge-category badge-accounting">ACCOUNTING</span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="/online_payables" class="btn btn-link p-0">Learn More</a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-link p-0 text-start">
+                                                    <i class="fas fa-edit me-1"></i>Request a Demo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+    });
+
+    // Profile switch form handling
+    const profileForm = document.getElementById('profile-switch-form');
+    const switchButton = document.getElementById('switch_profile_button');
+    
+    profileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        const buttonText = switchButton.querySelector('.button-text');
+        const loadingSpinner = switchButton.querySelector('.loading-spinner');
+        
+        buttonText.classList.add('d-none');
+        loadingSpinner.classList.remove('d-none');
+        switchButton.disabled = true;
+        
+        // Simulate form submission
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showFlashMessage('Profile switched successfully!', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                throw new Error(data.message || 'Failed to switch profile');
+            }
+        })
+        .catch(error => {
+            showFlashMessage(error.message || 'An error occurred', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            buttonText.classList.remove('d-none');
+            loadingSpinner.classList.add('d-none');
+            switchButton.disabled = false;
+        });
+    });
+
+    // Services search functionality
+    const searchInput = document.getElementById('services-search');
+    const serviceItems = document.querySelectorAll('.service-item');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        serviceItems.forEach(item => {
+            const title = item.querySelector('h4').textContent.toLowerCase();
+            const category = item.dataset.category.toLowerCase();
+            
+            if (title.includes(searchTerm) || category.includes(searchTerm)) {
+                item.style.display = '';
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    if (!title.includes(searchTerm) && !category.includes(searchTerm)) {
+                        item.style.display = 'none';
+                    }
+                }, 300);
+            }
+        });
+    });
+
+    // Service item interactions
+    document.querySelectorAll('.service-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(10px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+
+    // Demo request buttons
+    document.querySelectorAll('button[id*="-sign-up"], button:contains("Request a Demo")').forEach(button => {
+        button.addEventListener('click', function() {
+            const serviceName = this.closest('.service-item').querySelector('h4').textContent;
+            showDemoRequestModal(serviceName);
+        });
+    });
+
+    // Service card hover effects
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+
+function showFlashMessage(message, type) {
+    const flashContainer = document.getElementById('flash_messages');
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    
+    const alertHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    flashContainer.innerHTML = alertHTML;
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        const alert = flashContainer.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 5000);
+}
+
+function showDemoRequestModal(serviceName) {
+    const modalHTML = `
+        <div class="modal fade" id="demoRequestModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Request Demo - ${serviceName}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="demoRequestForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message (Optional)</label>
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" form="demoRequestForm" class="btn btn-primary-custom">Request Demo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('demoRequestModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add new modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('demoRequestModal'));
+    modal.show();
+    
+    // Handle form submission
+    document.getElementById('demoRequestForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Simulate form submission
+        showFlashMessage(`Demo request for ${serviceName} submitted successfully!`, 'success');
+        modal.hide();
+    });
+}
+
+// Supabase integration for data persistence
+const supabaseUrl = 'your-supabase-url';
+const supabaseKey = 'your-supabase-anon-key';
+
+async function saveServiceInteraction(serviceId, action) {
+    try {
+        const { data, error } = await supabase
+            .from('service_interactions')
+            .insert([
+                {
+                    service_id: serviceId,
+                    action: action,
+                    timestamp: new Date().toISOString(),
+                    user_id: 'current-user-id'
+                }
+            ]);
+        
+        if (error) throw error;
+        console.log('Interaction saved:', data);
+    } catch (error) {
+        console.error('Error saving interaction:', error);
+    }
+}
+</script>
+{% endblock %}
